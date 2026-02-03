@@ -15,4 +15,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.22" />
   </ItemGroup>
 
+	<ItemGroup>
+		<ProjectReference Include="..\Marketio_Shared\Marketio_Shared.csproj" />
+	</ItemGroup>
+
 </Project>
