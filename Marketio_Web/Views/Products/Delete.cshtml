@@ -1,0 +1,79 @@
+﻿@model Marketio_Shared.DTOs.ProductDto
+
+@{
+    ViewData["Title"] = "Product Verwijderen";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="alert alert-warning" role="alert">
+                <h4 class="alert-heading">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Let op!
+                </h4>
+                <p>Weet u zeker dat u dit product wilt verwijderen?</p>
+                <hr>
+                <p class="mb-0">Deze actie kan niet ongedaan worden gemaakt.</p>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">
+                        <i class="bi bi-trash"></i> Product Verwijderen
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Name"
+                                 onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'" />
+                        </div>
+                        <div class="col-md-8">
+                            <dl class="row">
+                                <dt class="col-sm-4">Productnaam</dt>
+                                <dd class="col-sm-8">@Model.Name</dd>
+
+                                <dt class="col-sm-4">Beschrijving</dt>
+                                <dd class="col-sm-8">@Model.Description</dd>
+
+                                <dt class="col-sm-4">Prijs</dt>
+                                <dd class="col-sm-8">€@Model.Price.ToString("N2")</dd>
+
+                                <dt class="col-sm-4">Voorraad</dt>
+                                <dd class="col-sm-8">@Model.Stock stuks</dd>
+
+                                <dt class="col-sm-4">Categorie</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge bg-secondary">@Model.CategoryName</span>
+                                </dd>
+
+                                <dt class="col-sm-4">Status</dt>
+                                <dd class="col-sm-8">
+                                    @if (Model.IsActive)
+                                    {
+                                        <span class="badge bg-success">Actief</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Inactief</span>
+                                    }
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="bi bi-trash-fill"></i> Ja, Verwijderen
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-arrow-left"></i> Nee, Annuleren
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

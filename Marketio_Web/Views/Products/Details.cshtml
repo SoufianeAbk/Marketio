@@ -1,0 +1,74 @@
+﻿@model Marketio_Shared.DTOs.ProductDto
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Producten</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-6">
+            <img src="@Model.ImageUrl" class="img-fluid rounded shadow" alt="@Model.Name"
+                 onerror="this.src='https://via.placeholder.com/500x500?text=No+Image'" />
+        </div>
+
+        <div class="col-md-6">
+            <h1 class="display-5 mb-3">@Model.Name</h1>
+
+            <div class="mb-3">
+                <span class="badge bg-secondary fs-6">@Model.CategoryName</span>
+                @if (Model.IsActive)
+                {
+                    <span class="badge bg-success fs-6">Actief</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger fs-6">Inactief</span>
+                }
+            </div>
+
+            <h2 class="text-primary mb-4">€@Model.Price.ToString("N2")</h2>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Beschrijving</h5>
+                    <p class="card-text">@Model.Description</p>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h5>Voorraad</h5>
+                @if (Model.Stock == 0)
+                {
+                    <span class="badge bg-warning text-dark fs-6">Uitverkocht</span>
+                }
+                else if (Model.Stock < 10)
+                {
+                    <span class="badge bg-info fs-6">@Model.Stock stuks beschikbaar (Beperkt)</span>
+                }
+                else
+                {
+                    <span class="badge bg-success fs-6">@Model.Stock stuks op voorraad</span>
+                }
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-lg">
+                    <i class="bi bi-pencil"></i> Bewerken
+                </a>
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger btn-lg">
+                    <i class="bi bi-trash"></i> Verwijderen
+                </a>
+                <a asp-action="Index" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-arrow-left"></i> Terug
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
