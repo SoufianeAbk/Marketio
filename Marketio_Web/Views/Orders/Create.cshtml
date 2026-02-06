@@ -1,0 +1,220 @@
+﻿@model Marketio_Shared.DTOs.CreateOrderDto
+@using Marketio_Shared.Enums
+
+@{
+    ViewData["Title"] = "Nieuwe Bestelling";
+    var products = ViewBag.Products as List<Marketio_Shared.DTOs.ProductDto>;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-10 offset-lg-1">
+            <h1 class="mb-4">
+                <i class="bi bi-cart-plus"></i> Nieuwe Bestelling Aanmaken
+            </h1>
+
+            <form asp-action="Create" method="post" id="orderForm">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- Klant Informatie -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-person-circle"></i> Klant Informatie
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="CustomerId" class="form-label">Customer ID / Email</label>
+                            <input asp-for="CustomerId" class="form-control" placeholder="customer@example.com" />
+                            <span asp-validation-for="CustomerId" class="text-danger"></span>
+                            <div class="form-text">Voer het email adres of ID van de klant in</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Producten Selectie -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-box-seam"></i> Producten Selecteren
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="orderItems">
+                            <!-- Product items komen hier dynamisch -->
+                        </div>
+                        <button type="button" class="btn btn-outline-success" onclick="addOrderItem()">
+                            <i class="bi bi-plus-circle"></i> Product Toevoegen
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Adres Informatie -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-geo-alt"></i> Adres Informatie
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ShippingAddress" class="form-label">Verzendadres</label>
+                                <textarea asp-for="ShippingAddress" class="form-control" rows="3"
+                                          placeholder="Straat, Huisnummer&#10;Postcode Plaats"></textarea>
+                                <span asp-validation-for="ShippingAddress" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="BillingAddress" class="form-label">Factuuradres</label>
+                                <textarea asp-for="BillingAddress" class="form-control" rows="3"
+                                          placeholder="Straat, Huisnummer&#10;Postcode Plaats"></textarea>
+                                <span asp-validation-for="BillingAddress" class="text-danger"></span>
+                                <button type="button" class="btn btn-sm btn-outline-secondary mt-2"
+                                        onclick="copyShippingAddress()">
+                                    <i class="bi bi-files"></i> Kopieer verzendadres
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Betaalmethode -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-warning">
+                        <h5 class="mb-0">
+                            <i class="bi bi-credit-card"></i> Betaalmethode
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="PaymentMethod" class="form-label">Selecteer Betaalmethode</label>
+                            <select asp-for="PaymentMethod" class="form-select">
+                                @foreach (PaymentMethod method in ViewBag.PaymentMethods)
+                                {
+                                    <option value="@((int)method)">@method</option>
+                                }
+                            </select>
+                            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Totaal Bedrag -->
+                <div class="card shadow-sm mb-4 border-primary">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0">Totaal Bedrag:</h4>
+                            <h3 class="text-primary mb-0" id="totalAmount">€0.00</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actie Knoppen -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+                    <a asp-action="Index" class="btn btn-secondary btn-lg">
+                        <i class="bi bi-x-circle"></i> Annuleren
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-cart-check"></i> Bestelling Plaatsen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        const products = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(products ?? new List<Marketio_Shared.DTOs.ProductDto>()));
+        let itemIndex = 0;
+
+        function addOrderItem() {
+            const container = document.getElementById('orderItems');
+            const itemHtml = `
+                <div class="order-item card mb-3" data-index="${itemIndex}">
+                    <div class="card-body">
+                        <div class="row align-items-end">
+                            <div class="col-md-5">
+                                <label class="form-label">Product</label>
+                                <select name="OrderItems[${itemIndex}].ProductId" class="form-select product-select" onchange="updatePrice(${itemIndex})" required>
+                                    <option value="">-- Selecteer Product --</option>
+                                    ${products.map(p => `<option value="${p.id}" data-price="${p.price}" data-stock="${p.stock}">${p.name} - €${p.price.toFixed(2)} (Voorraad: ${p.stock})</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Aantal</label>
+                                <input type="number" name="OrderItems[${itemIndex}].Quantity" class="form-control quantity-input" min="1" value="1" onchange="updatePrice(${itemIndex})" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Subtotaal</label>
+                                <input type="text" class="form-control item-total" readonly value="€0.00">
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-danger" onclick="removeOrderItem(${itemIndex})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', itemHtml);
+            itemIndex++;
+        }
+
+        function removeOrderItem(index) {
+            const item = document.querySelector(`[data-index="${index}"]`);
+            if (item) {
+                item.remove();
+                updateTotalAmount();
+            }
+        }
+
+        function updatePrice(index) {
+            const item = document.querySelector(`[data-index="${index}"]`);
+            const select = item.querySelector('.product-select');
+            const quantityInput = item.querySelector('.quantity-input');
+            const totalInput = item.querySelector('.item-total');
+
+            const selectedOption = select.options[select.selectedIndex];
+            const price = parseFloat(selectedOption.dataset.price || 0);
+            const quantity = parseInt(quantityInput.value || 0);
+            const stock = parseInt(selectedOption.dataset.stock || 0);
+
+            if (quantity > stock) {
+                alert(`Maximale voorraad voor dit product is ${stock}`);
+                quantityInput.value = stock;
+                return;
+            }
+
+            const total = price * quantity;
+            totalInput.value = `€${total.toFixed(2)}`;
+
+            updateTotalAmount();
+        }
+
+        function updateTotalAmount() {
+            let total = 0;
+            document.querySelectorAll('.item-total').forEach(input => {
+                const value = parseFloat(input.value.replace('€', '').replace(',', '.')) || 0;
+                total += value;
+            });
+            document.getElementById('totalAmount').textContent = `€${total.toFixed(2)}`;
+        }
+
+        function copyShippingAddress() {
+            const shipping = document.querySelector('[name="ShippingAddress"]').value;
+            document.querySelector('[name="BillingAddress"]').value = shipping;
+        }
+
+        // Voeg automatisch 1 item toe bij laden
+        document.addEventListener('DOMContentLoaded', function() {
+            addOrderItem();
+        });
+    </script>
+}

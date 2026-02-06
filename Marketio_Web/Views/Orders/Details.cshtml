@@ -1,0 +1,186 @@
+﻿@model Marketio_Shared.DTOs.OrderDto
+
+@{
+    ViewData["Title"] = $"Bestelling {Model.OrderNumber}";
+}
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Bestellingen</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.OrderNumber</li>
+        </ol>
+    </nav>
+
+    @* Success/Error Messages *@
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Bestelling Header -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="bi bi-receipt"></i> Bestelling @Model.OrderNumber
+                        </h4>
+                        <span class="badge bg-light text-dark fs-6">@Model.StatusName</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Besteldatum</h6>
+                            <p class="mb-3">@Model.OrderDate.ToString("dd MMMM yyyy HH:mm")</p>
+
+                            <h6 class="text-muted">Customer ID</h6>
+                            <p class="mb-3">@Model.CustomerId</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Status</h6>
+                            <p class="mb-3">
+                                @switch (Model.Status)
+                                {
+                                    case Marketio_Shared.Enums.OrderStatus.Pending:
+                                        <span class="badge bg-warning text-dark">@Model.StatusName</span>
+                                        break;
+                                    case Marketio_Shared.Enums.OrderStatus.Processing:
+                                        <span class="badge bg-info">@Model.StatusName</span>
+                                        break;
+                                    case Marketio_Shared.Enums.OrderStatus.Shipped:
+                                        <span class="badge bg-primary">@Model.StatusName</span>
+                                        break;
+                                    case Marketio_Shared.Enums.OrderStatus.Delivered:
+                                        <span class="badge bg-success">@Model.StatusName</span>
+                                        break;
+                                    case Marketio_Shared.Enums.OrderStatus.Cancelled:
+                                        <span class="badge bg-danger">@Model.StatusName</span>
+                                        break;
+                                }
+                            </p>
+
+                            <h6 class="text-muted">Betaalmethode</h6>
+                            <p class="mb-3">
+                                <i class="bi bi-credit-card"></i> @Model.PaymentMethodName
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bestelde Producten -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-box-seam"></i> Bestelde Producten
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-center">Aantal</th>
+                                    <th class="text-end">Prijs</th>
+                                    <th class="text-end">Totaal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.OrderItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@item.ProductName</strong>
+                                        </td>
+                                        <td class="text-center">@item.Quantity</td>
+                                        <td class="text-end">€@item.UnitPrice.ToString("N2")</td>
+                                        <td class="text-end">€@item.TotalPrice.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Totaal:</strong></td>
+                                    <td class="text-end">
+                                        <h5 class="text-primary mb-0">€@Model.TotalAmount.ToString("N2")</h5>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Verzendadres -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-truck"></i> Verzendadres
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <address class="mb-0">
+                        @Html.Raw(Model.ShippingAddress.Replace("\n", "<br />"))
+                    </address>
+                </div>
+            </div>
+
+            <!-- Acties -->
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-gear"></i> Acties
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        @if (Model.Status != Marketio_Shared.Enums.OrderStatus.Cancelled &&
+                                                Model.Status != Marketio_Shared.Enums.OrderStatus.Delivered)
+                        {
+                            <form asp-action="Cancel" asp-route-id="@Model.Id" method="post"
+                                  onsubmit="return confirm('Weet u zeker dat u deze bestelling wilt annuleren?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger w-100">
+                                    <i class="bi bi-x-circle"></i> Annuleer Bestelling
+                                </button>
+                            </form>
+                        }
+
+                        <a asp-action="CustomerOrders" asp-route-customerId="@Model.CustomerId"
+                           class="btn btn-outline-primary">
+                            <i class="bi bi-person-circle"></i> Alle Klant Bestellingen
+                        </a>
+
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Terug naar Overzicht
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 5000);
+    </script>
+}

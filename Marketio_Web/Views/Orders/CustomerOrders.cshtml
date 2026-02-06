@@ -1,0 +1,113 @@
+﻿@model IEnumerable<Marketio_Shared.DTOs.OrderDto>
+
+@{
+    ViewData["Title"] = "Klant Bestellingen";
+    var customerId = ViewBag.CustomerId as string;
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5">
+                <i class="bi bi-person-circle"></i> Bestellingen van Klant
+            </h1>
+            <p class="lead text-muted">Customer ID: <strong>@customerId</strong></p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Terug
+            </a>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var order in Model)
+            {
+                <div class="col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-receipt"></i> @order.OrderNumber
+                                </h5>
+                                @switch (order.Status)
+                                {
+                                    case Marketio_Shared.Enums.OrderStatus.Pending:
+                                        <span class="badge bg-warning text-dark">@order.StatusName</span>
+                                        break;
+                                    case Marketio_Shared.Enums.OrderStatus.Processing:
+                                        <span class="badge bg-info">@order.StatusName</span>
+                                        break;
+                                    case Marketio_Shared.Enums.OrderStatus.Shipped:
+                                        <span class="badge bg-primary">@order.StatusName</span>
+                                        break;
+                                    case Marketio_Shared.Enums.OrderStatus.Delivered:
+                                        <span class="badge bg-success">@order.StatusName</span>
+                                        break;
+                                    case Marketio_Shared.Enums.OrderStatus.Cancelled:
+                                        <span class="badge bg-danger">@order.StatusName</span>
+                                        break;
+                                }
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar"></i> @order.OrderDate.ToString("dd MMMM yyyy HH:mm")
+                                </small>
+                            </div>
+
+                            <h6 class="text-muted mb-2">Producten:</h6>
+                            <ul class="list-unstyled mb-3">
+                                @foreach (var item in order.OrderItems.Take(3))
+                                {
+                                    <li class="mb-1">
+                                        <i class="bi bi-box-seam text-muted"></i>
+                                        @item.Quantity x @item.ProductName
+                                    </li>
+                                }
+                                @if (order.OrderItems.Count > 3)
+                                {
+                                    <li class="text-muted">
+                                        <small>... en @(order.OrderItems.Count - 3) meer</small>
+                                    </li>
+                                }
+                            </ul>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="text-primary mb-0">€@order.TotalAmount.ToString("N2")</h4>
+                                <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-outline-primary">
+                                    <i class="bi bi-eye"></i> Details
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <small>
+                                <i class="bi bi-credit-card"></i> @order.PaymentMethodName
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="mt-4 text-center">
+            <p class="text-muted">
+                Totaal <strong>@Model.Count()</strong> bestelling(en) gevonden
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center" role="alert">
+            <i class="bi bi-info-circle fs-1"></i>
+            <h4 class="mt-3">Geen bestellingen gevonden</h4>
+            <p class="mb-0">Deze klant heeft nog geen bestellingen geplaatst.</p>
+            <a asp-action="Create" class="btn btn-primary mt-3">
+                <i class="bi bi-plus-circle"></i> Nieuwe Bestelling Aanmaken
+            </a>
+        </div>
+    }
+</div>

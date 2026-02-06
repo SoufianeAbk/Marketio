@@ -1,0 +1,148 @@
+﻿@{
+    ViewData["Title"] = "Bestellingen";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-4">
+                <i class="bi bi-cart"></i> Bestellingen
+            </h1>
+            <p class="lead text-muted">Beheer en bekijk alle bestellingen</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Create" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle"></i> Nieuwe Bestelling
+            </a>
+        </div>
+    </div>
+
+    @* Success/Error Messages *@
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="alert alert-info" role="alert">
+        <h4 class="alert-heading">
+            <i class="bi bi-info-circle"></i> Bestellingen Overzicht
+        </h4>
+        <p>Hier kunt u bestellingen aanmaken en beheren. Om bestellingen van een specifieke klant te bekijken, gebruikt u de Customer Orders functie.</p>
+        <hr>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <h5>Quick Actions:</h5>
+                <ul class="mb-0">
+                    <li>
+                        <a asp-action="Create">
+                            <i class="bi bi-plus-circle"></i> Nieuwe bestelling aanmaken
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Products" asp-action="Index">
+                            <i class="bi bi-box-seam"></i> Bekijk beschikbare producten
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h5>Customer Orders:</h5>
+                <form asp-action="CustomerOrders" method="get" class="d-flex gap-2">
+                    <input type="text" name="customerId" class="form-control" placeholder="Voer Customer ID in" required />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Zoeken
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-2">
+        <div class="col-md-4">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <i class="bi bi-cart-check text-primary" style="font-size: 3rem;"></i>
+                    <h5 class="card-title mt-3">Nieuwe Bestelling</h5>
+                    <p class="card-text">Maak een nieuwe bestelling aan voor een klant</p>
+                    <a asp-action="Create" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Aanmaken
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-info">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-circle text-info" style="font-size: 3rem;"></i>
+                    <h5 class="card-title mt-3">Klant Bestellingen</h5>
+                    <p class="card-text">Bekijk alle bestellingen van een specifieke klant</p>
+                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#customerModal">
+                        <i class="bi bi-search"></i> Zoeken
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <i class="bi bi-box-seam text-success" style="font-size: 3rem;"></i>
+                    <h5 class="card-title mt-3">Producten</h5>
+                    <p class="card-text">Bekijk beschikbare producten voor bestellingen</p>
+                    <a asp-controller="Products" asp-action="Index" class="btn btn-success">
+                        <i class="bi bi-box-seam"></i> Bekijken
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Customer Search Modal -->
+<div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerModalLabel">
+                    <i class="bi bi-search"></i> Zoek Klant Bestellingen
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="CustomerOrders" method="get">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="customerId" class="form-label">Customer ID</label>
+                        <input type="text" class="form-control" id="customerId" name="customerId"
+                               placeholder="Bijv. user@example.com" required>
+                        <div class="form-text">Voer het email adres of ID van de klant in</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Zoeken
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 5000);
+    </script>
+}
