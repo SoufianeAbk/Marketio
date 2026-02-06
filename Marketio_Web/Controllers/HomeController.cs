@@ -15,7 +15,8 @@ namespace Marketio_Web.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            // Redirect naar Products/Index in plaats van een lege view
+            return RedirectToAction("Index", "Products");
         }
 
         public IActionResult Privacy()
