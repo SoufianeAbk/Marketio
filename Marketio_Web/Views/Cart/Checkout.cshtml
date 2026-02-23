@@ -1,0 +1,125 @@
+﻿@model Marketio_Shared.DTOs.CreateOrderDto
+@using Marketio_Shared.Enums
+@{
+    ViewData["Title"] = "Afrekenen";
+    var cartTotal = ViewBag.CartTotal as decimal? ?? 0;
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">
+        <i class="bi bi-cart-check"></i> Afrekenen
+    </h1>
+
+    <form asp-action="PlaceOrder" method="post">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-person-circle"></i> Klantgegevens
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="CustomerId" class="form-label">Email / Customer ID</label>
+                            <input asp-for="CustomerId" class="form-control" placeholder="uw@email.nl" required />
+                            <span asp-validation-for="CustomerId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-geo-alt"></i> Verzendgegevens
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="ShippingAddress" class="form-label">Verzendadres</label>
+                            <textarea asp-for="ShippingAddress" class="form-control" rows="3"
+                                      placeholder="Straat, Huisnummer&#10;Postcode Plaats" required></textarea>
+                            <span asp-validation-for="ShippingAddress" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="BillingAddress" class="form-label">Factuuradres</label>
+                            <textarea asp-for="BillingAddress" class="form-control" rows="3"
+                                      placeholder="Straat, Huisnummer&#10;Postcode Plaats" required></textarea>
+                            <span asp-validation-for="BillingAddress" class="text-danger"></span>
+                            <button type="button" class="btn btn-sm btn-outline-secondary mt-2"
+                                    onclick="document.querySelector('[name=BillingAddress]').value = document.querySelector('[name=ShippingAddress]').value">
+                                <i class="bi bi-files"></i> Kopieer verzendadres
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-warning">
+                        <h5 class="mb-0">
+                            <i class="bi bi-credit-card"></i> Betaalmethode
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="PaymentMethod" class="form-label">Selecteer betaalmethode</label>
+                            <select asp-for="PaymentMethod" class="form-select" required>
+                                <option value="">-- Selecteer --</option>
+                                @foreach (PaymentMethod method in Enum.GetValues(typeof(PaymentMethod)))
+                                {
+                                    <option value="@((int)method)">@method</option>
+                                }
+                            </select>
+                            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm sticky-top" style="top: 20px;">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-receipt"></i> Bestelling
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotaal:</span>
+                            <span>€@cartTotal.ToString("F2")</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Verzendkosten:</span>
+                            <span class="text-success">Gratis</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <strong>Totaal te betalen:</strong>
+                            <strong class="text-success fs-4">€@cartTotal.ToString("F2")</strong>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 mb-3">
+                            <i class="bi bi-check-circle"></i> Bestelling Plaatsen
+                        </button>
+
+                        <a asp-action="Index" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-arrow-left"></i> Terug naar winkelwagen
+                        </a>
+
+                        <div class="mt-3 text-center">
+                            <small class="text-muted">
+                                <i class="bi bi-shield-lock"></i> Uw gegevens zijn veilig
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

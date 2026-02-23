@@ -1,0 +1,179 @@
+﻿@model List<Marketio_Shared.DTOs.CartItemDto>
+@{
+    ViewData["Title"] = "Winkelwagen";
+    var cartTotal = ViewBag.CartTotal as decimal? ?? 0;
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">
+        <i class="bi bi-cart"></i> Winkelwagen
+    </h1>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <h4 class="alert-heading">
+                <i class="bi bi-cart-x"></i> Uw winkelwagen is leeg
+            </h4>
+            <p>Begin met winkelen en voeg producten toe aan uw winkelwagen.</p>
+            <hr>
+            <a asp-controller="Products" asp-action="Index" class="btn btn-primary">
+                <i class="bi bi-box-seam"></i> Naar Producten
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        @foreach (var item in Model)
+                        {
+                            <div class="row align-items-center mb-3 pb-3 border-bottom">
+                                <div class="col-md-2">
+                                    <img src="@item.ImageUrl" alt="@item.ProductName"
+                                         class="img-fluid rounded"
+                                         onerror="this.src='/images/placeholder.jpg'">
+                                </div>
+                                <div class="col-md-4">
+                                    <h5>
+                                        <a asp-controller="Products" asp-action="Details" asp-route-id="@item.ProductId"
+                                           class="text-decoration-none">
+                                            @item.ProductName
+                                        </a>
+                                    </h5>
+                                    <p class="text-muted mb-0">€@item.UnitPrice.ToString("F2")</p>
+                                    <small class="text-muted">Voorraad: @item.AvailableStock</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="input-group">
+                                        <button class="btn btn-outline-secondary" type="button"
+                                                onclick="updateQuantity(@item.ProductId, @(item.Quantity - 1))">
+                                            <i class="bi bi-dash"></i>
+                                        </button>
+                                        <input type="number" class="form-control text-center"
+                                               id="quantity-@item.ProductId"
+                                               value="@item.Quantity"
+                                               min="1" max="@item.AvailableStock"
+                                               onchange="updateQuantity(@item.ProductId, this.value)">
+                                        <button class="btn btn-outline-secondary" type="button"
+                                                onclick="updateQuantity(@item.ProductId, @(item.Quantity + 1))">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <p class="fw-bold mb-2">€@item.TotalPrice.ToString("F2")</p>
+                                    <form asp-action="RemoveItem" method="post" class="d-inline">
+                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-controller="Products" asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Verder winkelen
+                    </a>
+                    <form asp-action="ClearCart" method="post" class="d-inline"
+                          onsubmit="return confirm('Weet u zeker dat u de winkelwagen wilt legen?');">
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="bi bi-trash"></i> Winkelwagen legen
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-receipt"></i> Overzicht
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotaal:</span>
+                            <span>€@cartTotal.ToString("F2")</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Verzendkosten:</span>
+                            <span class="text-success">Gratis</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <strong>Totaal:</strong>
+                            <strong class="text-primary">€@cartTotal.ToString("F2")</strong>
+                        </div>
+
+                        <a asp-action="Checkout" class="btn btn-primary w-100 mb-2">
+                            <i class="bi bi-cart-check"></i> Afrekenen
+                        </a>
+                        <p class="text-muted small text-center mb-0">
+                            <i class="bi bi-shield-check"></i> Veilig betalen
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mt-3">
+                    <div class="card-body">
+                        <h6><i class="bi bi-truck"></i> Verzending</h6>
+                        <p class="small text-muted mb-0">
+                            Gratis verzending bij bestellingen boven €50. Besteld voor 23:00, morgen in huis.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        async function updateQuantity(productId, quantity) {
+            quantity = parseInt(quantity);
+            if (quantity < 1) return;
+
+            try {
+                const response = await fetch('@Url.Action("UpdateQuantity", "Cart")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ productId, quantity })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    location.reload();
+                } else {
+                    alert(result.message || 'Fout bij bijwerken');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Er is een fout opgetreden');
+            }
+        }
+    </script>
+}

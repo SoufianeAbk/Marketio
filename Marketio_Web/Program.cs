@@ -16,21 +16,50 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// ✅ Repositories
+//  Session support voor shopping cart
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+//  HttpContextAccessor voor cart service
+builder.Services.AddHttpContextAccessor();
+
+//  Repositories
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
-// ✅ Services
+//  Services
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<ICartService, CartService>();
 
+//  Identity met Rollen
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-        options.SignIn.RequireConfirmedAccount = true)
+{
+    options.SignIn.RequireConfirmedAccount = false; // Voor development gemakkelijker
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 6;
+})
+    .AddRoles<IdentityRole>() // 👈 Voeg rollen support toe
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+// Seed rollen en admin gebruiker
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedRolesAndAdminAsync(services);
+}
 
 // Configureer de HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -48,6 +77,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// ✅ Session middleware (voor UseAuthorization!)
+app.UseSession();
+
+app.UseAuthentication(); // Deze moet er zijn
 app.UseAuthorization();
 
 app.MapControllerRoute(
@@ -57,3 +90,40 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
+
+// ✅ Helper method om rollen en admin te seeden
+async Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
+{
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+    // Maak rollen aan
+    string[] roles = { "Admin", "Customer" };
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+
+    // Maak admin gebruiker aan
+    var adminEmail = "admin@marketio.nl";
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
+    if (adminUser == null)
+    {
+        adminUser = new IdentityUser
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            EmailConfirmed = true
+        };
+
+        var result = await userManager.CreateAsync(adminUser, "Admin123!");
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+        }
+    }
+}
