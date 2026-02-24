@@ -1,6 +1,7 @@
 ﻿using Marketio_Shared.DTOs;
 using Marketio_Shared.Enums;
 using Marketio_Shared.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Marketio_Web.Controllers
@@ -16,24 +17,74 @@ namespace Marketio_Web.Controllers
             _logger = logger;
         }
 
-        // GET: Products
-        public async Task<IActionResult> Index(ProductCategory? category = null)
+        // GET: Products - Met Search & Filter
+        public async Task<IActionResult> Index(
+            string? searchTerm = null,
+            ProductCategory? category = null,
+            decimal? minPrice = null,
+            decimal? maxPrice = null,
+            string sortBy = "name")
         {
             try
             {
-                IEnumerable<ProductDto> products;
+                // Haal alle producten op
+                var products = await _productService.GetAllProductsAsync();
 
+                // Filter op categorie
                 if (category.HasValue)
                 {
-                    products = await _productService.GetProductsByCategoryAsync(category.Value);
-                    ViewBag.SelectedCategory = category.Value;
+                    products = products.Where(p => p.Category == category.Value);
+                }
+
+                // Zoeken op naam of beschrijving
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    products = products.Where(p =>
+                        p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                        p.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+                }
+
+                // Filter op prijsrange
+                if (minPrice.HasValue)
+                {
+                    products = products.Where(p => p.Price >= minPrice.Value);
+                }
+
+                if (maxPrice.HasValue)
+                {
+                    products = products.Where(p => p.Price <= maxPrice.Value);
+                }
+
+                // Sorteer producten
+                products = sortBy?.ToLower() switch
+                {
+                    "price-asc" => products.OrderBy(p => p.Price),
+                    "price-desc" => products.OrderByDescending(p => p.Price),
+                    "name-desc" => products.OrderByDescending(p => p.Name),
+                    "newest" => products.OrderByDescending(p => p.Id), // Nieuwste eerst
+                    _ => products.OrderBy(p => p.Name) // Default: naam A-Z
+                };
+
+                // ViewBag data voor filters
+                ViewBag.Categories = Enum.GetValues<ProductCategory>();
+                ViewBag.SelectedCategory = category;
+                ViewBag.SearchTerm = searchTerm;
+                ViewBag.MinPrice = minPrice;
+                ViewBag.MaxPrice = maxPrice;
+                ViewBag.SortBy = sortBy;
+
+                // Prijs statistieken voor slider
+                if (products.Any())
+                {
+                    ViewBag.LowestPrice = products.Min(p => p.Price);
+                    ViewBag.HighestPrice = products.Max(p => p.Price);
                 }
                 else
                 {
-                    products = await _productService.GetAllProductsAsync();
+                    ViewBag.LowestPrice = 0;
+                    ViewBag.HighestPrice = 1000;
                 }
 
-                ViewBag.Categories = Enum.GetValues<ProductCategory>();
                 return View(products);
             }
             catch (Exception ex)
@@ -65,7 +116,8 @@ namespace Marketio_Web.Controllers
             }
         }
 
-        // GET: Products/Create
+        // GET: Products/Create - ✅ Alleen Admin
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewBag.Categories = Enum.GetValues<ProductCategory>();
@@ -73,6 +125,7 @@ namespace Marketio_Web.Controllers
         }
 
         // POST: Products/Create
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductDto productDto)
@@ -99,6 +152,7 @@ namespace Marketio_Web.Controllers
         }
 
         // GET: Products/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             try
@@ -121,6 +175,7 @@ namespace Marketio_Web.Controllers
         }
 
         // POST: Products/Edit/5
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ProductDto productDto)
@@ -152,6 +207,7 @@ namespace Marketio_Web.Controllers
         }
 
         // GET: Products/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -173,6 +229,7 @@ namespace Marketio_Web.Controllers
         }
 
         // POST: Products/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
