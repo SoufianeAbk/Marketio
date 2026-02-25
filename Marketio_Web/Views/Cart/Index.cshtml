@@ -9,20 +9,7 @@
         <i class="bi bi-cart"></i> Winkelwagen
     </h1>
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show">
-            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show">
-            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
+    <div id="alert-container"></div>
 
     @if (!Model.Any())
     {
@@ -42,14 +29,14 @@
         <div class="row">
             <div class="col-lg-8">
                 <div class="card shadow-sm mb-4">
-                    <div class="card-body">
+                    <div class="card-body" id="cart-items">
                         @foreach (var item in Model)
                         {
-                            <div class="row align-items-center mb-3 pb-3 border-bottom">
+                            <div class="row align-items-center mb-3 pb-3 border-bottom cart-item" data-product-id="@item.ProductId">
                                 <div class="col-md-2">
                                     <img src="@item.ImageUrl" alt="@item.ProductName"
                                          class="img-fluid rounded"
-                                         onerror="this.src='/images/placeholder.jpg'">
+                                         onerror="this.src='https://via.placeholder.com/100x100?text=No+Image'">
                                 </div>
                                 <div class="col-md-4">
                                     <h5>
@@ -63,29 +50,28 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="input-group">
-                                        <button class="btn btn-outline-secondary" type="button"
-                                                onclick="updateQuantity(@item.ProductId, @(item.Quantity - 1))">
+                                        <button class="btn btn-outline-secondary btn-decrease" type="button"
+                                                data-product-id="@item.ProductId">
                                             <i class="bi bi-dash"></i>
                                         </button>
-                                        <input type="number" class="form-control text-center"
-                                               id="quantity-@item.ProductId"
+                                        <input type="number" class="form-control text-center quantity-input"
+                                               data-product-id="@item.ProductId"
                                                value="@item.Quantity"
-                                               min="1" max="@item.AvailableStock"
-                                               onchange="updateQuantity(@item.ProductId, this.value)">
-                                        <button class="btn btn-outline-secondary" type="button"
-                                                onclick="updateQuantity(@item.ProductId, @(item.Quantity + 1))">
+                                               min="1" max="@item.AvailableStock">
+                                        <button class="btn btn-outline-secondary btn-increase" type="button"
+                                                data-product-id="@item.ProductId"
+                                                data-max-stock="@item.AvailableStock">
                                             <i class="bi bi-plus"></i>
                                         </button>
                                     </div>
                                 </div>
                                 <div class="col-md-2 text-end">
-                                    <p class="fw-bold mb-2">€@item.TotalPrice.ToString("F2")</p>
-                                    <form asp-action="RemoveItem" method="post" class="d-inline">
-                                        <input type="hidden" name="productId" value="@item.ProductId" />
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                                    <p class="fw-bold mb-2 item-total">€@item.TotalPrice.ToString("F2")</p>
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-remove"
+                                            data-product-id="@item.ProductId"
+                                            data-product-name="@item.ProductName">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
                             </div>
                         }
@@ -98,6 +84,7 @@
                     </a>
                     <form asp-action="ClearCart" method="post" class="d-inline"
                           onsubmit="return confirm('Weet u zeker dat u de winkelwagen wilt legen?');">
+                        @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-outline-danger">
                             <i class="bi bi-trash"></i> Winkelwagen legen
                         </button>
@@ -115,7 +102,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-2">
                             <span>Subtotaal:</span>
-                            <span>€@cartTotal.ToString("F2")</span>
+                            <span id="cart-subtotal">€@cartTotal.ToString("F2")</span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Verzendkosten:</span>
@@ -124,7 +111,7 @@
                         <hr>
                         <div class="d-flex justify-content-between mb-3">
                             <strong>Totaal:</strong>
-                            <strong class="text-primary">€@cartTotal.ToString("F2")</strong>
+                            <strong class="text-primary" id="cart-total">€@cartTotal.ToString("F2")</strong>
                         </div>
 
                         <a asp-action="Checkout" class="btn btn-primary w-100 mb-2">
@@ -135,15 +122,6 @@
                         </p>
                     </div>
                 </div>
-
-                <div class="card shadow-sm mt-3">
-                    <div class="card-body">
-                        <h6><i class="bi bi-truck"></i> Verzending</h6>
-                        <p class="small text-muted mb-0">
-                            Gratis verzending bij bestellingen boven €50. Besteld voor 23:00, morgen in huis.
-                        </p>
-                    </div>
-                </div>
             </div>
         </div>
     }
@@ -151,29 +129,152 @@
 
 @section Scripts {
     <script>
-        async function updateQuantity(productId, quantity) {
-            quantity = parseInt(quantity);
-            if (quantity < 1) return;
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = '@Html.AntiForgeryToken()'.match(/value="([^"]+)"/)?.[1];
 
-            try {
-                const response = await fetch('@Url.Action("UpdateQuantity", "Cart")', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ productId, quantity })
+            // Increase Quantity
+            document.querySelectorAll('.btn-increase').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const productId = this.dataset.productId;
+                    const maxStock = parseInt(this.dataset.maxStock);
+                    const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+                    const currentQty = parseInt(input.value);
+
+                    if (currentQty < maxStock) {
+                        await updateQuantity(productId, currentQty + 1);
+                    } else {
+                        showAlert('Maximale voorraad bereikt', 'warning');
+                    }
                 });
+            });
 
-                const result = await response.json();
-                if (result.success) {
-                    location.reload();
-                } else {
-                    alert(result.message || 'Fout bij bijwerken');
+            // Decrease Quantity
+            document.querySelectorAll('.btn-decrease').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const productId = this.dataset.productId;
+                    const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+                    const currentQty = parseInt(input.value);
+
+                    if (currentQty > 1) {
+                        await updateQuantity(productId, currentQty - 1);
+                    }
+                });
+            });
+
+            // Manual Input Change
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                input.addEventListener('change', async function() {
+                    const productId = this.dataset.productId;
+                    const newQty = parseInt(this.value);
+
+                    if (newQty >= 1) {
+                        await updateQuantity(productId, newQty);
+                    }
+                });
+            });
+
+            // Remove Item
+            document.querySelectorAll('.btn-remove').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    if (!confirm('Weet u zeker dat u dit product wilt verwijderen?')) return;
+
+                    const productId = this.dataset.productId;
+                    const productName = this.dataset.productName;
+
+                    try {
+                        const response = await fetch('@Url.Action("RemoveItem", "Cart")', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: `productId=${productId}&__RequestVerificationToken=${encodeURIComponent(token)}`
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            // Remove item from DOM
+                            const itemElement = document.querySelector(`.cart-item[data-product-id="${productId}"]`);
+                            itemElement.style.transition = 'opacity 0.3s';
+                            itemElement.style.opacity = '0';
+                            setTimeout(() => itemElement.remove(), 300);
+
+                            // Update totals
+                            updateCartTotals(result.cartTotal, result.cartCount);
+
+                            showAlert(`${productName} verwijderd uit winkelwagen`, 'success');
+
+                            // Reload if cart is empty
+                            if (result.cartCount === 0) {
+                                setTimeout(() => location.reload(), 1500);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        showAlert('Fout bij verwijderen van product', 'danger');
+                    }
+                });
+            });
+
+            // Update Quantity Function
+            async function updateQuantity(productId, quantity) {
+                try {
+                    const response = await fetch('@Url.Action("UpdateQuantity", "Cart")', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ productId, quantity })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        // Update input value
+                        const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+                        input.value = quantity;
+
+                        // Update item total
+                        const itemTotal = document.querySelector(`.cart-item[data-product-id="${productId}"] .item-total`);
+                        itemTotal.textContent = `€${result.itemTotal.toFixed(2)}`;
+
+                        // Update cart totals
+                        updateCartTotals(result.cartTotal, result.cartCount);
+                    } else {
+                        showAlert(result.message || 'Fout bij bijwerken', 'danger');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showAlert('Fout bij bijwerken van aantal', 'danger');
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Er is een fout opgetreden');
             }
-        }
+
+            // Update Cart Totals
+            function updateCartTotals(total, count) {
+                document.getElementById('cart-subtotal').textContent = `€${total.toFixed(2)}`;
+                document.getElementById('cart-total').textContent = `€${total.toFixed(2)}`;
+
+                // Update cart badge in header
+                const cartBadge = document.getElementById('cart-count');
+                if (cartBadge) {
+                    cartBadge.textContent = count;
+                    cartBadge.style.display = count > 0 ? 'inline-block' : 'none';
+                }
+            }
+
+            // ✅ Toon Alert
+            function showAlert(message, type) {
+                const alertContainer = document.getElementById('alert-container');
+                const alert = `
+                    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                        <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}-fill"></i> ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                alertContainer.innerHTML = alert;
+                setTimeout(() => $('.alert').fadeOut('slow'), 3000);
+            }
+        });
     </script>
 }

@@ -25,7 +25,7 @@ namespace Marketio_Web.Controllers
             return View(cartItems);
         }
 
-        // POST: Cart/AddToCart
+        // POST: Cart/AddToCart - ✅ AJAX Compatible
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToCart(int productId, int quantity = 1)
@@ -33,25 +33,47 @@ namespace Marketio_Web.Controllers
             try
             {
                 await _cartService.AddToCartAsync(productId, quantity);
+
+                // ✅ AJAX Response
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    var cartCount = await _cartService.GetCartItemCountAsync();
+                    var cartTotal = await _cartService.GetCartTotalAsync();
+
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Product toegevoegd aan winkelwagen!",
+                        cartCount = cartCount,
+                        cartTotal = cartTotal
+                    });
+                }
+
                 TempData["Success"] = "Product toegevoegd aan winkelwagen!";
 
-                // ✅ Verbeterde redirect logica
+                // Normale redirect voor non-AJAX
                 var referer = Request.Headers["Referer"].ToString();
-
-                // Als van product index pagina, blijf daar
                 if (!string.IsNullOrEmpty(referer) && referer.Contains("/Products") && !referer.Contains("/Details"))
                 {
                     return Redirect(referer);
                 }
 
-                // Anders naar product details
                 return RedirectToAction("Details", "Products", new { id = productId });
             }
             catch (Exception ex)
             {
+                // ✅ AJAX Error Response
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = ex.Message
+                    });
+                }
+
                 TempData["Error"] = ex.Message;
 
-                // Bij fout ook terug naar oorspronkelijke pagina
                 var referer = Request.Headers["Referer"].ToString();
                 if (!string.IsNullOrEmpty(referer) && referer.Contains("/Products"))
                 {
@@ -62,14 +84,26 @@ namespace Marketio_Web.Controllers
             }
         }
 
-        // POST: Cart/UpdateQuantity
+        // POST: Cart/UpdateQuantity - ✅ Already AJAX
         [HttpPost]
         public async Task<IActionResult> UpdateQuantity(int productId, int quantity)
         {
             try
             {
                 await _cartService.UpdateCartItemAsync(productId, quantity);
-                return Json(new { success = true });
+
+                var cartTotal = await _cartService.GetCartTotalAsync();
+                var cartCount = await _cartService.GetCartItemCountAsync();
+                var cartItems = await _cartService.GetCartItemsAsync();
+                var updatedItem = cartItems.FirstOrDefault(x => x.ProductId == productId);
+
+                return Json(new
+                {
+                    success = true,
+                    cartTotal = cartTotal,
+                    cartCount = cartCount,
+                    itemTotal = updatedItem?.TotalPrice ?? 0
+                });
             }
             catch (Exception ex)
             {
@@ -77,7 +111,7 @@ namespace Marketio_Web.Controllers
             }
         }
 
-        // POST: Cart/RemoveItem
+        // POST: Cart/RemoveItem - ✅ AJAX Compatible
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveItem(int productId)
@@ -85,10 +119,31 @@ namespace Marketio_Web.Controllers
             try
             {
                 await _cartService.RemoveFromCartAsync(productId);
+
+                // ✅ AJAX Response
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    var cartCount = await _cartService.GetCartItemCountAsync();
+                    var cartTotal = await _cartService.GetCartTotalAsync();
+
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Product verwijderd uit winkelwagen",
+                        cartCount = cartCount,
+                        cartTotal = cartTotal
+                    });
+                }
+
                 TempData["Success"] = "Product verwijderd uit winkelwagen";
             }
             catch (Exception ex)
             {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = false, message = ex.Message });
+                }
+
                 TempData["Error"] = ex.Message;
             }
 
@@ -105,7 +160,7 @@ namespace Marketio_Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Cart/Checkout - ✅ Beschermd met [Authorize]
+        // GET: Cart/Checkout
         [Authorize]
         public async Task<IActionResult> Checkout()
         {
@@ -116,13 +171,12 @@ namespace Marketio_Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // ✅ Automatisch gebruiker info ophalen
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
 
             var createOrderDto = new CreateOrderDto
             {
-                CustomerId = userId ?? userEmail ?? "", // Gebruik user ID of email
+                CustomerId = userId ?? userEmail ?? "",
                 OrderItems = cartItems.Select(item => new CreateOrderItemDto
                 {
                     ProductId = item.ProductId,
@@ -135,7 +189,7 @@ namespace Marketio_Web.Controllers
             return View(createOrderDto);
         }
 
-        // POST: Cart/PlaceOrder - ✅ Beschermd met [Authorize]
+        // POST: Cart/PlaceOrder
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -150,12 +204,10 @@ namespace Marketio_Web.Controllers
 
             try
             {
-                // ✅ Zorg dat CustomerId altijd gezet is
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var userEmail = User.FindFirstValue(ClaimTypes.Email);
                 model.CustomerId = userId ?? userEmail ?? model.CustomerId;
 
-                // Haal cart items op en voeg toe aan model
                 var cartItems = await _cartService.GetCartItemsAsync();
                 model.OrderItems = cartItems.Select(item => new CreateOrderItemDto
                 {
@@ -163,7 +215,6 @@ namespace Marketio_Web.Controllers
                     Quantity = item.Quantity
                 }).ToList();
 
-                // Maak bestelling aan via OrderService
                 var orderService = HttpContext.RequestServices.GetRequiredService<IOrderService>();
                 var order = await orderService.CreateOrderAsync(model);
 
@@ -186,12 +237,29 @@ namespace Marketio_Web.Controllers
             }
         }
 
-        // GET: Cart/GetCartCount - API endpoint voor cart count (gebruikt in layout)
+        // GET: Cart/GetCartCount
         [HttpGet]
         public async Task<IActionResult> GetCartCount()
         {
             var count = await _cartService.GetCartItemCountAsync();
             return Json(new { count });
+        }
+
+        // ✅ NEW: Get Cart Summary (AJAX)
+        [HttpGet]
+        public async Task<IActionResult> GetCartSummary()
+        {
+            var cartItems = await _cartService.GetCartItemsAsync();
+            var cartTotal = await _cartService.GetCartTotalAsync();
+            var cartCount = await _cartService.GetCartItemCountAsync();
+
+            return Json(new
+            {
+                success = true,
+                items = cartItems,
+                total = cartTotal,
+                count = cartCount
+            });
         }
     }
 }
