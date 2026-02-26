@@ -4,6 +4,8 @@ using Marketio_Web.Repositories;
 using Marketio_Web.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +39,26 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ICartService, CartService>();
 
+// ✅ Localization Services
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[]
+    {
+        new CultureInfo("nl"),
+        new CultureInfo("en"),
+        new CultureInfo("fr")
+    };
+
+    options.DefaultRequestCulture = new RequestCulture("nl");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+
+    options.RequestCultureProviders.Insert(0, new QueryStringRequestCultureProvider());
+    options.RequestCultureProviders.Insert(1, new CookieRequestCultureProvider());
+});
+
 //  Identity met Rollen
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
@@ -50,7 +72,9 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     .AddRoles<IdentityRole>() // 👈 Voeg rollen support toe
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization() // ✅ View localization
+    .AddDataAnnotationsLocalization(); // ✅ Data annotations localization
 
 var app = builder.Build();
 
@@ -74,6 +98,9 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// ✅ Request Localization Middleware
+app.UseRequestLocalization();
 
 app.UseRouting();
 

@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -37,7 +40,7 @@
                                asp-area=""
                                asp-controller="Home"
                                asp-action="Index">
-                                <i class="bi bi-house-door"></i> Home
+                                <i class="bi bi-house-door"></i> @Localizer["Home"]
                             </a>
                         </li>
 
@@ -46,7 +49,7 @@
                                asp-area=""
                                asp-controller="Products"
                                asp-action="Index">
-                                <i class="bi bi-box-seam"></i> Producten
+                                <i class="bi bi-box-seam"></i> @Localizer["Products"]
                             </a>
                         </li>
 
@@ -57,7 +60,7 @@
                                 <a class="nav-link text-dark @(ViewContext.RouteData.Values["Action"]?.ToString() == "MyOrders" ? "active" : "")"
                                    asp-controller="Orders"
                                    asp-action="MyOrders">
-                                    <i class="bi bi-bag-check"></i> Mijn Bestellingen
+                                    <i class="bi bi-bag-check"></i> @Localizer["MyOrders"]
                                 </a>
                             </li>
                         }
@@ -69,7 +72,7 @@
                                 <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Orders" && ViewContext.RouteData.Values["Action"]?.ToString() != "MyOrders" ? "active" : "")"
                                    asp-controller="Orders"
                                    asp-action="Index">
-                                    <i class="bi bi-cart"></i> Bestellingen Beheer
+                                    <i class="bi bi-cart"></i> @Localizer["OrdersManagement"]
                                 </a>
                             </li>
                         }
@@ -79,7 +82,7 @@
                                asp-area=""
                                asp-controller="Home"
                                asp-action="Privacy">
-                                <i class="bi bi-shield-check"></i> Privacy
+                                <i class="bi bi-shield-check"></i> @Localizer["Privacy"]
                             </a>
                         </li>
                     </ul>
@@ -91,7 +94,7 @@
                                 <input class="form-control form-control-sm me-2"
                                        type="search"
                                        name="searchTerm"
-                                       placeholder="Zoek producten..."
+                                       placeholder="@Localizer["SearchPlaceholder"]"
                                        aria-label="Search">
                                 <button class="btn btn-outline-primary btn-sm" type="submit">
                                     <i class="bi bi-search"></i>
@@ -114,6 +117,20 @@
                         </li>
                     </ul>
 
+                    <!-- Taal Switcher -->
+                    <ul class="navbar-nav ms-2">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-translate"></i> @Localizer["Language"]
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="?culture=nl&ui-culture=nl">🇳🇱 Nederlands</a></li>
+                                <li><a class="dropdown-item" href="?culture=en&ui-culture=en">🇬🇧 English</a></li>
+                                <li><a class="dropdown-item" href="?culture=fr&ui-culture=fr">🇫🇷 Français</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
                     <partial name="_LoginPartial" />
                 </div>
             </div>
@@ -132,7 +149,7 @@
             <a asp-area=""
                asp-controller="Home"
                asp-action="Privacy">
-                Privacy
+                @Localizer["Privacy"]
             </a>
         </div>
     </footer>
