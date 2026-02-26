@@ -1,0 +1,200 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="metadata">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" />
+							</xsd:sequence>
+							<xsd:attribute name="name" use="required" type="xsd:string" />
+							<xsd:attribute name="type" type="xsd:string" />
+							<xsd:attribute name="mimetype" type="xsd:string" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="assembly">
+						<xsd:complexType>
+							<xsd:attribute name="alias" type="xsd:string" />
+							<xsd:attribute name="name" type="xsd:string" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+
+	<!-- Navigation -->
+	<data name="Nav_Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+	<data name="Nav_Products" xml:space="preserve">
+    <value>Producten</value>
+  </data>
+	<data name="Nav_MyOrders" xml:space="preserve">
+    <value>Mijn Bestellingen</value>
+  </data>
+	<data name="Nav_OrdersManagement" xml:space="preserve">
+    <value>Bestellingen Beheer</value>
+  </data>
+	<data name="Nav_Privacy" xml:space="preserve">
+    <value>Privacy</value>
+  </data>
+	<data name="Nav_Search" xml:space="preserve">
+    <value>Zoek producten...</value>
+  </data>
+	<data name="Nav_Cart" xml:space="preserve">
+    <value>Winkelwagen</value>
+  </data>
+
+	<!-- Common -->
+	<data name="Common_Welcome" xml:space="preserve">
+    <value>Welkom bij Marketio</value>
+  </data>
+	<data name="Common_Save" xml:space="preserve">
+    <value>Opslaan</value>
+  </data>
+	<data name="Common_Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+	<data name="Common_Delete" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+	<data name="Common_Edit" xml:space="preserve">
+    <value>Bewerken</value>
+  </data>
+	<data name="Common_Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+	<data name="Common_Back" xml:space="preserve">
+    <value>Terug</value>
+  </data>
+	<data name="Common_Search" xml:space="preserve">
+    <value>Zoeken</value>
+  </data>
+	<data name="Common_Price" xml:space="preserve">
+    <value>Prijs</value>
+  </data>
+	<data name="Common_Quantity" xml:space="preserve">
+    <value>Aantal</value>
+  </data>
+	<data name="Common_Total" xml:space="preserve">
+    <value>Totaal</value>
+  </data>
+
+	<!-- Products -->
+	<data name="Products_Title" xml:space="preserve">
+    <value>Producten</value>
+  </data>
+	<data name="Products_AddToCart" xml:space="preserve">
+    <value>Toevoegen aan Winkelwagen</value>
+  </data>
+	<data name="Products_OutOfStock" xml:space="preserve">
+    <value>Niet op voorraad</value>
+  </data>
+	<data name="Products_InStock" xml:space="preserve">
+    <value>Op voorraad</value>
+  </data>
+	<data name="Products_ViewDetails" xml:space="preserve">
+    <value>Bekijk Details</value>
+  </data>
+
+	<!-- Cart -->
+	<data name="Cart_Title" xml:space="preserve">
+    <value>Winkelwagen</value>
+  </data>
+	<data name="Cart_Empty" xml:space="preserve">
+    <value>Uw winkelwagen is leeg</value>
+  </data>
+	<data name="Cart_Checkout" xml:space="preserve">
+    <value>Afrekenen</value>
+  </data>
+	<data name="Cart_ContinueShopping" xml:space="preserve">
+    <value>Verder winkelen</value>
+  </data>
+	<data name="Cart_Remove" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+
+	<!-- Orders -->
+	<data name="Orders_Title" xml:space="preserve">
+    <value>Bestellingen</value>
+  </data>
+	<data name="Orders_OrderNumber" xml:space="preserve">
+    <value>Bestelnummer</value>
+  </data>
+	<data name="Orders_OrderDate" xml:space="preserve">
+    <value>Besteldatum</value>
+  </data>
+	<data name="Orders_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+	<data name="Orders_TotalAmount" xml:space="preserve">
+    <value>Totaalbedrag</value>
+  </data>
+
+	<!-- Privacy -->
+	<data name="Privacy_Title" xml:space="preserve">
+    <value>Privacybeleid</value>
+  </data>
+	<data name="Privacy_Introduction" xml:space="preserve">
+    <value>Inleiding</value>
+  </data>
+	<data name="Privacy_DataCollection" xml:space="preserve">
+    <value>Welke gegevens verzamelen wij?</value>
+  </data>
+
+	<!-- Footer -->
+	<data name="Footer_Copyright" xml:space="preserve">
+    <value>© 2026 - Marketio</value>
+  </data>
+
+	<!-- Account -->
+	<data name="Account_Login" xml:space="preserve">
+    <value>Inloggen</value>
+  </data>
+	<data name="Account_Register" xml:space="preserve">
+    <value>Registreren</value>
+  </data>
+	<data name="Account_Logout" xml:space="preserve">
+    <value>Uitloggen</value>
+  </data>
+	<data name="Account_Hello" xml:space="preserve">
+    <value>Hallo {0}!</value>
+  </data>
+</root>
