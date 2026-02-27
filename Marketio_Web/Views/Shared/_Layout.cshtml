@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using Marketio_Web.Resources
 @inject IStringLocalizer<SharedResources> Localizer
 
 <!DOCTYPE html>
@@ -124,9 +125,21 @@
                                 <i class="bi bi-translate"></i> @Localizer["Language"]
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="?culture=nl&ui-culture=nl">🇳🇱 Nederlands</a></li>
-                                <li><a class="dropdown-item" href="?culture=en&ui-culture=en">🇬🇧 English</a></li>
-                                <li><a class="dropdown-item" href="?culture=fr&ui-culture=fr">🇫🇷 Français</a></li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Culture" asp-action="Set" asp-route-culture="nl" asp-route-returnUrl="@Context.Request.Path">
+                                        🇳🇱 Nederlands
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Culture" asp-action="Set" asp-route-culture="en" asp-route-returnUrl="@Context.Request.Path">
+                                        🇬🇧 English
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Culture" asp-action="Set" asp-route-culture="fr" asp-route-returnUrl="@Context.Request.Path">
+                                        🇫🇷 Français
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     </ul>

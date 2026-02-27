@@ -1,4 +1,6 @@
 ﻿@model Marketio_Shared.DTOs.ProductDto
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
 
 @{
     ViewData["Title"] = Model.Name;
@@ -7,8 +9,8 @@
 <div class="container mt-4">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-action="Index">Producten</a></li>
-            <li class="breadcrumb-item"><a asp-action="Index" asp-route-category="@Model.Category">@Model.CategoryName</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">@Localizer["Products"]</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index" asp-route-category="@Model.Category">@Localizer[$"Category_{Model.Category}"]</a></li>
             <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
         </ol>
     </nav>
@@ -44,18 +46,18 @@
         <!-- Product Info -->
         <div class="col-md-6">
             <div class="mb-3">
-                <span class="badge bg-secondary fs-6">@Model.CategoryName</span>
+                <span class="badge bg-secondary fs-6">@Localizer[$"Category_{Model.Category}"]</span>
                 @if (!Model.IsActive)
                 {
-                    <span class="badge bg-danger fs-6">Inactief</span>
+                    <span class="badge bg-danger fs-6">@Localizer["Inactive"]</span>
                 }
                 else if (Model.Stock == 0)
                 {
-                    <span class="badge bg-warning text-dark fs-6">Uitverkocht</span>
+                    <span class="badge bg-warning text-dark fs-6">@Localizer["OutOfStock"]</span>
                 }
                 else if (Model.Stock < 10)
                 {
-                    <span class="badge bg-info fs-6">Beperkte voorraad</span>
+                    <span class="badge bg-info fs-6">@Localizer["LimitedStock"]</span>
                 }
             </div>
 
@@ -65,7 +67,7 @@
 
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Productomschrijving</h5>
+                    <h5 class="card-title">@Localizer["ProductDescription"]</h5>
                     <p class="card-text">@Model.Description</p>
                 </div>
             </div>
@@ -73,14 +75,14 @@
             <!-- Stock Info -->
             <div class="alert @(Model.Stock > 0 ? "alert-success" : "alert-danger") mb-4">
                 <i class="bi @(Model.Stock > 0 ? "bi-check-circle" : "bi-x-circle")"></i>
-                <strong>Voorraad:</strong> @Model.Stock stuks
+                <strong>@Localizer["Stock"]:</strong> @Model.Stock @Localizer["Units"]
                 @if (Model.Stock > 0 && Model.Stock < 10)
                 {
-                    <span class="ms-2 text-muted">(Nog maar @Model.Stock stuks beschikbaar!)</span>
+                    <span class="ms-2 text-muted">(@Localizer["OnlyUnitsLeft", Model.Stock])</span>
                 }
             </div>
 
-            <!-- ✅ Add to Cart Form -->
+            <!-- Add to Cart Form -->
             @if (Model.IsActive && Model.Stock > 0)
             {
                 <form asp-controller="Cart" asp-action="AddToCart" method="post" class="mb-4">
@@ -88,7 +90,7 @@
 
                     <div class="row g-3 align-items-end">
                         <div class="col-md-4">
-                            <label for="quantity" class="form-label">Aantal</label>
+                            <label for="quantity" class="form-label">@Localizer["Quantity"]</label>
                             <div class="input-group">
                                 <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()">
                                     <i class="bi bi-dash"></i>
@@ -108,7 +110,7 @@
                         </div>
                         <div class="col-md-8">
                             <button type="submit" class="btn btn-primary btn-lg w-100">
-                                <i class="bi bi-cart-plus"></i> Toevoegen aan Winkelwagen
+                                <i class="bi bi-cart-plus"></i> @Localizer["AddToCartButton"]
                             </button>
                         </div>
                     </div>
@@ -116,10 +118,10 @@
 
                 <div class="d-flex gap-2 mb-4">
                     <a asp-controller="Cart" asp-action="Index" class="btn btn-outline-secondary">
-                        <i class="bi bi-cart"></i> Bekijk Winkelwagen
+                        <i class="bi bi-cart"></i> @Localizer["ViewCart"]
                     </a>
                     <a asp-action="Index" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> Terug naar Producten
+                        <i class="bi bi-arrow-left"></i> @Localizer["BackToProducts"]
                     </a>
                 </div>
             }
@@ -127,29 +129,29 @@
             {
                 <div class="alert alert-warning">
                     <i class="bi bi-exclamation-triangle"></i>
-                    Dit product is momenteel niet beschikbaar.
+                    @Localizer["ProductNotAvailable"]
                 </div>
                 <a asp-action="Index" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> Terug naar Producten
+                    <i class="bi bi-arrow-left"></i> @Localizer["BackToProducts"]
                 </a>
             }
 
             <!-- Product Features -->
             <div class="card mt-4">
                 <div class="card-body">
-                    <h5 class="card-title">Productkenmerken</h5>
+                    <h5 class="card-title">@Localizer["ProductFeatures"]</h5>
                     <ul class="list-unstyled">
                         <li class="mb-2">
-                            <i class="bi bi-truck text-primary"></i> Gratis verzending boven €50
+                            <i class="bi bi-truck text-primary"></i> @Localizer["FreeShippingAbove50"]
                         </li>
                         <li class="mb-2">
-                            <i class="bi bi-arrow-repeat text-success"></i> 30 dagen retourrecht
+                            <i class="bi bi-arrow-repeat text-success"></i> @Localizer["ReturnPolicy30Days"]
                         </li>
                         <li class="mb-2">
-                            <i class="bi bi-shield-check text-info"></i> 2 jaar garantie
+                            <i class="bi bi-shield-check text-info"></i> @Localizer["Warranty2Years"]
                         </li>
                         <li class="mb-2">
-                            <i class="bi bi-lightning-charge text-warning"></i> Morgen in huis (besteld voor 23:00)
+                            <i class="bi bi-lightning-charge text-warning"></i> @Localizer["DeliveryTomorrow"]
                         </li>
                     </ul>
                 </div>
@@ -165,16 +167,16 @@
                 <div class="card border-warning">
                     <div class="card-header bg-warning">
                         <h5 class="mb-0">
-                            <i class="bi bi-tools"></i> Admin Acties
+                            <i class="bi bi-tools"></i> @Localizer["AdminActions"]
                         </h5>
                     </div>
                     <div class="card-body">
                         <div class="btn-group" role="group">
                             <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
-                                <i class="bi bi-pencil"></i> Bewerken
+                                <i class="bi bi-pencil"></i> @Localizer["Edit"]
                             </a>
                             <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
-                                <i class="bi bi-trash"></i> Verwijderen
+                                <i class="bi bi-trash"></i> @Localizer["Delete"]
                             </a>
                         </div>
                     </div>
@@ -186,12 +188,10 @@
 
 @section Scripts {
     <script>
-        // Auto-dismiss alerts
         setTimeout(function() {
             $('.alert').fadeOut('slow');
         }, 5000);
 
-        // Quantity controls
         function increaseQuantity(maxStock) {
             const input = document.getElementById('quantity');
             const currentValue = parseInt(input.value);
@@ -208,7 +208,6 @@
             }
         }
 
-        // Update cart count after page load
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof updateCartCount === 'function') {
                 updateCartCount();

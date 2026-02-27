@@ -59,142 +59,486 @@
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
 
-	<!-- Navigation -->
-	<data name="Nav_Home" xml:space="preserve">
-    <value>Home</value>
-  </data>
-	<data name="Nav_Products" xml:space="preserve">
-    <value>Producten</value>
-  </data>
-	<data name="Nav_MyOrders" xml:space="preserve">
-    <value>Mijn Bestellingen</value>
-  </data>
-	<data name="Nav_OrdersManagement" xml:space="preserve">
-    <value>Bestellingen Beheer</value>
-  </data>
-	<data name="Nav_Privacy" xml:space="preserve">
-    <value>Privacy</value>
-  </data>
-	<data name="Nav_Search" xml:space="preserve">
-    <value>Zoek producten...</value>
-  </data>
-	<data name="Nav_Cart" xml:space="preserve">
-    <value>Winkelwagen</value>
-  </data>
+	<!-- _Layout.cshtml -->
+	<data name="Home" xml:space="preserve">
+		<value>Home</value>
+	</data>
+	<data name="Products" xml:space="preserve">
+		<value>Products</value>
+	</data>
+	<data name="MyOrders" xml:space="preserve">
+		<value>My Orders</value>
+	</data>
+	<data name="OrdersManagement" xml:space="preserve">
+		<value>Orders Management</value>
+	</data>
+	<data name="Privacy" xml:space="preserve">
+		<value>Privacy</value>
+	</data>
+	<data name="SearchPlaceholder" xml:space="preserve">
+		<value>Search products...</value>
+	</data>
+	<data name="Language" xml:space="preserve">
+		<value>Language</value>
+	</data>
 
-	<!-- Common -->
-	<data name="Common_Welcome" xml:space="preserve">
-    <value>Welkom bij Marketio</value>
-  </data>
-	<data name="Common_Save" xml:space="preserve">
-    <value>Opslaan</value>
-  </data>
-	<data name="Common_Cancel" xml:space="preserve">
-    <value>Annuleren</value>
-  </data>
-	<data name="Common_Delete" xml:space="preserve">
-    <value>Verwijderen</value>
-  </data>
-	<data name="Common_Edit" xml:space="preserve">
-    <value>Bewerken</value>
-  </data>
-	<data name="Common_Details" xml:space="preserve">
-    <value>Details</value>
-  </data>
-	<data name="Common_Back" xml:space="preserve">
-    <value>Terug</value>
-  </data>
-	<data name="Common_Search" xml:space="preserve">
-    <value>Zoeken</value>
-  </data>
-	<data name="Common_Price" xml:space="preserve">
-    <value>Prijs</value>
-  </data>
-	<data name="Common_Quantity" xml:space="preserve">
-    <value>Aantal</value>
-  </data>
-	<data name="Common_Total" xml:space="preserve">
-    <value>Totaal</value>
-  </data>
+	<!-- Home\Index.cshtml -->
+	<data name="WelcomeToMarketio" xml:space="preserve">
+		<value>Welcome to Marketio</value>
+	</data>
+	<data name="MarketplaceDescription" xml:space="preserve">
+		<value>Your online marketplace for electronics, clothing, books and more!</value>
+	</data>
+	<data name="ViewProducts" xml:space="preserve">
+		<value>View Products</value>
+	</data>
+	<data name="Orders" xml:space="preserve">
+		<value>Orders</value>
+	</data>
+	<data name="FastDelivery" xml:space="preserve">
+		<value>Fast Delivery</value>
+	</data>
+	<data name="FastDeliveryDescription" xml:space="preserve">
+		<value>Ordered before 11 PM, delivered tomorrow</value>
+	</data>
+	<data name="SecurePayment" xml:space="preserve">
+		<value>Secure Payment</value>
+	</data>
+	<data name="SecurePaymentDescription" xml:space="preserve">
+		<value>All payment methods are supported</value>
+	</data>
+	<data name="FreeReturns" xml:space="preserve">
+		<value>Free Returns</value>
+	</data>
+	<data name="FreeReturnsDescription" xml:space="preserve">
+		<value>30 days return policy</value>
+	</data>
 
-	<!-- Products -->
-	<data name="Products_Title" xml:space="preserve">
-    <value>Producten</value>
-  </data>
-	<data name="Products_AddToCart" xml:space="preserve">
-    <value>Toevoegen aan Winkelwagen</value>
-  </data>
-	<data name="Products_OutOfStock" xml:space="preserve">
-    <value>Niet op voorraad</value>
-  </data>
-	<data name="Products_InStock" xml:space="preserve">
-    <value>Op voorraad</value>
-  </data>
-	<data name="Products_ViewDetails" xml:space="preserve">
-    <value>Bekijk Details</value>
-  </data>
+	<!-- Products\Index.cshtml -->
+	<data name="ShoppingCart" xml:space="preserve">
+		<value>Shopping Cart</value>
+	</data>
+	<data name="ProductAddedToCart" xml:space="preserve">
+		<value>Product added to cart</value>
+	</data>
+	<data name="Filters" xml:space="preserve">
+		<value>Filters</value>
+	</data>
+	<data name="Category" xml:space="preserve">
+		<value>Category</value>
+	</data>
+	<data name="AllCategories" xml:space="preserve">
+		<value>All Categories</value>
+	</data>
+	<data name="Category_Electronics" xml:space="preserve">
+		<value>Electronics</value>
+	</data>
+	<data name="Category_Clothing" xml:space="preserve">
+		<value>Clothing</value>
+	</data>
+	<data name="Category_Books" xml:space="preserve">
+		<value>Books</value>
+	</data>
+	<data name="Category_HomeAndGarden" xml:space="preserve">
+		<value>Home &amp; Garden</value>
+	</data>
+	<data name="Category_Sports" xml:space="preserve">
+		<value>Sports</value>
+	</data>
+	<data name="Category_Toys" xml:space="preserve">
+		<value>Toys</value>
+	</data>
+	<data name="PriceRange" xml:space="preserve">
+		<value>Price Range</value>
+	</data>
+	<data name="Min" xml:space="preserve">
+		<value>Min</value>
+	</data>
+	<data name="Max" xml:space="preserve">
+		<value>Max</value>
+	</data>
+	<data name="SortBy" xml:space="preserve">
+		<value>Sort By</value>
+	</data>
+	<data name="Sort_NameAsc" xml:space="preserve">
+		<value>Name (A-Z)</value>
+	</data>
+	<data name="Sort_NameDesc" xml:space="preserve">
+		<value>Name (Z-A)</value>
+	</data>
+	<data name="Sort_PriceAsc" xml:space="preserve">
+		<value>Price (Low-High)</value>
+	</data>
+	<data name="Sort_PriceDesc" xml:space="preserve">
+		<value>Price (High-Low)</value>
+	</data>
+	<data name="Sort_Newest" xml:space="preserve">
+		<value>Newest First</value>
+	</data>
+	<data name="ApplyFilters" xml:space="preserve">
+		<value>Apply Filters</value>
+	</data>
+	<data name="ResetFilters" xml:space="preserve">
+		<value>Reset Filters</value>
+	</data>
+	<data name="AddProduct" xml:space="preserve">
+		<value>Add Product</value>
+	</data>
+	<data name="ProductsFound" xml:space="preserve">
+		<value>products found</value>
+	</data>
+	<data name="Inactive" xml:space="preserve">
+		<value>Inactive</value>
+	</data>
+	<data name="OutOfStock" xml:space="preserve">
+		<value>Out of Stock</value>
+	</data>
+	<data name="LowStock" xml:space="preserve">
+		<value>Low Stock</value>
+	</data>
+	<data name="InStock" xml:space="preserve">
+		<value>In Stock</value>
+	</data>
+	<data name="Units" xml:space="preserve">
+		<value>units</value>
+	</data>
+	<data name="AddToCart" xml:space="preserve">
+		<value>Add to Cart</value>
+	</data>
+	<data name="NotAvailable" xml:space="preserve">
+		<value>Not Available</value>
+	</data>
+	<data name="Details" xml:space="preserve">
+		<value>Details</value>
+	</data>
+	<data name="NoProductsFound" xml:space="preserve">
+		<value>No products found</value>
+	</data>
+	<data name="AdjustFilters" xml:space="preserve">
+		<value>Adjust your filters to see more results</value>
+	</data>
+	<data name="ViewAllProducts" xml:space="preserve">
+		<value>View All Products</value>
+	</data>
+	<data name="Adding" xml:space="preserve">
+		<value>Adding</value>
+	</data>
+	<data name="Added" xml:space="preserve">
+		<value>Added</value>
+	</data>
+	<data name="ErrorOccurred" xml:space="preserve">
+		<value>An error occurred</value>
+	</data>
+	<data name="ErrorAddingToCart" xml:space="preserve">
+		<value>Error adding to cart</value>
+	</data>
 
-	<!-- Cart -->
-	<data name="Cart_Title" xml:space="preserve">
-    <value>Winkelwagen</value>
-  </data>
-	<data name="Cart_Empty" xml:space="preserve">
-    <value>Uw winkelwagen is leeg</value>
-  </data>
-	<data name="Cart_Checkout" xml:space="preserve">
-    <value>Afrekenen</value>
-  </data>
-	<data name="Cart_ContinueShopping" xml:space="preserve">
-    <value>Verder winkelen</value>
-  </data>
-	<data name="Cart_Remove" xml:space="preserve">
-    <value>Verwijderen</value>
-  </data>
+	<!-- Products\Details.cshtml -->
+	<data name="LimitedStock" xml:space="preserve">
+		<value>Limited Stock</value>
+	</data>
+	<data name="ProductDescription" xml:space="preserve">
+		<value>Product Description</value>
+	</data>
+	<data name="Stock" xml:space="preserve">
+		<value>Stock</value>
+	</data>
+	<data name="OnlyUnitsLeft" xml:space="preserve">
+		<value>Only {0} units left in stock</value>
+	</data>
+	<data name="Quantity" xml:space="preserve">
+		<value>Quantity</value>
+	</data>
+	<data name="AddToCartButton" xml:space="preserve">
+		<value>Add to Cart</value>
+	</data>
+	<data name="ViewCart" xml:space="preserve">
+		<value>View Cart</value>
+	</data>
+	<data name="BackToProducts" xml:space="preserve">
+		<value>Back to Products</value>
+	</data>
+	<data name="ProductNotAvailable" xml:space="preserve">
+		<value>This product is currently not available</value>
+	</data>
+	<data name="ProductFeatures" xml:space="preserve">
+		<value>Product Features</value>
+	</data>
+	<data name="FreeShippingAbove50" xml:space="preserve">
+		<value>Free shipping above €50</value>
+	</data>
+	<data name="ReturnPolicy30Days" xml:space="preserve">
+		<value>30 days return policy</value>
+	</data>
+	<data name="Warranty2Years" xml:space="preserve">
+		<value>2 years warranty</value>
+	</data>
+	<data name="DeliveryTomorrow" xml:space="preserve">
+		<value>Delivered tomorrow (ordered before 11 PM)</value>
+	</data>
+	<data name="AdminActions" xml:space="preserve">
+		<value>Admin Actions</value>
+	</data>
+	<data name="Edit" xml:space="preserve">
+		<value>Edit</value>
+	</data>
+	<data name="Delete" xml:space="preserve">
+		<value>Delete</value>
+	</data>
 
-	<!-- Orders -->
-	<data name="Orders_Title" xml:space="preserve">
-    <value>Bestellingen</value>
-  </data>
-	<data name="Orders_OrderNumber" xml:space="preserve">
-    <value>Bestelnummer</value>
-  </data>
-	<data name="Orders_OrderDate" xml:space="preserve">
-    <value>Besteldatum</value>
-  </data>
-	<data name="Orders_Status" xml:space="preserve">
-    <value>Status</value>
-  </data>
-	<data name="Orders_TotalAmount" xml:space="preserve">
-    <value>Totaalbedrag</value>
-  </data>
+	<!-- Cart\Index.cshtml -->
+	<data name="CartEmpty" xml:space="preserve">
+		<value>Your cart is empty</value>
+	</data>
+	<data name="StartShoppingMessage" xml:space="preserve">
+		<value>Start shopping to add products!</value>
+	</data>
+	<data name="GoToProducts" xml:space="preserve">
+		<value>Go to Products</value>
+	</data>
+	<data name="ContinueShopping" xml:space="preserve">
+		<value>Continue Shopping</value>
+	</data>
+	<data name="ConfirmClearCart" xml:space="preserve">
+		<value>Are you sure you want to clear the cart?</value>
+	</data>
+	<data name="ClearCart" xml:space="preserve">
+		<value>Clear Cart</value>
+	</data>
+	<data name="Summary" xml:space="preserve">
+		<value>Summary</value>
+	</data>
+	<data name="Subtotal" xml:space="preserve">
+		<value>Subtotal</value>
+	</data>
+	<data name="ShippingCost" xml:space="preserve">
+		<value>Shipping Cost</value>
+	</data>
+	<data name="Free" xml:space="preserve">
+		<value>Free</value>
+	</data>
+	<data name="Total" xml:space="preserve">
+		<value>Total</value>
+	</data>
+	<data name="Checkout" xml:space="preserve">
+		<value>Checkout</value>
+	</data>
+	<data name="MaxStockReached" xml:space="preserve">
+		<value>Maximum stock reached</value>
+	</data>
+	<data name="ConfirmRemoveItem" xml:space="preserve">
+		<value>Are you sure you want to remove this item?</value>
+	</data>
+	<data name="RemovedFromCart" xml:space="preserve">
+		<value>removed from cart</value>
+	</data>
+	<data name="ErrorRemovingProduct" xml:space="preserve">
+		<value>Error removing product</value>
+	</data>
+	<data name="ErrorUpdating" xml:space="preserve">
+		<value>Error updating</value>
+	</data>
+	<data name="ErrorUpdatingQuantity" xml:space="preserve">
+		<value>Error updating quantity</value>
+	</data>
 
-	<!-- Privacy -->
-	<data name="Privacy_Title" xml:space="preserve">
-    <value>Privacybeleid</value>
-  </data>
-	<data name="Privacy_Introduction" xml:space="preserve">
-    <value>Inleiding</value>
-  </data>
-	<data name="Privacy_DataCollection" xml:space="preserve">
-    <value>Welke gegevens verzamelen wij?</value>
-  </data>
+	<!-- Cart\Checkout.cshtml -->
+	<data name="CustomerInformation" xml:space="preserve">
+		<value>Customer Information</value>
+	</data>
+	<data name="EmailCustomerId" xml:space="preserve">
+		<value>Email / Customer ID</value>
+	</data>
+	<data name="YourEmail" xml:space="preserve">
+		<value>Your email address</value>
+	</data>
+	<data name="ShippingInformation" xml:space="preserve">
+		<value>Shipping Information</value>
+	</data>
+	<data name="ShippingAddress" xml:space="preserve">
+		<value>Shipping Address</value>
+	</data>
+	<data name="ShippingAddressPlaceholder" xml:space="preserve">
+		<value>Street, Number, Postal Code, City</value>
+	</data>
+	<data name="BillingAddress" xml:space="preserve">
+		<value>Billing Address</value>
+	</data>
+	<data name="BillingAddressPlaceholder" xml:space="preserve">
+		<value>Street, Number, Postal Code, City</value>
+	</data>
+	<data name="CopyShippingAddress" xml:space="preserve">
+		<value>Copy Shipping Address</value>
+	</data>
+	<data name="PaymentMethod" xml:space="preserve">
+		<value>Payment Method</value>
+	</data>
+	<data name="SelectPaymentMethod" xml:space="preserve">
+		<value>Select Payment Method</value>
+	</data>
+	<data name="Select" xml:space="preserve">
+		<value>Select</value>
+	</data>
+	<data name="PaymentMethod_CreditCard" xml:space="preserve">
+		<value>Credit Card</value>
+	</data>
+	<data name="PaymentMethod_DebitCard" xml:space="preserve">
+		<value>Debit Card</value>
+	</data>
+	<data name="PaymentMethod_PayPal" xml:space="preserve">
+		<value>PayPal</value>
+	</data>
+	<data name="PaymentMethod_BankTransfer" xml:space="preserve">
+		<value>Bank Transfer</value>
+	</data>
+	<data name="PaymentMethod_Ideal" xml:space="preserve">
+		<value>iDEAL</value>
+	</data>
+	<data name="OrderSummary" xml:space="preserve">
+		<value>Order Summary</value>
+	</data>
+	<data name="TotalToPay" xml:space="preserve">
+		<value>Total to Pay</value>
+	</data>
+	<data name="PlaceOrder" xml:space="preserve">
+		<value>Place Order</value>
+	</data>
+	<data name="BackToCart" xml:space="preserve">
+		<value>Back to Cart</value>
+	</data>
+	<data name="YourDataIsSafe" xml:space="preserve">
+		<value>Your data is safe with us</value>
+	</data>
 
-	<!-- Footer -->
-	<data name="Footer_Copyright" xml:space="preserve">
-    <value>© 2026 - Marketio</value>
-  </data>
+	<!-- Orders\Index.cshtml -->
+	<data name="ManageAndViewOrders" xml:space="preserve">
+		<value>Manage and view all orders</value>
+	</data>
+	<data name="NewOrder" xml:space="preserve">
+		<value>New Order</value>
+	</data>
+	<data name="OrdersOverview" xml:space="preserve">
+		<value>Orders Overview</value>
+	</data>
+	<data name="OrdersOverviewDescription" xml:space="preserve">
+		<value>Here you can manage all orders and create new orders.</value>
+	</data>
+	<data name="QuickActions" xml:space="preserve">
+		<value>Quick Actions</value>
+	</data>
+	<data name="CreateNewOrder" xml:space="preserve">
+		<value>Create new order</value>
+	</data>
+	<data name="ViewAvailableProducts" xml:space="preserve">
+		<value>View available products</value>
+	</data>
+	<data name="CustomerOrders" xml:space="preserve">
+		<value>Customer Orders</value>
+	</data>
+	<data name="EnterCustomerId" xml:space="preserve">
+		<value>Enter customer ID</value>
+	</data>
+	<data name="Search" xml:space="preserve">
+		<value>Search</value>
+	</data>
+	<data name="CreateOrderForCustomer" xml:space="preserve">
+		<value>Create a new order for a customer</value>
+	</data>
+	<data name="Create" xml:space="preserve">
+		<value>Create</value>
+	</data>
+	<data name="ViewCustomerOrders" xml:space="preserve">
+		<value>View all orders from a specific customer</value>
+	</data>
+	<data name="View" xml:space="preserve">
+		<value>View</value>
+	</data>
+	<data name="ViewProductsForOrders" xml:space="preserve">
+		<value>View products to place orders</value>
+	</data>
+	<data name="SearchCustomerOrders" xml:space="preserve">
+		<value>Search Customer Orders</value>
+	</data>
+	<data name="CustomerId" xml:space="preserve">
+		<value>Customer ID</value>
+	</data>
+	<data name="CustomerIdPlaceholder" xml:space="preserve">
+		<value>e.g. customer@example.com</value>
+	</data>
+	<data name="EnterEmailOrId" xml:space="preserve">
+		<value>Enter the email address or ID of the customer</value>
+	</data>
+	<data name="Cancel" xml:space="preserve">
+		<value>Cancel</value>
+	</data>
 
-	<!-- Account -->
-	<data name="Account_Login" xml:space="preserve">
-    <value>Inloggen</value>
-  </data>
-	<data name="Account_Register" xml:space="preserve">
-    <value>Registreren</value>
-  </data>
-	<data name="Account_Logout" xml:space="preserve">
-    <value>Uitloggen</value>
-  </data>
-	<data name="Account_Hello" xml:space="preserve">
-    <value>Hallo {0}!</value>
-  </data>
+	<!-- Orders\Details.cshtml -->
+	<data name="Order" xml:space="preserve">
+		<value>Order</value>
+	</data>
+	<data name="OrderDate" xml:space="preserve">
+		<value>Order Date</value>
+	</data>
+	<data name="Status" xml:space="preserve">
+		<value>Status</value>
+	</data>
+	<data name="OrderStatus_Pending" xml:space="preserve">
+		<value>Pending</value>
+	</data>
+	<data name="OrderStatus_Processing" xml:space="preserve">
+		<value>Processing</value>
+	</data>
+	<data name="OrderStatus_Shipped" xml:space="preserve">
+		<value>Shipped</value>
+	</data>
+	<data name="OrderStatus_Delivered" xml:space="preserve">
+		<value>Delivered</value>
+	</data>
+	<data name="OrderStatus_Cancelled" xml:space="preserve">
+		<value>Cancelled</value>
+	</data>
+	<data name="OrderedProducts" xml:space="preserve">
+		<value>Ordered Products</value>
+	</data>
+	<data name="Product" xml:space="preserve">
+		<value>Product</value>
+	</data>
+	<data name="Price" xml:space="preserve">
+		<value>Price</value>
+	</data>
+	<data name="Actions" xml:space="preserve">
+		<value>Actions</value>
+	</data>
+	<data name="ConfirmCancelOrder" xml:space="preserve">
+		<value>Are you sure you want to cancel this order?</value>
+	</data>
+	<data name="CancelOrder" xml:space="preserve">
+		<value>Cancel Order</value>
+	</data>
+	<data name="AllCustomerOrders" xml:space="preserve">
+		<value>All Customer Orders</value>
+	</data>
+	<data name="BackToOverview" xml:space="preserve">
+		<value>Back to Overview</value>
+	</data>
+
+	<!-- Orders\MyOrders.cshtml -->
+	<data name="OrdersOverviewDescription2" xml:space="preserve">
+		<value>View the status of all your orders</value>
+	</data>
+	<data name="NoOrdersFound" xml:space="preserve">
+		<value>No orders found</value>
+	</data>
+	<data name="NoOrdersPlaced" xml:space="preserve">
+		<value>You haven't placed any orders yet.</value>
+	</data>
+	<data name="StartShopping" xml:space="preserve">
+		<value>Start Shopping</value>
+	</data>
+	<data name="More" xml:space="preserve">
+		<value>more</value>
+	</data>
+	<data name="ViewDetails" xml:space="preserve">
+		<value>View Details</value>
+	</data>
 </root>

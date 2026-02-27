@@ -1,23 +1,26 @@
-﻿@{
-    ViewData["Title"] = "Home";
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
+
+@{
+    ViewData["Title"] = Localizer["Home"];
 }
 
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-lg-8 text-center">
             <h1 class="display-3 fw-bold mb-4">
-                <i class="bi bi-shop"></i> Welkom bij Marketio
+                <i class="bi bi-shop"></i> @Localizer["WelcomeToMarketio"]
             </h1>
             <p class="lead text-muted mb-5">
-                Uw online marktplaats voor elektronica, kleding, boeken en meer!
+                @Localizer["MarketplaceDescription"]
             </p>
 
             <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
                 <a asp-controller="Products" asp-action="Index" class="btn btn-primary btn-lg px-4 gap-3">
-                    <i class="bi bi-box-seam"></i> Bekijk Producten
+                    <i class="bi bi-box-seam"></i> @Localizer["ViewProducts"]
                 </a>
                 <a asp-controller="Orders" asp-action="Index" class="btn btn-outline-secondary btn-lg px-4">
-                    <i class="bi bi-cart"></i> Bestellingen
+                    <i class="bi bi-cart"></i> @Localizer["Orders"]
                 </a>
             </div>
         </div>
@@ -28,8 +31,8 @@
             <div class="card h-100 border-0 shadow-sm">
                 <div class="card-body text-center p-4">
                     <i class="bi bi-lightning-charge text-primary fs-1 mb-3"></i>
-                    <h5 class="card-title">Snelle Levering</h5>
-                    <p class="card-text text-muted">Besteld voor 23:00, morgen in huis</p>
+                    <h5 class="card-title">@Localizer["FastDelivery"]</h5>
+                    <p class="card-text text-muted">@Localizer["FastDeliveryDescription"]</p>
                 </div>
             </div>
         </div>
@@ -37,8 +40,8 @@
             <div class="card h-100 border-0 shadow-sm">
                 <div class="card-body text-center p-4">
                     <i class="bi bi-shield-check text-success fs-1 mb-3"></i>
-                    <h5 class="card-title">Veilig Betalen</h5>
-                    <p class="card-text text-muted">Alle betalingsmethoden worden ondersteund</p>
+                    <h5 class="card-title">@Localizer["SecurePayment"]</h5>
+                    <p class="card-text text-muted">@Localizer["SecurePaymentDescription"]</p>
                 </div>
             </div>
         </div>
@@ -46,8 +49,8 @@
             <div class="card h-100 border-0 shadow-sm">
                 <div class="card-body text-center p-4">
                     <i class="bi bi-arrow-repeat text-info fs-1 mb-3"></i>
-                    <h5 class="card-title">Gratis Retour</h5>
-                    <p class="card-text text-muted">30 dagen bedenktijd</p>
+                    <h5 class="card-title">@Localizer["FreeReturns"]</h5>
+                    <p class="card-text text-muted">@Localizer["FreeReturnsDescription"]</p>
                 </div>
             </div>
         </div>

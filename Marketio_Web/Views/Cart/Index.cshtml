@@ -1,12 +1,15 @@
 ﻿@model List<Marketio_Shared.DTOs.CartItemDto>
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
+
 @{
-    ViewData["Title"] = "Winkelwagen";
+    ViewData["Title"] = Localizer["ShoppingCart"];
     var cartTotal = ViewBag.CartTotal as decimal? ?? 0;
 }
 
 <div class="container mt-4">
     <h1 class="mb-4">
-        <i class="bi bi-cart"></i> Winkelwagen
+        <i class="bi bi-cart"></i> @Localizer["ShoppingCart"]
     </h1>
 
     <div id="alert-container"></div>
@@ -15,12 +18,12 @@
     {
         <div class="alert alert-info">
             <h4 class="alert-heading">
-                <i class="bi bi-cart-x"></i> Uw winkelwagen is leeg
+                <i class="bi bi-cart-x"></i> @Localizer["CartEmpty"]
             </h4>
-            <p>Begin met winkelen en voeg producten toe aan uw winkelwagen.</p>
+            <p>@Localizer["StartShoppingMessage"]</p>
             <hr>
             <a asp-controller="Products" asp-action="Index" class="btn btn-primary">
-                <i class="bi bi-box-seam"></i> Naar Producten
+                <i class="bi bi-box-seam"></i> @Localizer["GoToProducts"]
             </a>
         </div>
     }
@@ -46,7 +49,7 @@
                                         </a>
                                     </h5>
                                     <p class="text-muted mb-0">€@item.UnitPrice.ToString("F2")</p>
-                                    <small class="text-muted">Voorraad: @item.AvailableStock</small>
+                                    <small class="text-muted">@Localizer["Stock"]: @item.AvailableStock</small>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="input-group">
@@ -80,13 +83,13 @@
 
                 <div class="d-flex justify-content-between">
                     <a asp-controller="Products" asp-action="Index" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> Verder winkelen
+                        <i class="bi bi-arrow-left"></i> @Localizer["ContinueShopping"]
                     </a>
                     <form asp-action="ClearCart" method="post" class="d-inline"
-                          onsubmit="return confirm('Weet u zeker dat u de winkelwagen wilt legen?');">
+                          onsubmit="return confirm('@Localizer["ConfirmClearCart"]');">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-outline-danger">
-                            <i class="bi bi-trash"></i> Winkelwagen legen
+                            <i class="bi bi-trash"></i> @Localizer["ClearCart"]
                         </button>
                     </form>
                 </div>
@@ -96,29 +99,29 @@
                 <div class="card shadow-sm">
                     <div class="card-header bg-primary text-white">
                         <h5 class="mb-0">
-                            <i class="bi bi-receipt"></i> Overzicht
+                            <i class="bi bi-receipt"></i> @Localizer["Summary"]
                         </h5>
                     </div>
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-2">
-                            <span>Subtotaal:</span>
+                            <span>@Localizer["Subtotal"]:</span>
                             <span id="cart-subtotal">€@cartTotal.ToString("F2")</span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
-                            <span>Verzendkosten:</span>
-                            <span class="text-success">Gratis</span>
+                            <span>@Localizer["ShippingCost"]:</span>
+                            <span class="text-success">@Localizer["Free"]</span>
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between mb-3">
-                            <strong>Totaal:</strong>
+                            <strong>@Localizer["Total"]:</strong>
                             <strong class="text-primary" id="cart-total">€@cartTotal.ToString("F2")</strong>
                         </div>
 
                         <a asp-action="Checkout" class="btn btn-primary w-100 mb-2">
-                            <i class="bi bi-cart-check"></i> Afrekenen
+                            <i class="bi bi-cart-check"></i> @Localizer["Checkout"]
                         </a>
                         <p class="text-muted small text-center mb-0">
-                            <i class="bi bi-shield-check"></i> Veilig betalen
+                            <i class="bi bi-shield-check"></i> @Localizer["SecurePayment"]
                         </p>
                     </div>
                 </div>
@@ -143,7 +146,7 @@
                     if (currentQty < maxStock) {
                         await updateQuantity(productId, currentQty + 1);
                     } else {
-                        showAlert('Maximale voorraad bereikt', 'warning');
+                        showAlert('@Localizer["MaxStockReached"]', 'warning');
                     }
                 });
             });
@@ -176,7 +179,7 @@
             // Remove Item
             document.querySelectorAll('.btn-remove').forEach(btn => {
                 btn.addEventListener('click', async function() {
-                    if (!confirm('Weet u zeker dat u dit product wilt verwijderen?')) return;
+                    if (!confirm('@Localizer["ConfirmRemoveItem"]')) return;
 
                     const productId = this.dataset.productId;
                     const productName = this.dataset.productName;
@@ -194,25 +197,21 @@
                         const result = await response.json();
 
                         if (result.success) {
-                            // Remove item from DOM
                             const itemElement = document.querySelector(`.cart-item[data-product-id="${productId}"]`);
                             itemElement.style.transition = 'opacity 0.3s';
                             itemElement.style.opacity = '0';
                             setTimeout(() => itemElement.remove(), 300);
 
-                            // Update totals
                             updateCartTotals(result.cartTotal, result.cartCount);
+                            showAlert(`${productName} @Localizer["RemovedFromCart"]`, 'success');
 
-                            showAlert(`${productName} verwijderd uit winkelwagen`, 'success');
-
-                            // Reload if cart is empty
                             if (result.cartCount === 0) {
                                 setTimeout(() => location.reload(), 1500);
                             }
                         }
                     } catch (error) {
                         console.error('Error:', error);
-                        showAlert('Fout bij verwijderen van product', 'danger');
+                        showAlert('@Localizer["ErrorRemovingProduct"]', 'danger');
                     }
                 });
             });
@@ -231,22 +230,19 @@
                     const result = await response.json();
 
                     if (result.success) {
-                        // Update input value
                         const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
                         input.value = quantity;
 
-                        // Update item total
                         const itemTotal = document.querySelector(`.cart-item[data-product-id="${productId}"] .item-total`);
                         itemTotal.textContent = `€${result.itemTotal.toFixed(2)}`;
 
-                        // Update cart totals
                         updateCartTotals(result.cartTotal, result.cartCount);
                     } else {
-                        showAlert(result.message || 'Fout bij bijwerken', 'danger');
+                        showAlert(result.message || '@Localizer["ErrorUpdating"]', 'danger');
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    showAlert('Fout bij bijwerken van aantal', 'danger');
+                    showAlert('@Localizer["ErrorUpdatingQuantity"]', 'danger');
                 }
             }
 
@@ -255,7 +251,6 @@
                 document.getElementById('cart-subtotal').textContent = `€${total.toFixed(2)}`;
                 document.getElementById('cart-total').textContent = `€${total.toFixed(2)}`;
 
-                // Update cart badge in header
                 const cartBadge = document.getElementById('cart-count');
                 if (cartBadge) {
                     cartBadge.textContent = count;
@@ -263,7 +258,7 @@
                 }
             }
 
-            // ✅ Toon Alert
+            // Show Alert
             function showAlert(message, type) {
                 const alertContainer = document.getElementById('alert-container');
                 const alert = `

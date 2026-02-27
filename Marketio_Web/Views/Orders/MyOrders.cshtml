@@ -1,6 +1,9 @@
 ﻿@model IEnumerable<Marketio_Shared.DTOs.OrderDto>
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
+
 @{
-    ViewData["Title"] = "Mijn Bestellingen";
+    ViewData["Title"] = Localizer["MyOrders"];
     var customerEmail = ViewBag.CustomerEmail as string ?? "";
 }
 
@@ -8,9 +11,9 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <h1 class="display-4">
-                <i class="bi bi-bag-check"></i> Mijn Bestellingen
+                <i class="bi bi-bag-check"></i> @Localizer["MyOrders"]
             </h1>
-            <p class="lead text-muted">Overzicht van al uw bestellingen</p>
+            <p class="lead text-muted">@Localizer["OrdersOverviewDescription2"]</p>
         </div>
     </div>
 
@@ -33,12 +36,12 @@
     {
         <div class="alert alert-info">
             <h4 class="alert-heading">
-                <i class="bi bi-info-circle"></i> Geen bestellingen gevonden
+                <i class="bi bi-info-circle"></i> @Localizer["NoOrdersFound"]
             </h4>
-            <p>U heeft nog geen bestellingen geplaatst.</p>
+            <p>@Localizer["NoOrdersPlaced"]</p>
             <hr>
             <a asp-controller="Products" asp-action="Index" class="btn btn-primary">
-                <i class="bi bi-box-seam"></i> Start met winkelen
+                <i class="bi bi-box-seam"></i> @Localizer["StartShopping"]
             </a>
         </div>
     }
@@ -57,19 +60,19 @@
                                 @switch (order.Status)
                                 {
                                     case Marketio_Shared.Enums.OrderStatus.Pending:
-                                        <span class="badge bg-warning text-dark">@order.StatusName</span>
+                                        <span class="badge bg-warning text-dark">@Localizer["OrderStatus_Pending"]</span>
                                         break;
                                     case Marketio_Shared.Enums.OrderStatus.Processing:
-                                        <span class="badge bg-info">@order.StatusName</span>
+                                        <span class="badge bg-info">@Localizer["OrderStatus_Processing"]</span>
                                         break;
                                     case Marketio_Shared.Enums.OrderStatus.Shipped:
-                                        <span class="badge bg-light text-dark">@order.StatusName</span>
+                                        <span class="badge bg-light text-dark">@Localizer["OrderStatus_Shipped"]</span>
                                         break;
                                     case Marketio_Shared.Enums.OrderStatus.Delivered:
-                                        <span class="badge bg-success">@order.StatusName</span>
+                                        <span class="badge bg-success">@Localizer["OrderStatus_Delivered"]</span>
                                         break;
                                     case Marketio_Shared.Enums.OrderStatus.Cancelled:
-                                        <span class="badge bg-danger">@order.StatusName</span>
+                                        <span class="badge bg-danger">@Localizer["OrderStatus_Cancelled"]</span>
                                         break;
                                 }
                             </div>
@@ -80,7 +83,7 @@
                                 <small>@order.OrderDate.ToString("dd MMM yyyy HH:mm")</small>
                             </p>
 
-                            <h6 class="mb-2">Producten:</h6>
+                            <h6 class="mb-2">@Localizer["Products"]:</h6>
                             <ul class="list-unstyled mb-3">
                                 @foreach (var item in order.OrderItems.Take(3))
                                 {
@@ -91,7 +94,7 @@
                                 @if (order.OrderItems.Count > 3)
                                 {
                                     <li class="small text-muted">
-                                        <i class="bi bi-three-dots"></i> +@(order.OrderItems.Count - 3) meer...
+                                        <i class="bi bi-three-dots"></i> +@(order.OrderItems.Count - 3) @Localizer["More"]...
                                     </li>
                                 }
                             </ul>
@@ -99,22 +102,22 @@
                             <hr>
 
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <strong>Totaal:</strong>
+                                <strong>@Localizer["Total"]:</strong>
                                 <h5 class="text-primary mb-0">€@order.TotalAmount.ToString("N2")</h5>
                             </div>
 
                             <div class="d-grid gap-2">
                                 <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-eye"></i> Bekijk Details
+                                    <i class="bi bi-eye"></i> @Localizer["ViewDetails"]
                                 </a>
 
                                 @if (order.Status == Marketio_Shared.Enums.OrderStatus.Pending)
                                 {
                                     <form asp-action="Cancel" asp-route-id="@order.Id" method="post" class="d-inline"
-                                          onsubmit="return confirm('Weet u zeker dat u deze bestelling wilt annuleren?');">
+                                          onsubmit="return confirm('@Localizer["ConfirmCancelOrder"]');">
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-                                            <i class="bi bi-x-circle"></i> Annuleren
+                                            <i class="bi bi-x-circle"></i> @Localizer["Cancel"]
                                         </button>
                                     </form>
                                 }

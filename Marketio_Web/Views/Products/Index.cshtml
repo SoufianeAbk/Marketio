@@ -1,8 +1,10 @@
 ﻿@model IEnumerable<Marketio_Shared.DTOs.ProductDto>
 @using Marketio_Shared.Enums
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
 
 @{
-    ViewData["Title"] = "Producten";
+    ViewData["Title"] = Localizer["Products"];
     var selectedCategory = ViewBag.SelectedCategory as ProductCategory?;
     var searchTerm = ViewBag.SearchTerm as string ?? "";
     var minPrice = ViewBag.MinPrice as decimal?;
@@ -17,32 +19,102 @@
     <div id="cartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header bg-success text-white">
             <i class="bi bi-cart-check me-2"></i>
-            <strong class="me-auto">Winkelwagen</strong>
+            <strong class="me-auto">@Localizer["ShoppingCart"]</strong>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
         </div>
         <div class="toast-body" id="toastMessage">
-            Product toegevoegd aan winkelwagen!
+            @Localizer["ProductAddedToCart"]
         </div>
     </div>
 </div>
 
 <div class="container mt-4">
-    <!-- Bestaande header en filters blijven hetzelfde -->
-    <!-- ... rest van je bestaande HTML ... -->
-
     <div class="row">
-        <!-- Sidebar - blijft hetzelfde -->
+        <!-- Sidebar -->
         <div class="col-lg-3 mb-4">
-            <!-- Je bestaande filter sidebar -->
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-funnel"></i> @Localizer["Filters"]
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Index" method="get">
+                        <!-- Category Filter -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">@Localizer["Category"]</label>
+                            <select name="category" class="form-select" onchange="this.form.submit()">
+                                <option value="">@Localizer["AllCategories"]</option>
+                                @foreach (ProductCategory cat in Enum.GetValues<ProductCategory>())
+                                {
+                                    <option value="@cat" selected="@(selectedCategory == cat)">
+                                        @Localizer[$"Category_{cat}"]
+                                    </option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Price Range Filter -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">@Localizer["PriceRange"]</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="number" name="minPrice" class="form-control"
+                                           placeholder="@Localizer["Min"]" value="@minPrice" step="0.01">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" name="maxPrice" class="form-control"
+                                           placeholder="@Localizer["Max"]" value="@maxPrice" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sort By -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">@Localizer["SortBy"]</label>
+                            <select name="sortBy" class="form-select" onchange="this.form.submit()">
+                                <option value="name" selected="@(sortBy == "name")">@Localizer["Sort_NameAsc"]</option>
+                                <option value="name-desc" selected="@(sortBy == "name-desc")">@Localizer["Sort_NameDesc"]</option>
+                                <option value="price-asc" selected="@(sortBy == "price-asc")">@Localizer["Sort_PriceAsc"]</option>
+                                <option value="price-desc" selected="@(sortBy == "price-desc")">@Localizer["Sort_PriceDesc"]</option>
+                                <option value="newest" selected="@(sortBy == "newest")">@Localizer["Sort_Newest"]</option>
+                            </select>
+                        </div>
+
+                        <input type="hidden" name="searchTerm" value="@searchTerm" />
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-funnel-fill"></i> @Localizer["ApplyFilters"]
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> @Localizer["ResetFilters"]
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <!-- Products Grid -->
         <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="mb-0">
+                    <i class="bi bi-box-seam"></i> @Localizer["Products"]
+                </h1>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-action="Create" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> @Localizer["AddProduct"]
+                    </a>
+                }
+            </div>
+
             @if (Model != null && Model.Any())
             {
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <p class="text-muted mb-0">
-                        <strong>@Model.Count()</strong> producten gevonden
+                        <strong>@Model.Count()</strong> @Localizer["ProductsFound"]
                     </p>
                 </div>
 
@@ -64,19 +136,19 @@
                                 <div class="position-absolute top-0 end-0 m-2">
                                     @if (!product.IsActive)
                                     {
-                                        <span class="badge bg-danger">Inactief</span>
+                                        <span class="badge bg-danger">@Localizer["Inactive"]</span>
                                     }
                                     else if (product.Stock == 0)
                                     {
-                                        <span class="badge bg-warning text-dark">Uitverkocht</span>
+                                        <span class="badge bg-warning text-dark">@Localizer["OutOfStock"]</span>
                                     }
                                     else if (product.Stock < 10)
                                     {
-                                        <span class="badge bg-info">Laag voorraad</span>
+                                        <span class="badge bg-info">@Localizer["LowStock"]</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-success">Op voorraad</span>
+                                        <span class="badge bg-success">@Localizer["InStock"]</span>
                                     }
                                 </div>
 
@@ -86,13 +158,14 @@
                                     </a>
 
                                     <p class="mb-2">
-                                        <span class="badge bg-secondary">@product.CategoryName</span>
+                                        <span class="badge bg-secondary">@Localizer[$"Category_{product.Category}"]</span>
                                     </p>
 
                                     <p class="card-text text-muted small flex-grow-1">
                                         @if (product.Description.Length > 80)
                                         {
                                             @product.Description.Substring(0, 80)
+                                
                                             <text>...</text>
                                         }
                                         else
@@ -105,25 +178,24 @@
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <h4 class="text-primary mb-0">€@product.Price.ToString("N2")</h4>
                                             <span class="text-muted small">
-                                                <i class="bi bi-box"></i> @product.Stock stuks
+                                                <i class="bi bi-box"></i> @product.Stock @Localizer["Units"]
                                             </span>
                                         </div>
 
                                         <div class="d-grid gap-2">
                                             @if (product.IsActive && product.Stock > 0)
                                             {
-                                                <!-- ✅ AJAX Add to Cart Button -->
                                                 <button type="button"
                                                         class="btn btn-primary btn-sm w-100 ajax-add-to-cart"
                                                         data-product-id="@product.Id"
                                                         data-product-name="@product.Name">
-                                                    <i class="bi bi-cart-plus"></i> Toevoegen
+                                                    <i class="bi bi-cart-plus"></i> @Localizer["AddToCart"]
                                                 </button>
                                             }
                                             else
                                             {
                                                 <button class="btn btn-secondary btn-sm w-100" disabled>
-                                                    <i class="bi bi-x-circle"></i> Niet beschikbaar
+                                                    <i class="bi bi-x-circle"></i> @Localizer["NotAvailable"]
                                                 </button>
                                             }
 
@@ -131,7 +203,7 @@
                                                 <a asp-action="Details"
                                                    asp-route-id="@product.Id"
                                                    class="btn btn-sm btn-outline-primary">
-                                                    <i class="bi bi-eye"></i> Details
+                                                    <i class="bi bi-eye"></i> @Localizer["Details"]
                                                 </a>
                                                 @if (User.IsInRole("Admin"))
                                                 {
@@ -155,10 +227,10 @@
             {
                 <div class="alert alert-info text-center">
                     <i class="bi bi-info-circle fs-1"></i>
-                    <h4 class="mt-3">Geen producten gevonden</h4>
-                    <p class="mb-0">Pas je filters aan of probeer een andere zoekterm.</p>
+                    <h4 class="mt-3">@Localizer["NoProductsFound"]</h4>
+                    <p class="mb-0">@Localizer["AdjustFilters"]</p>
                     <a asp-action="Index" class="btn btn-primary mt-3">
-                        <i class="bi bi-arrow-clockwise"></i> Bekijk alle producten
+                        <i class="bi bi-arrow-clockwise"></i> @Localizer["ViewAllProducts"]
                     </a>
                 </div>
             }
@@ -168,13 +240,10 @@
 
 @section Scripts {
     <script>
-        // ✅ AJAX Add to Cart Functionaliteit
         document.addEventListener('DOMContentLoaded', function() {
-            // Get anti-forgery token
             const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value ||
                          '@Html.AntiForgeryToken()'.match(/value="([^"]+)"/)?.[1];
 
-            // Add to Cart AJAX
             document.querySelectorAll('.ajax-add-to-cart').forEach(button => {
                 button.addEventListener('click', async function(e) {
                     e.preventDefault();
@@ -183,8 +252,7 @@
                     const productName = this.dataset.productName;
                     const originalHtml = this.innerHTML;
 
-                    // Show loading state
-                    this.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Toevoegen...';
+                    this.innerHTML = '<span class="spinner-border spinner-border-sm"></span> @Localizer["Adding"]...';
                     this.disabled = true;
 
                     try {
@@ -201,18 +269,13 @@
                         const result = await response.json();
 
                         if (result.success) {
-                            // Show success state
-                            this.innerHTML = '<i class="bi bi-check-circle"></i> Toegevoegd!';
+                            this.innerHTML = '<i class="bi bi-check-circle"></i> @Localizer["Added"]!';
                             this.classList.remove('btn-primary');
                             this.classList.add('btn-success');
 
-                            // Update cart count
                             updateCartCount();
+                            showToast(`${productName} @Localizer["ProductAddedToCart"]`, 'success');
 
-                            // Show toast notification
-                            showToast(`${productName} toegevoegd aan winkelwagen`, 'success');
-
-                            // Reset button after 2 seconds
                             setTimeout(() => {
                                 this.innerHTML = originalHtml;
                                 this.classList.remove('btn-success');
@@ -220,26 +283,23 @@
                                 this.disabled = false;
                             }, 2000);
                         } else {
-                            throw new Error(result.message || 'Er is een fout opgetreden');
+                            throw new Error(result.message || '@Localizer["ErrorOccurred"]');
                         }
                     } catch (error) {
                         console.error('Error:', error);
-                        showToast(error.message || 'Fout bij toevoegen aan winkelwagen', 'error');
+                        showToast(error.message || '@Localizer["ErrorAddingToCart"]', 'error');
 
-                        // Reset button
                         this.innerHTML = originalHtml;
                         this.disabled = false;
                     }
                 });
             });
 
-            // Toast notification function
             function showToast(message, type = 'success') {
                 const toastEl = document.getElementById('cartToast');
                 const toastBody = document.getElementById('toastMessage');
                 const toastHeader = toastEl.querySelector('.toast-header');
 
-                // Update toast styling based on type
                 if (type === 'success') {
                     toastHeader.classList.remove('bg-danger');
                     toastHeader.classList.add('bg-success');
@@ -254,13 +314,11 @@
                 toast.show();
             }
 
-            // Update cart count
             if (typeof updateCartCount === 'function') {
                 updateCartCount();
             }
         });
 
-        // Auto-dismiss alerts
         setTimeout(() => $('.alert').fadeOut('slow'), 5000);
     </script>
 
