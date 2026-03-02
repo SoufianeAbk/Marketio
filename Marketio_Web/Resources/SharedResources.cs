@@ -1,4 +1,4 @@
-﻿namespace Marketio_Web.Resources
+﻿namespace Marketio_Web
 {
     /// <summary>
     /// Marker class for shared resources localization
