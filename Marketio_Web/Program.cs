@@ -132,8 +132,8 @@ async Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-    // Maak rollen aan
-    string[] roles = { "Admin", "Customer" };
+    // Maak rollen aan - inclusief Manager
+    string[] roles = { "Admin", "Manager", "Customer" };
     foreach (var role in roles)
     {
         if (!await roleManager.RoleExistsAsync(role))
