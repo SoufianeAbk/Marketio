@@ -114,6 +114,215 @@
 		<value>30 days return policy</value>
 	</data>
 
+	<!-- Home\Privacy.cshtml -->
+	<data name="PrivacyPolicy" xml:space="preserve">
+		<value>Privacy Policy</value>
+	</data>
+	<data name="Introduction" xml:space="preserve">
+		<value>Introduction</value>
+	</data>
+	<data name="PrivacyIntro" xml:space="preserve">
+		<value>At Marketio, we value your privacy. This privacy policy explains how we collect, use, and protect your personal information when you use our platform.</value>
+	</data>
+	<data name="WhatDataWeCollect" xml:space="preserve">
+		<value>What Data We Collect</value>
+	</data>
+	<data name="DataCollectionIntro" xml:space="preserve">
+		<value>We collect various types of information to provide and improve our services:</value>
+	</data>
+	<data name="IdentityData" xml:space="preserve">
+		<value>Identity Data</value>
+	</data>
+	<data name="IdentityDataDesc" xml:space="preserve">
+		<value>Name, username, and other identifiers</value>
+	</data>
+	<data name="ContactData" xml:space="preserve">
+		<value>Contact Data</value>
+	</data>
+	<data name="ContactDataDesc" xml:space="preserve">
+		<value>Email address, phone number, and delivery address</value>
+	</data>
+	<data name="TransactionData" xml:space="preserve">
+		<value>Transaction Data</value>
+	</data>
+	<data name="TransactionDataDesc" xml:space="preserve">
+		<value>Payment details and order history</value>
+	</data>
+	<data name="TechnicalData" xml:space="preserve">
+		<value>Technical Data</value>
+	</data>
+	<data name="TechnicalDataDesc" xml:space="preserve">
+		<value>IP address, browser type, and device information</value>
+	</data>
+	<data name="ProfileData" xml:space="preserve">
+		<value>Profile Data</value>
+	</data>
+	<data name="ProfileDataDesc" xml:space="preserve">
+		<value>Preferences, interests, and shopping behavior</value>
+	</data>
+	<data name="HowWeUseData" xml:space="preserve">
+		<value>How We Use Your Data</value>
+	</data>
+	<data name="DataUsageIntro" xml:space="preserve">
+		<value>We use your personal data for the following purposes:</value>
+	</data>
+	<data name="OrderManagement" xml:space="preserve">
+		<value>Order Management</value>
+	</data>
+	<data name="OrderManagementDesc" xml:space="preserve">
+		<value>To process and fulfill your orders</value>
+	</data>
+	<data name="AccountManagement" xml:space="preserve">
+		<value>Account Management</value>
+	</data>
+	<data name="AccountManagementDesc" xml:space="preserve">
+		<value>To manage your account and profile</value>
+	</data>
+	<data name="Communication" xml:space="preserve">
+		<value>Communication</value>
+	</data>
+	<data name="CommunicationDesc" xml:space="preserve">
+		<value>To send you order updates and promotional messages</value>
+	</data>
+	<data name="Improvement" xml:space="preserve">
+		<value>Service Improvement</value>
+	</data>
+	<data name="ImprovementDesc" xml:space="preserve">
+		<value>To analyze and improve our services</value>
+	</data>
+	<data name="DataSharing" xml:space="preserve">
+		<value>Data Sharing</value>
+	</data>
+	<data name="DataSharingIntro" xml:space="preserve">
+		<value>We may share your data with third parties in the following cases:</value>
+	</data>
+	<data name="ServiceProviders" xml:space="preserve">
+		<value>Service Providers</value>
+	</data>
+	<data name="ServiceProvidersDesc" xml:space="preserve">
+		<value>We work with trusted partners for payment processing, delivery, and analytics</value>
+	</data>
+	<data name="LegalRequirements" xml:space="preserve">
+		<value>Legal Requirements</value>
+	</data>
+	<data name="LegalRequirementsDesc" xml:space="preserve">
+		<value>When required by law or to protect our rights</value>
+	</data>
+	<data name="BusinessPartners" xml:space="preserve">
+		<value>Business Partners</value>
+	</data>
+	<data name="BusinessPartnersDesc" xml:space="preserve">
+		<value>With your consent, we may share data with marketing partners</value>
+	</data>
+	<data name="Note" xml:space="preserve">
+		<value>Note</value>
+	</data>
+	<data name="NoDataSaleNote" xml:space="preserve">
+		<value>We never sell your personal data to third parties</value>
+	</data>
+	<data name="DataSecurity" xml:space="preserve">
+		<value>Data Security</value>
+	</data>
+	<data name="DataSecurityIntro" xml:space="preserve">
+		<value>We implement appropriate technical and organizational measures to protect your data:</value>
+	</data>
+	<data name="Encryption" xml:space="preserve">
+		<value>Encryption</value>
+	</data>
+	<data name="SslTlsSecurity" xml:space="preserve">
+		<value>SSL/TLS Security</value>
+	</data>
+	<data name="SecureServers" xml:space="preserve">
+		<value>Secure Servers</value>
+	</data>
+	<data name="IsoCertified" xml:space="preserve">
+		<value>ISO Certified</value>
+	</data>
+	<data name="AccessControl" xml:space="preserve">
+		<value>Access Control</value>
+	</data>
+	<data name="LimitedAccess" xml:space="preserve">
+		<value>Limited Access</value>
+	</data>
+	<data name="YourRights" xml:space="preserve">
+		<value>Your Rights</value>
+	</data>
+	<data name="YourRightsIntro" xml:space="preserve">
+		<value>Under applicable data protection laws, you have the following rights:</value>
+	</data>
+	<data name="Right" xml:space="preserve">
+		<value>Right</value>
+	</data>
+	<data name="Description" xml:space="preserve">
+		<value>Description</value>
+	</data>
+	<data name="RightOfAccess" xml:space="preserve">
+		<value>Right of Access</value>
+	</data>
+	<data name="RightOfAccessDesc" xml:space="preserve">
+		<value>Request a copy of your personal data</value>
+	</data>
+	<data name="RightOfRectification" xml:space="preserve">
+		<value>Right of Rectification</value>
+	</data>
+	<data name="RightOfRectificationDesc" xml:space="preserve">
+		<value>Correct inaccurate or incomplete data</value>
+	</data>
+	<data name="RightOfErasure" xml:space="preserve">
+		<value>Right of Erasure</value>
+	</data>
+	<data name="RightOfErasureDesc" xml:space="preserve">
+		<value>Request deletion of your personal data</value>
+	</data>
+	<data name="RightOfRestriction" xml:space="preserve">
+		<value>Right of Restriction</value>
+	</data>
+	<data name="RightOfRestrictionDesc" xml:space="preserve">
+		<value>Restrict processing of your data</value>
+	</data>
+	<data name="RightToObject" xml:space="preserve">
+		<value>Right to Object</value>
+	</data>
+	<data name="RightToObjectDesc" xml:space="preserve">
+		<value>Object to certain processing activities</value>
+	</data>
+	<data name="RightOfPortability" xml:space="preserve">
+		<value>Right of Portability</value>
+	</data>
+	<data name="RightOfPortabilityDesc" xml:space="preserve">
+		<value>Receive your data in a portable format</value>
+	</data>
+	<data name="Cookies" xml:space="preserve">
+		<value>Cookies</value>
+	</data>
+	<data name="CookiesIntro" xml:space="preserve">
+		<value>We use cookies to improve your browsing experience and analyze website traffic. You can manage cookie preferences in your browser settings.</value>
+	</data>
+	<data name="CookiesWarning" xml:space="preserve">
+		<value>By continuing to use our website, you consent to our use of cookies as described in this policy.</value>
+	</data>
+	<data name="Contact" xml:space="preserve">
+		<value>Contact Us</value>
+	</data>
+	<data name="ContactIntro" xml:space="preserve">
+		<value>If you have any questions about this privacy policy or your personal data, please contact us:</value>
+	</data>
+	<data name="Email" xml:space="preserve">
+		<value>Email</value>
+	</data>
+	<data name="Phone" xml:space="preserve">
+		<value>Phone</value>
+	</data>
+	<data name="Address" xml:space="preserve">
+		<value>Address</value>
+	</data>
+	<data name="BackToHome" xml:space="preserve">
+		<value>Back to Home</value>
+	</data>
+	<data name="LastUpdated" xml:space="preserve">
+		<value>Last Updated: {0}</value>
+	</data>
+
 	<!-- Products\Index.cshtml -->
 	<data name="ShoppingCart" xml:space="preserve">
 		<value>Shopping Cart</value>

@@ -61,484 +61,693 @@
 
 	<!-- _Layout.cshtml -->
 	<data name="Home" xml:space="preserve">
-    <value>Home</value>
-  </data>
+		<value>Home</value>
+	</data>
 	<data name="Products" xml:space="preserve">
-    <value>Producten</value>
-  </data>
+		<value>Producten</value>
+	</data>
 	<data name="MyOrders" xml:space="preserve">
-    <value>Mijn Bestellingen</value>
-  </data>
+		<value>Mijn Bestellingen</value>
+	</data>
 	<data name="OrdersManagement" xml:space="preserve">
-    <value>Bestellingen Beheer</value>
-  </data>
+		<value>Bestellingen Beheer</value>
+	</data>
 	<data name="Privacy" xml:space="preserve">
-    <value>Privacy</value>
-  </data>
+		<value>Privacy</value>
+	</data>
 	<data name="SearchPlaceholder" xml:space="preserve">
-    <value>Zoek producten...</value>
-  </data>
+		<value>Zoek producten...</value>
+	</data>
 	<data name="Language" xml:space="preserve">
-    <value>Taal</value>
-  </data>
+		<value>Taal</value>
+	</data>
 
 	<!-- Home\Index.cshtml -->
 	<data name="WelcomeToMarketio" xml:space="preserve">
-    <value>Welkom bij Marketio</value>
-  </data>
+		<value>Welkom bij Marketio</value>
+	</data>
 	<data name="MarketplaceDescription" xml:space="preserve">
-    <value>Uw online marktplaats voor elektronica, kleding, boeken en meer!</value>
-  </data>
+		<value>Uw online marktplaats voor elektronica, kleding, boeken en meer!</value>
+	</data>
 	<data name="ViewProducts" xml:space="preserve">
-    <value>Bekijk Producten</value>
-  </data>
+		<value>Bekijk Producten</value>
+	</data>
 	<data name="Orders" xml:space="preserve">
-    <value>Bestellingen</value>
-  </data>
+		<value>Bestellingen</value>
+	</data>
 	<data name="FastDelivery" xml:space="preserve">
-    <value>Snelle Levering</value>
-  </data>
+		<value>Snelle Levering</value>
+	</data>
 	<data name="FastDeliveryDescription" xml:space="preserve">
-    <value>Besteld voor 23:00, morgen in huis</value>
-  </data>
+		<value>Besteld voor 23:00, morgen in huis</value>
+	</data>
 	<data name="SecurePayment" xml:space="preserve">
-    <value>Veilig Betalen</value>
-  </data>
+		<value>Veilig Betalen</value>
+	</data>
 	<data name="SecurePaymentDescription" xml:space="preserve">
-    <value>Alle betalingsmethoden worden ondersteund</value>
-  </data>
+		<value>Alle betalingsmethoden worden ondersteund</value>
+	</data>
 	<data name="FreeReturns" xml:space="preserve">
-    <value>Gratis Retour</value>
-  </data>
+		<value>Gratis Retour</value>
+	</data>
 	<data name="FreeReturnsDescription" xml:space="preserve">
-    <value>30 dagen bedenktijd</value>
-  </data>
+		<value>30 dagen bedenktijd</value>
+	</data>
+
+	<!-- Home\Privacy.cshtml -->
+	<data name="PrivacyPolicy" xml:space="preserve">
+		<value>Privacybeleid</value>
+	</data>
+	<data name="Introduction" xml:space="preserve">
+		<value>Inleiding</value>
+	</data>
+	<data name="PrivacyIntro" xml:space="preserve">
+		<value>Bij Marketio waarderen wij uw privacy. Dit privacybeleid legt uit hoe wij uw persoonlijke gegevens verzamelen, gebruiken en beschermen wanneer u ons platform gebruikt.</value>
+	</data>
+	<data name="WhatDataWeCollect" xml:space="preserve">
+		<value>Welke Gegevens Wij Verzamelen</value>
+	</data>
+	<data name="DataCollectionIntro" xml:space="preserve">
+		<value>Wij verzamelen verschillende soorten informatie om onze diensten te leveren en te verbeteren:</value>
+	</data>
+	<data name="IdentityData" xml:space="preserve">
+		<value>Identiteitsgegevens</value>
+	</data>
+	<data name="IdentityDataDesc" xml:space="preserve">
+		<value>Naam, gebruikersnaam en andere identificatoren</value>
+	</data>
+	<data name="ContactData" xml:space="preserve">
+		<value>Contactgegevens</value>
+	</data>
+	<data name="ContactDataDesc" xml:space="preserve">
+		<value>E-mailadres, telefoonnummer en bezorgadres</value>
+	</data>
+	<data name="TransactionData" xml:space="preserve">
+		<value>Transactiegegevens</value>
+	</data>
+	<data name="TransactionDataDesc" xml:space="preserve">
+		<value>Betalingsgegevens en bestelgeschiedenis</value>
+	</data>
+	<data name="TechnicalData" xml:space="preserve">
+		<value>Technische Gegevens</value>
+	</data>
+	<data name="TechnicalDataDesc" xml:space="preserve">
+		<value>IP-adres, browsertype en apparaatinformatie</value>
+	</data>
+	<data name="ProfileData" xml:space="preserve">
+		<value>Profielgegevens</value>
+	</data>
+	<data name="ProfileDataDesc" xml:space="preserve">
+		<value>Voorkeuren, interesses en winkelgedrag</value>
+	</data>
+	<data name="HowWeUseData" xml:space="preserve">
+		<value>Hoe Wij Uw Gegevens Gebruiken</value>
+	</data>
+	<data name="DataUsageIntro" xml:space="preserve">
+		<value>Wij gebruiken uw persoonlijke gegevens voor de volgende doeleinden:</value>
+	</data>
+	<data name="OrderManagement" xml:space="preserve">
+		<value>Bestelbeheer</value>
+	</data>
+	<data name="OrderManagementDesc" xml:space="preserve">
+		<value>Om uw bestellingen te verwerken en uit te voeren</value>
+	</data>
+	<data name="AccountManagement" xml:space="preserve">
+		<value>Accountbeheer</value>
+	</data>
+	<data name="AccountManagementDesc" xml:space="preserve">
+		<value>Om uw account en profiel te beheren</value>
+	</data>
+	<data name="Communication" xml:space="preserve">
+		<value>Communicatie</value>
+	</data>
+	<data name="CommunicationDesc" xml:space="preserve">
+		<value>Om u bestel-updates en promotionele berichten te sturen</value>
+	</data>
+	<data name="Improvement" xml:space="preserve">
+		<value>Verbetering van Diensten</value>
+	</data>
+	<data name="ImprovementDesc" xml:space="preserve">
+		<value>Om onze diensten te analyseren en te verbeteren</value>
+	</data>
+	<data name="DataSharing" xml:space="preserve">
+		<value>Gegevens Delen</value>
+	</data>
+	<data name="DataSharingIntro" xml:space="preserve">
+		<value>Wij kunnen uw gegevens delen met derden in de volgende gevallen:</value>
+	</data>
+	<data name="ServiceProviders" xml:space="preserve">
+		<value>Dienstverleners</value>
+	</data>
+	<data name="ServiceProvidersDesc" xml:space="preserve">
+		<value>Wij werken samen met vertrouwde partners voor betalingsverwerking, levering en analyses</value>
+	</data>
+	<data name="LegalRequirements" xml:space="preserve">
+		<value>Wettelijke Vereisten</value>
+	</data>
+	<data name="LegalRequirementsDesc" xml:space="preserve">
+		<value>Wanneer vereist door de wet of om onze rechten te beschermen</value>
+	</data>
+	<data name="BusinessPartners" xml:space="preserve">
+		<value>Zakelijke Partners</value>
+	</data>
+	<data name="BusinessPartnersDesc" xml:space="preserve">
+		<value>Met uw toestemming kunnen wij gegevens delen met marketingpartners</value>
+	</data>
+	<data name="Note" xml:space="preserve">
+		<value>Let op</value>
+	</data>
+	<data name="NoDataSaleNote" xml:space="preserve">
+		<value>Wij verkopen nooit uw persoonlijke gegevens aan derden</value>
+	</data>
+	<data name="DataSecurity" xml:space="preserve">
+		<value>Gegevensbeveiliging</value>
+	</data>
+	<data name="DataSecurityIntro" xml:space="preserve">
+		<value>Wij implementeren passende technische en organisatorische maatregelen om uw gegevens te beschermen:</value>
+	</data>
+	<data name="Encryption" xml:space="preserve">
+		<value>Versleuteling</value>
+	</data>
+	<data name="SslTlsSecurity" xml:space="preserve">
+		<value>SSL/TLS Beveiliging</value>
+	</data>
+	<data name="SecureServers" xml:space="preserve">
+		<value>Beveiligde Servers</value>
+	</data>
+	<data name="IsoCertified" xml:space="preserve">
+		<value>ISO Gecertificeerd</value>
+	</data>
+	<data name="AccessControl" xml:space="preserve">
+		<value>Toegangscontrole</value>
+	</data>
+	<data name="LimitedAccess" xml:space="preserve">
+		<value>Beperkte Toegang</value>
+	</data>
+	<data name="YourRights" xml:space="preserve">
+		<value>Uw Rechten</value>
+	</data>
+	<data name="YourRightsIntro" xml:space="preserve">
+		<value>Onder de toepasselijke wetgeving voor gegevensbescherming heeft u de volgende rechten:</value>
+	</data>
+	<data name="Right" xml:space="preserve">
+		<value>Recht</value>
+	</data>
+	<data name="Description" xml:space="preserve">
+		<value>Beschrijving</value>
+	</data>
+	<data name="RightOfAccess" xml:space="preserve">
+		<value>Recht van Toegang</value>
+	</data>
+	<data name="RightOfAccessDesc" xml:space="preserve">
+		<value>Vraag een kopie van uw persoonlijke gegevens aan</value>
+	</data>
+	<data name="RightOfRectification" xml:space="preserve">
+		<value>Recht van Rectificatie</value>
+	</data>
+	<data name="RightOfRectificationDesc" xml:space="preserve">
+		<value>Corrigeer onjuiste of onvolledige gegevens</value>
+	</data>
+	<data name="RightOfErasure" xml:space="preserve">
+		<value>Recht van Verwijdering</value>
+	</data>
+	<data name="RightOfErasureDesc" xml:space="preserve">
+		<value>Vraag verwijdering van uw persoonlijke gegevens aan</value>
+	</data>
+	<data name="RightOfRestriction" xml:space="preserve">
+		<value>Recht van Beperking</value>
+	</data>
+	<data name="RightOfRestrictionDesc" xml:space="preserve">
+		<value>Beperk de verwerking van uw gegevens</value>
+	</data>
+	<data name="RightToObject" xml:space="preserve">
+		<value>Recht van Bezwaar</value>
+	</data>
+	<data name="RightToObjectDesc" xml:space="preserve">
+		<value>Maak bezwaar tegen bepaalde verwerkingsactiviteiten</value>
+	</data>
+	<data name="RightOfPortability" xml:space="preserve">
+		<value>Recht van Overdraagbaarheid</value>
+	</data>
+	<data name="RightOfPortabilityDesc" xml:space="preserve">
+		<value>Ontvang uw gegevens in een overdraagbaar formaat</value>
+	</data>
+	<data name="Cookies" xml:space="preserve">
+		<value>Cookies</value>
+	</data>
+	<data name="CookiesIntro" xml:space="preserve">
+		<value>Wij gebruiken cookies om uw surfervaring te verbeteren en websiteverkeer te analyseren. U kunt cookievoorkeuren beheren in uw browserinstellingen.</value>
+	</data>
+	<data name="CookiesWarning" xml:space="preserve">
+		<value>Door onze website te blijven gebruiken, stemt u in met ons gebruik van cookies zoals beschreven in dit beleid.</value>
+	</data>
+	<data name="Contact" xml:space="preserve">
+		<value>Neem Contact Op</value>
+	</data>
+	<data name="ContactIntro" xml:space="preserve">
+		<value>Als u vragen heeft over dit privacybeleid of uw persoonlijke gegevens, neem dan contact met ons op:</value>
+	</data>
+	<data name="Email" xml:space="preserve">
+		<value>E-mail</value>
+	</data>
+	<data name="Phone" xml:space="preserve">
+		<value>Telefoon</value>
+	</data>
+	<data name="Address" xml:space="preserve">
+		<value>Adres</value>
+	</data>
+	<data name="BackToHome" xml:space="preserve">
+		<value>Terug naar Home</value>
+	</data>
+	<data name="LastUpdated" xml:space="preserve">
+		<value>Laatst Bijgewerkt: {0}</value>
+	</data>
 
 	<!-- Products\Index.cshtml -->
 	<data name="ShoppingCart" xml:space="preserve">
-    <value>Winkelwagen</value>
-  </data>
+		<value>Winkelwagen</value>
+	</data>
 	<data name="ProductAddedToCart" xml:space="preserve">
-    <value>Product toegevoegd aan winkelwagen</value>
-  </data>
+		<value>Product toegevoegd aan winkelwagen</value>
+	</data>
 	<data name="Filters" xml:space="preserve">
-    <value>Filters</value>
-  </data>
+		<value>Filters</value>
+	</data>
 	<data name="Category" xml:space="preserve">
-    <value>Categorie</value>
-  </data>
+		<value>Categorie</value>
+	</data>
 	<data name="AllCategories" xml:space="preserve">
-    <value>Alle Categorieën</value>
-  </data>
+		<value>Alle Categorieën</value>
+	</data>
 	<data name="Category_Electronics" xml:space="preserve">
-    <value>Elektronica</value>
-  </data>
+		<value>Elektronica</value>
+	</data>
 	<data name="Category_Clothing" xml:space="preserve">
-    <value>Kleding</value>
-  </data>
+		<value>Kleding</value>
+	</data>
 	<data name="Category_Books" xml:space="preserve">
-    <value>Boeken</value>
-  </data>
+		<value>Boeken</value>
+	</data>
 	<data name="Category_HomeAndGarden" xml:space="preserve">
-    <value>Huis &amp; Tuin</value>
-  </data>
+		<value>Huis &amp; Tuin</value>
+	</data>
 	<data name="Category_Sports" xml:space="preserve">
-    <value>Sport</value>
-  </data>
+		<value>Sport</value>
+	</data>
 	<data name="Category_Toys" xml:space="preserve">
-    <value>Speelgoed</value>
-  </data>
+		<value>Speelgoed</value>
+	</data>
 	<data name="PriceRange" xml:space="preserve">
-    <value>Prijsbereik</value>
-  </data>
+		<value>Prijsbereik</value>
+	</data>
 	<data name="Min" xml:space="preserve">
-    <value>Min</value>
-  </data>
+		<value>Min</value>
+	</data>
 	<data name="Max" xml:space="preserve">
-    <value>Max</value>
-  </data>
+		<value>Max</value>
+	</data>
 	<data name="SortBy" xml:space="preserve">
-    <value>Sorteer op</value>
-  </data>
+		<value>Sorteer op</value>
+	</data>
 	<data name="Sort_NameAsc" xml:space="preserve">
-    <value>Naam (A-Z)</value>
-  </data>
+		<value>Naam (A-Z)</value>
+	</data>
 	<data name="Sort_NameDesc" xml:space="preserve">
-    <value>Naam (Z-A)</value>
-  </data>
+		<value>Naam (Z-A)</value>
+	</data>
 	<data name="Sort_PriceAsc" xml:space="preserve">
-    <value>Prijs (Laag-Hoog)</value>
-  </data>
+		<value>Prijs (Laag-Hoog)</value>
+	</data>
 	<data name="Sort_PriceDesc" xml:space="preserve">
-    <value>Prijs (Hoog-Laag)</value>
-  </data>
+		<value>Prijs (Hoog-Laag)</value>
+	</data>
 	<data name="Sort_Newest" xml:space="preserve">
-    <value>Nieuwste eerst</value>
-  </data>
+		<value>Nieuwste eerst</value>
+	</data>
 	<data name="ApplyFilters" xml:space="preserve">
-    <value>Filters Toepassen</value>
-  </data>
+		<value>Filters Toepassen</value>
+	</data>
 	<data name="ResetFilters" xml:space="preserve">
-    <value>Filters Resetten</value>
-  </data>
+		<value>Filters Resetten</value>
+	</data>
 	<data name="AddProduct" xml:space="preserve">
-    <value>Product Toevoegen</value>
-  </data>
+		<value>Product Toevoegen</value>
+	</data>
 	<data name="ProductsFound" xml:space="preserve">
-    <value>producten gevonden</value>
-  </data>
+		<value>producten gevonden</value>
+	</data>
 	<data name="Inactive" xml:space="preserve">
-    <value>Inactief</value>
-  </data>
+		<value>Inactief</value>
+	</data>
 	<data name="OutOfStock" xml:space="preserve">
-    <value>Niet op voorraad</value>
-  </data>
+		<value>Niet op voorraad</value>
+	</data>
 	<data name="LowStock" xml:space="preserve">
-    <value>Lage voorraad</value>
-  </data>
+		<value>Lage voorraad</value>
+	</data>
 	<data name="InStock" xml:space="preserve">
-    <value>Op voorraad</value>
-  </data>
+		<value>Op voorraad</value>
+	</data>
 	<data name="Units" xml:space="preserve">
-    <value>stuks</value>
-  </data>
+		<value>stuks</value>
+	</data>
 	<data name="AddToCart" xml:space="preserve">
-    <value>Toevoegen aan Winkelwagen</value>
-  </data>
+		<value>Toevoegen aan Winkelwagen</value>
+	</data>
 	<data name="NotAvailable" xml:space="preserve">
-    <value>Niet Beschikbaar</value>
-  </data>
+		<value>Niet Beschikbaar</value>
+	</data>
 	<data name="Details" xml:space="preserve">
-    <value>Details</value>
-  </data>
+		<value>Details</value>
+	</data>
 	<data name="NoProductsFound" xml:space="preserve">
-    <value>Geen producten gevonden</value>
-  </data>
+		<value>Geen producten gevonden</value>
+	</data>
 	<data name="AdjustFilters" xml:space="preserve">
-    <value>Pas uw filters aan om meer resultaten te zien</value>
-  </data>
+		<value>Pas uw filters aan om meer resultaten te zien</value>
+	</data>
 	<data name="ViewAllProducts" xml:space="preserve">
-    <value>Bekijk Alle Producten</value>
-  </data>
+		<value>Bekijk Alle Producten</value>
+	</data>
 	<data name="Adding" xml:space="preserve">
-    <value>Toevoegen</value>
-  </data>
+		<value>Toevoegen</value>
+	</data>
 	<data name="Added" xml:space="preserve">
-    <value>Toegevoegd</value>
-  </data>
+		<value>Toegevoegd</value>
+	</data>
 	<data name="ErrorOccurred" xml:space="preserve">
-    <value>Er is een fout opgetreden</value>
-  </data>
+		<value>Er is een fout opgetreden</value>
+	</data>
 	<data name="ErrorAddingToCart" xml:space="preserve">
-    <value>Fout bij toevoegen aan winkelwagen</value>
-  </data>
+		<value>Fout bij toevoegen aan winkelwagen</value>
+	</data>
 
 	<!-- Products\Details.cshtml -->
 	<data name="LimitedStock" xml:space="preserve">
-    <value>Beperkte voorraad</value>
-  </data>
+		<value>Beperkte voorraad</value>
+	</data>
 	<data name="ProductDescription" xml:space="preserve">
-    <value>Productbeschrijving</value>
-  </data>
+		<value>Productbeschrijving</value>
+	</data>
 	<data name="Stock" xml:space="preserve">
-    <value>Voorraad</value>
-  </data>
+		<value>Voorraad</value>
+	</data>
 	<data name="OnlyUnitsLeft" xml:space="preserve">
-    <value>Nog maar {0} stuks op voorraad</value>
-  </data>
+		<value>Nog maar {0} stuks op voorraad</value>
+	</data>
 	<data name="Quantity" xml:space="preserve">
-    <value>Aantal</value>
-  </data>
+		<value>Aantal</value>
+	</data>
 	<data name="AddToCartButton" xml:space="preserve">
-    <value>Toevoegen aan Winkelwagen</value>
-  </data>
+		<value>Toevoegen aan Winkelwagen</value>
+	</data>
 	<data name="ViewCart" xml:space="preserve">
-    <value>Bekijk Winkelwagen</value>
-  </data>
+		<value>Bekijk Winkelwagen</value>
+	</data>
 	<data name="BackToProducts" xml:space="preserve">
-    <value>Terug naar Producten</value>
-  </data>
+		<value>Terug naar Producten</value>
+	</data>
 	<data name="ProductNotAvailable" xml:space="preserve">
-    <value>Dit product is momenteel niet beschikbaar</value>
-  </data>
+		<value>Dit product is momenteel niet beschikbaar</value>
+	</data>
 	<data name="ProductFeatures" xml:space="preserve">
-    <value>Product Kenmerken</value>
-  </data>
+		<value>Product Kenmerken</value>
+	</data>
 	<data name="FreeShippingAbove50" xml:space="preserve">
-    <value>Gratis verzending vanaf €50</value>
-  </data>
+		<value>Gratis verzending vanaf €50</value>
+	</data>
 	<data name="ReturnPolicy30Days" xml:space="preserve">
-    <value>30 dagen retourbeleid</value>
-  </data>
+		<value>30 dagen retourbeleid</value>
+	</data>
 	<data name="Warranty2Years" xml:space="preserve">
-    <value>2 jaar garantie</value>
-  </data>
+		<value>2 jaar garantie</value>
+	</data>
 	<data name="DeliveryTomorrow" xml:space="preserve">
-    <value>Morgen in huis (besteld voor 23:00)</value>
-  </data>
+		<value>Morgen in huis (besteld voor 23:00)</value>
+	</data>
 	<data name="AdminActions" xml:space="preserve">
-    <value>Beheerder Acties</value>
-  </data>
+		<value>Beheerder Acties</value>
+	</data>
 	<data name="Edit" xml:space="preserve">
-    <value>Bewerken</value>
-  </data>
+		<value>Bewerken</value>
+	</data>
 	<data name="Delete" xml:space="preserve">
-    <value>Verwijderen</value>
-  </data>
+		<value>Verwijderen</value>
+	</data>
 
 	<!-- Cart\Index.cshtml -->
 	<data name="CartEmpty" xml:space="preserve">
-    <value>Uw winkelwagen is leeg</value>
-  </data>
+		<value>Uw winkelwagen is leeg</value>
+	</data>
 	<data name="StartShoppingMessage" xml:space="preserve">
-    <value>Begin met winkelen om producten toe te voegen!</value>
-  </data>
+		<value>Begin met winkelen om producten toe te voegen!</value>
+	</data>
 	<data name="GoToProducts" xml:space="preserve">
-    <value>Ga naar Producten</value>
-  </data>
+		<value>Ga naar Producten</value>
+	</data>
 	<data name="ContinueShopping" xml:space="preserve">
-    <value>Verder Winkelen</value>
-  </data>
+		<value>Verder Winkelen</value>
+	</data>
 	<data name="ConfirmClearCart" xml:space="preserve">
-    <value>Weet u zeker dat u de winkelwagen wilt legen?</value>
-  </data>
+		<value>Weet u zeker dat u de winkelwagen wilt legen?</value>
+	</data>
 	<data name="ClearCart" xml:space="preserve">
-    <value>Winkelwagen Legen</value>
-  </data>
+		<value>Winkelwagen Legen</value>
+	</data>
 	<data name="Summary" xml:space="preserve">
-    <value>Samenvatting</value>
-  </data>
+		<value>Samenvatting</value>
+	</data>
 	<data name="Subtotal" xml:space="preserve">
-    <value>Subtotaal</value>
-  </data>
+		<value>Subtotaal</value>
+	</data>
 	<data name="ShippingCost" xml:space="preserve">
-    <value>Verzendkosten</value>
-  </data>
+		<value>Verzendkosten</value>
+	</data>
 	<data name="Free" xml:space="preserve">
-    <value>Gratis</value>
-  </data>
+		<value>Gratis</value>
+	</data>
 	<data name="Total" xml:space="preserve">
-    <value>Totaal</value>
-  </data>
+		<value>Totaal</value>
+	</data>
 	<data name="Checkout" xml:space="preserve">
-    <value>Afrekenen</value>
-  </data>
+		<value>Afrekenen</value>
+	</data>
 	<data name="MaxStockReached" xml:space="preserve">
-    <value>Maximum voorraad bereikt</value>
-  </data>
+		<value>Maximum voorraad bereikt</value>
+	</data>
 	<data name="ConfirmRemoveItem" xml:space="preserve">
-    <value>Weet u zeker dat u dit product wilt verwijderen?</value>
-  </data>
+		<value>Weet u zeker dat u dit product wilt verwijderen?</value>
+	</data>
 	<data name="RemovedFromCart" xml:space="preserve">
-    <value>verwijderd uit winkelwagen</value>
-  </data>
+		<value>verwijderd uit winkelwagen</value>
+	</data>
 	<data name="ErrorRemovingProduct" xml:space="preserve">
-    <value>Fout bij verwijderen van product</value>
-  </data>
+		<value>Fout bij verwijderen van product</value>
+	</data>
 	<data name="ErrorUpdating" xml:space="preserve">
-    <value>Fout bij bijwerken</value>
-  </data>
+		<value>Fout bij bijwerken</value>
+	</data>
 	<data name="ErrorUpdatingQuantity" xml:space="preserve">
-    <value>Fout bij bijwerken van aantal</value>
-  </data>
+		<value>Fout bij bijwerken van aantal</value>
+	</data>
 
 	<!-- Cart\Checkout.cshtml -->
 	<data name="CustomerInformation" xml:space="preserve">
-    <value>Klant Informatie</value>
-  </data>
+		<value>Klant Informatie</value>
+	</data>
 	<data name="EmailCustomerId" xml:space="preserve">
-    <value>Email / Klant ID</value>
-  </data>
+		<value>Email / Klant ID</value>
+	</data>
 	<data name="YourEmail" xml:space="preserve">
-    <value>Uw email adres</value>
-  </data>
+		<value>Uw email adres</value>
+	</data>
 	<data name="ShippingInformation" xml:space="preserve">
-    <value>Verzend Informatie</value>
-  </data>
+		<value>Verzend Informatie</value>
+	</data>
 	<data name="ShippingAddress" xml:space="preserve">
-    <value>Verzendadres</value>
-  </data>
+		<value>Verzendadres</value>
+	</data>
 	<data name="ShippingAddressPlaceholder" xml:space="preserve">
-    <value>Straat, Huisnummer, Postcode, Plaats</value>
-  </data>
+		<value>Straat, Huisnummer, Postcode, Plaats</value>
+	</data>
 	<data name="BillingAddress" xml:space="preserve">
-    <value>Factuuradres</value>
-  </data>
+		<value>Factuuradres</value>
+	</data>
 	<data name="BillingAddressPlaceholder" xml:space="preserve">
-    <value>Straat, Huisnummer, Postcode, Plaats</value>
-  </data>
+		<value>Straat, Huisnummer, Postcode, Plaats</value>
+	</data>
 	<data name="CopyShippingAddress" xml:space="preserve">
-    <value>Kopieer Verzendadres</value>
-  </data>
+		<value>Kopieer Verzendadres</value>
+	</data>
 	<data name="PaymentMethod" xml:space="preserve">
-    <value>Betaalmethode</value>
-  </data>
+		<value>Betaalmethode</value>
+	</data>
 	<data name="SelectPaymentMethod" xml:space="preserve">
-    <value>Selecteer Betaalmethode</value>
-  </data>
+		<value>Selecteer Betaalmethode</value>
+	</data>
 	<data name="Select" xml:space="preserve">
-    <value>Selecteer</value>
-  </data>
+		<value>Selecteer</value>
+	</data>
 	<data name="PaymentMethod_CreditCard" xml:space="preserve">
-    <value>Creditcard</value>
-  </data>
+		<value>Creditcard</value>
+	</data>
 	<data name="PaymentMethod_DebitCard" xml:space="preserve">
-    <value>Betaalpas</value>
-  </data>
+		<value>Betaalpas</value>
+	</data>
 	<data name="PaymentMethod_PayPal" xml:space="preserve">
-    <value>PayPal</value>
-  </data>
+		<value>PayPal</value>
+	</data>
 	<data name="PaymentMethod_BankTransfer" xml:space="preserve">
-    <value>Bankoverschrijving</value>
-  </data>
+		<value>Bankoverschrijving</value>
+	</data>
 	<data name="PaymentMethod_Ideal" xml:space="preserve">
-    <value>iDEAL</value>
-  </data>
+		<value>iDEAL</value>
+	</data>
 	<data name="OrderSummary" xml:space="preserve">
-    <value>Bestelling Samenvatting</value>
-  </data>
+		<value>Bestelling Samenvatting</value>
+	</data>
 	<data name="TotalToPay" xml:space="preserve">
-    <value>Totaal te Betalen</value>
-  </data>
+		<value>Totaal te Betalen</value>
+	</data>
 	<data name="PlaceOrder" xml:space="preserve">
-    <value>Bestelling Plaatsen</value>
-  </data>
+		<value>Bestelling Plaatsen</value>
+	</data>
 	<data name="BackToCart" xml:space="preserve">
-    <value>Terug naar Winkelwagen</value>
-  </data>
+		<value>Terug naar Winkelwagen</value>
+	</data>
 	<data name="YourDataIsSafe" xml:space="preserve">
-    <value>Uw gegevens zijn veilig bij ons</value>
-  </data>
+		<value>Uw gegevens zijn veilig bij ons</value>
+	</data>
 
 	<!-- Orders\Index.cshtml -->
 	<data name="ManageAndViewOrders" xml:space="preserve">
-    <value>Beheer en bekijk alle bestellingen</value>
-  </data>
+		<value>Beheer en bekijk alle bestellingen</value>
+	</data>
 	<data name="NewOrder" xml:space="preserve">
-    <value>Nieuwe Bestelling</value>
-  </data>
+		<value>Nieuwe Bestelling</value>
+	</data>
 	<data name="OrdersOverview" xml:space="preserve">
-    <value>Bestellingen Overzicht</value>
-  </data>
+		<value>Bestellingen Overzicht</value>
+	</data>
 	<data name="OrdersOverviewDescription" xml:space="preserve">
-    <value>Hier kunt u alle bestellingen beheren en nieuwe bestellingen aanmaken.</value>
-  </data>
+		<value>Hier kunt u alle bestellingen beheren en nieuwe bestellingen aanmaken.</value>
+	</data>
 	<data name="QuickActions" xml:space="preserve">
-    <value>Snelle Acties</value>
-  </data>
+		<value>Snelle Acties</value>
+	</data>
 	<data name="CreateNewOrder" xml:space="preserve">
-    <value>Nieuwe bestelling aanmaken</value>
-  </data>
+		<value>Nieuwe bestelling aanmaken</value>
+	</data>
 	<data name="ViewAvailableProducts" xml:space="preserve">
-    <value>Beschikbare producten bekijken</value>
-  </data>
+		<value>Beschikbare producten bekijken</value>
+	</data>
 	<data name="CustomerOrders" xml:space="preserve">
-    <value>Klant Bestellingen</value>
-  </data>
+		<value>Klant Bestellingen</value>
+	</data>
 	<data name="EnterCustomerId" xml:space="preserve">
-    <value>Voer klant ID in</value>
-  </data>
+		<value>Voer klant ID in</value>
+	</data>
 	<data name="Search" xml:space="preserve">
-    <value>Zoeken</value>
-  </data>
+		<value>Zoeken</value>
+	</data>
 	<data name="CreateOrderForCustomer" xml:space="preserve">
-    <value>Maak een nieuwe bestelling aan voor een klant</value>
-  </data>
+		<value>Maak een nieuwe bestelling aan voor een klant</value>
+	</data>
 	<data name="Create" xml:space="preserve">
-    <value>Aanmaken</value>
-  </data>
+		<value>Aanmaken</value>
+	</data>
 	<data name="ViewCustomerOrders" xml:space="preserve">
-    <value>Bekijk alle bestellingen van een specifieke klant</value>
-  </data>
+		<value>Bekijk alle bestellingen van een specifieke klant</value>
+	</data>
 	<data name="View" xml:space="preserve">
-    <value>Bekijken</value>
-  </data>
+		<value>Bekijken</value>
+	</data>
 	<data name="ViewProductsForOrders" xml:space="preserve">
-    <value>Bekijk producten om bestellingen te plaatsen</value>
-  </data>
+		<value>Bekijk producten om bestellingen te plaatsen</value>
+	</data>
 	<data name="SearchCustomerOrders" xml:space="preserve">
-    <value>Zoek Klant Bestellingen</value>
-  </data>
+		<value>Zoek Klant Bestellingen</value>
+	</data>
 	<data name="CustomerId" xml:space="preserve">
-    <value>Klant ID</value>
-  </data>
+		<value>Klant ID</value>
+	</data>
 	<data name="CustomerIdPlaceholder" xml:space="preserve">
-    <value>bijv. klant@voorbeeld.nl</value>
-  </data>
+		<value>bijv. klant@voorbeeld.nl</value>
+	</data>
 	<data name="EnterEmailOrId" xml:space="preserve">
-    <value>Voer het email adres of ID van de klant in</value>
-  </data>
+		<value>Voer het email adres of ID van de klant in</value>
+	</data>
 	<data name="Cancel" xml:space="preserve">
-    <value>Annuleren</value>
-  </data>
+		<value>Annuleren</value>
+	</data>
 
 	<!-- Orders\Details.cshtml -->
 	<data name="Order" xml:space="preserve">
-    <value>Bestelling</value>
-  </data>
+		<value>Bestelling</value>
+	</data>
 	<data name="OrderDate" xml:space="preserve">
-    <value>Besteldatum</value>
-  </data>
+		<value>Besteldatum</value>
+	</data>
 	<data name="Status" xml:space="preserve">
-    <value>Status</value>
-  </data>
+		<value>Status</value>
+	</data>
 	<data name="OrderStatus_Pending" xml:space="preserve">
-    <value>In afwachting</value>
-  </data>
+		<value>In afwachting</value>
+	</data>
 	<data name="OrderStatus_Processing" xml:space="preserve">
-    <value>In behandeling</value>
-  </data>
+		<value>In behandeling</value>
+	</data>
 	<data name="OrderStatus_Shipped" xml:space="preserve">
-    <value>Verzonden</value>
-  </data>
+		<value>Verzonden</value>
+	</data>
 	<data name="OrderStatus_Delivered" xml:space="preserve">
-    <value>Afgeleverd</value>
-  </data>
+		<value>Afgeleverd</value>
+	</data>
 	<data name="OrderStatus_Cancelled" xml:space="preserve">
-    <value>Geannuleerd</value>
-  </data>
+		<value>Geannuleerd</value>
+	</data>
 	<data name="OrderedProducts" xml:space="preserve">
-    <value>Bestelde Producten</value>
-  </data>
+		<value>Bestelde Producten</value>
+	</data>
 	<data name="Product" xml:space="preserve">
-    <value>Product</value>
-  </data>
+		<value>Product</value>
+	</data>
 	<data name="Price" xml:space="preserve">
-    <value>Prijs</value>
-  </data>
+		<value>Prijs</value>
+	</data>
 	<data name="Actions" xml:space="preserve">
-    <value>Acties</value>
-  </data>
+		<value>Acties</value>
+	</data>
 	<data name="ConfirmCancelOrder" xml:space="preserve">
-    <value>Weet u zeker dat u deze bestelling wilt annuleren?</value>
-  </data>
+		<value>Weet u zeker dat u deze bestelling wilt annuleren?</value>
+	</data>
 	<data name="CancelOrder" xml:space="preserve">
-    <value>Annuleer Bestelling</value>
-  </data>
+		<value>Annuleer Bestelling</value>
+	</data>
 	<data name="AllCustomerOrders" xml:space="preserve">
-    <value>Alle Klant Bestellingen</value>
-  </data>
+		<value>Alle Klant Bestellingen</value>
+	</data>
 	<data name="BackToOverview" xml:space="preserve">
-    <value>Terug naar Overzicht</value>
-  </data>
+		<value>Terug naar Overzicht</value>
+	</data>
 
 	<!-- Orders\MyOrders.cshtml -->
 	<data name="OrdersOverviewDescription2" xml:space="preserve">
-    <value>Bekijk de status van al uw bestellingen</value>
-  </data>
+		<value>Bekijk de status van al uw bestellingen</value>
+	</data>
 	<data name="NoOrdersFound" xml:space="preserve">
-    <value>Geen bestellingen gevonden</value>
-  </data>
+		<value>Geen bestellingen gevonden</value>
+	</data>
 	<data name="NoOrdersPlaced" xml:space="preserve">
-    <value>U heeft nog geen bestellingen geplaatst.</value>
-  </data>
+		<value>U heeft nog geen bestellingen geplaatst.</value>
+	</data>
 	<data name="StartShopping" xml:space="preserve">
-    <value>Begin met Winkelen</value>
-  </data>
+		<value>Begin met Winkelen</value>
+	</data>
 	<data name="More" xml:space="preserve">
-    <value>meer</value>
-  </data>
+		<value>meer</value>
+	</data>
 	<data name="ViewDetails" xml:space="preserve">
-    <value>Bekijk Details</value>
-  </data>
+		<value>Bekijk Details</value>
+	</data>
 </root>
