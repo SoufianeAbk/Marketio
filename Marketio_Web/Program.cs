@@ -2,6 +2,7 @@
 using Marketio_Web.Data;
 using Marketio_Web.Repositories;
 using Marketio_Web.Services;
+using Marketio_Web.Middleware;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Localization;
@@ -98,6 +99,9 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// ✅ Custom Request Logging Middleware
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 // ✅ Request Localization Middleware
 app.UseRequestLocalization();
