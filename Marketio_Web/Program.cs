@@ -104,6 +104,9 @@ app.UseStaticFiles();
 // Custom Request Logging Middleware
 app.UseMiddleware<RequestLoggingMiddleware>();
 
+// Cookie Management Middleware (nieuwe middleware)
+app.UseCookieManagement();
+
 // Request Localization Middleware
 app.UseRequestLocalization();
 

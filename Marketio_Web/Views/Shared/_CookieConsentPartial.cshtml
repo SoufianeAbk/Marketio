@@ -1,0 +1,95 @@
+﻿@{
+    var hasConsent = Context.Request.Cookies.ContainsKey("cookie-consent");
+}
+
+@if (!hasConsent)
+{
+    <div id="cookie-consent-banner" class="position-fixed bottom-0 start-0 end-0 bg-dark text-white p-3 shadow-lg" style="z-index: 9999;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8 mb-3 mb-lg-0">
+                    <h5 class="mb-2">
+                        <i class="bi bi-cookie"></i> Cookies
+                    </h5>
+                    <p class="mb-0 small">
+                        Wij gebruiken cookies om uw ervaring te verbeteren. Essentiële cookies zijn nodig voor de werking van de website.
+                        <a href="/Home/Privacy" class="text-white text-decoration-underline">Meer informatie</a>
+                    </p>
+                </div>
+                <div class="col-lg-4">
+                    <div class="d-flex gap-2 justify-content-lg-end">
+                        <button type="button" class="btn btn-outline-light btn-sm" onclick="manageCookies()">
+                            <i class="bi bi-gear"></i> Beheren
+                        </button>
+                        <form asp-controller="Cookie" asp-action="DeclineCookies" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-secondary btn-sm">
+                                <i class="bi bi-x-circle"></i> Weigeren
+                            </button>
+                        </form>
+                        <form asp-controller="Cookie" asp-action="AcceptCookies" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="bi bi-check-circle"></i> Accepteren
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookie Preferences Modal -->
+    <div class="modal fade" id="cookiePreferencesModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-cookie"></i> Cookie Voorkeuren
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-controller="Cookie" asp-action="ManageCookiePreferences" method="post">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="essentialCookies" checked disabled>
+                                <label class="form-check-label" for="essentialCookies">
+                                    <strong>Essentiële Cookies</strong>
+                                    <p class="small text-muted mb-0">Noodzakelijk voor de werking van de website</p>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="functionalCookies" name="functional" value="true" checked>
+                                <label class="form-check-label" for="functionalCookies">
+                                    <strong>Functionele Cookies</strong>
+                                    <p class="small text-muted mb-0">Voor taalvoorkeuren en personalisatie</p>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="analyticsCookies" name="analytics" value="true">
+                                <label class="form-check-label" for="analyticsCookies">
+                                    <strong>Analytische Cookies</strong>
+                                    <p class="small text-muted mb-0">Om gebruik van de website te analyseren</p>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+                        <button type="submit" class="btn btn-primary">Opslaan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function manageCookies() {
+            var modal = new bootstrap.Modal(document.getElementById('cookiePreferencesModal'));
+            modal.show();
+        }
+    </script>
+}
