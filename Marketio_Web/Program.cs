@@ -1,5 +1,6 @@
 ﻿using Marketio_Shared.Interfaces;
 using Marketio_Web.Data;
+using Marketio_Web.Models;
 using Marketio_Web.Repositories;
 using Marketio_Web.Services;
 using Marketio_Web.Middleware;
@@ -60,8 +61,8 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.RequestCultureProviders.Insert(1, new CookieRequestCultureProvider());
 });
 
-//  Identity met Rollen
-builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+//  Identity met ApplicationUser en Rollen
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false; // Voor development gemakkelijker
     options.Password.RequireDigit = true;
@@ -70,12 +71,12 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 6;
 })
-    .AddRoles<IdentityRole>() // 👈 Voeg rollen support toe
+    .AddRoles<IdentityRole>() // Voeg rollen support toe
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews()
-    .AddViewLocalization() // ✅ View localization
-    .AddDataAnnotationsLocalization(); // ✅ Data annotations localization
+    .AddViewLocalization() // View localization
+    .AddDataAnnotationsLocalization(); // Data annotations localization
 
 var app = builder.Build();
 
@@ -100,15 +101,15 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// ✅ Custom Request Logging Middleware
+// Custom Request Logging Middleware
 app.UseMiddleware<RequestLoggingMiddleware>();
 
-// ✅ Request Localization Middleware
+// Request Localization Middleware
 app.UseRequestLocalization();
 
 app.UseRouting();
 
-// ✅ Session middleware (voor UseAuthorization!)
+// Session middleware (voor UseAuthorization!)
 app.UseSession();
 
 app.UseAuthentication(); // Deze moet er zijn
@@ -122,11 +123,11 @@ app.MapRazorPages();
 
 app.Run();
 
-// ✅ Helper method om rollen en admin te seeden
+// Helper method om rollen en admin te seeden
 async Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
 {
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
     // Maak rollen aan
     string[] roles = { "Admin", "Customer" };
@@ -144,11 +145,14 @@ async Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
 
     if (adminUser == null)
     {
-        adminUser = new IdentityUser
+        adminUser = new ApplicationUser
         {
             UserName = adminEmail,
             Email = adminEmail,
-            EmailConfirmed = true
+            EmailConfirmed = true,
+            FirstName = "Admin",
+            LastName = "Marketio",
+            Address = "Hoofdstraat 1, 1000 AA Amsterdam"
         };
 
         var result = await userManager.CreateAsync(adminUser, "Admin123!");

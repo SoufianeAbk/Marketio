@@ -1,10 +1,11 @@
 ﻿using Marketio_Shared.Entities;
+using Marketio_Web.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Marketio_Web.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -19,6 +20,14 @@ namespace Marketio_Web.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // ApplicationUser configuration
+            modelBuilder.Entity<ApplicationUser>(entity =>
+            {
+                entity.Property(u => u.FirstName).IsRequired().HasMaxLength(100);
+                entity.Property(u => u.LastName).IsRequired().HasMaxLength(100);
+                entity.Property(u => u.Address).HasMaxLength(500);
+            });
 
             // Product configuration
             modelBuilder.Entity<Product>(entity =>
