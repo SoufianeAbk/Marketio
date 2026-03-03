@@ -5,6 +5,7 @@ using Marketio_Web.Repositories;
 using Marketio_Web.Services;
 using Marketio_Web.Middleware;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
@@ -41,6 +42,9 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ICartService, CartService>();
 
+// Email Service (implementeer IEmailSender)
+builder.Services.AddTransient<IEmailSender, EmailSenderService>();
+
 // Localization Services
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
@@ -64,27 +68,60 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 //  Identity met ApplicationUser en Rollen
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = false; // Voor development gemakkelijker
+    // Email Verification
+    options.SignIn.RequireConfirmedAccount = true;
+    options.SignIn.RequireConfirmedEmail = true;
+
+    // Password requirements
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 6;
+
+    // Account Lockout Configuration
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
+
+    // User settings
+    options.User.RequireUniqueEmail = true;
 })
-    .AddRoles<IdentityRole>() // Voeg rollen support toe
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders(); // Voor email confirmation tokens
 
 builder.Services.AddControllersWithViews()
-    .AddViewLocalization() // View localization
-    .AddDataAnnotationsLocalization(); // Data annotations localization
+    .AddViewLocalization()
+    .AddDataAnnotationsLocalization();
 
 var app = builder.Build();
 
-// Seed rollen en admin gebruiker
-using (var scope = app.Services.CreateScope())
+// Ensure database is created and apply migrations
+await using (var scope = app.Services.CreateAsyncScope())
 {
     var services = scope.ServiceProvider;
-    await SeedRolesAndAdminAsync(services);
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        var logger = services.GetRequiredService<ILogger<Program>>();
+
+        // Apply any pending migrations and create database if it doesn't exist
+        logger.LogInformation("Applying database migrations...");
+        await context.Database.MigrateAsync();
+        logger.LogInformation("Database migrations applied successfully.");
+
+        // Seed rollen en admin gebruiker
+        logger.LogInformation("Seeding roles and admin user...");
+        await SeedRolesAndAdminAsync(services);
+        logger.LogInformation("Seeding completed successfully.");
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+        throw;
+    }
 }
 
 // Configureer de HTTP request pipeline.
@@ -104,7 +141,7 @@ app.UseStaticFiles();
 // Custom Request Logging Middleware
 app.UseMiddleware<RequestLoggingMiddleware>();
 
-// Cookie Management Middleware (nieuwe middleware)
+// Cookie Management Middleware
 app.UseCookieManagement();
 
 // Request Localization Middleware
@@ -112,10 +149,10 @@ app.UseRequestLocalization();
 
 app.UseRouting();
 
-// Session middleware (voor UseAuthorization!)
+// Session middleware
 app.UseSession();
 
-app.UseAuthentication(); // Deze moet er zijn
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
@@ -152,7 +189,7 @@ async Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
         {
             UserName = adminEmail,
             Email = adminEmail,
-            EmailConfirmed = true,
+            EmailConfirmed = true, // Admin doesn't need to confirm
             FirstName = "Admin",
             LastName = "Marketio",
             Address = "Hoofdstraat 1, 1000 AA Amsterdam"

@@ -1,0 +1,47 @@
+﻿using Marketio_Web.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
+
+namespace Marketio_Web.Areas.Identity.Pages.Account
+{
+    [AllowAnonymous]
+    public class ConfirmEmailModel : PageModel
+    {
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public ConfirmEmailModel(UserManager<ApplicationUser> userManager)
+        {
+            _userManager = userManager;
+        }
+
+        [TempData]
+        public string StatusMessage { get; set; } = string.Empty;
+
+        public async Task<IActionResult> OnGetAsync(string? userId, string? code)
+        {
+            if (userId == null || code == null)
+            {
+                return RedirectToPage("/Index");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound($"Kan gebruiker met ID '{userId}' niet laden.");
+            }
+
+            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+
+            StatusMessage = result.Succeeded
+                ? "Bedankt voor het bevestigen van uw email."
+                : "Fout bij het bevestigen van uw email.";
+
+            return Page();
+        }
+    }
+}

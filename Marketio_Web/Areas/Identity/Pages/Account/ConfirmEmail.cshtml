@@ -1,0 +1,44 @@
+﻿@page
+@model ConfirmEmailModel
+@{
+    ViewData["Title"] = "Email Bevestiging";
+}
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header @(Model.StatusMessage.Contains("bedankt") ? "bg-success" : "bg-danger") text-white">
+                    <h2 class="mb-0">
+                        <i class="bi @(Model.StatusMessage.Contains("bedankt") ? "bi-check-circle" : "bi-exclamation-triangle")"></i>
+                        Email Bevestiging
+                    </h2>
+                </div>
+                <div class="card-body text-center">
+                    @if (Model.StatusMessage.Contains("bedankt"))
+                    {
+                        <div class="mb-4">
+                            <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                        </div>
+                        <h4 class="text-success mb-3">@Model.StatusMessage</h4>
+                        <p>Uw account is nu actief. U kunt nu inloggen met uw gegevens.</p>
+                        <a asp-page="./Login" class="btn btn-success btn-lg mt-3">
+                            <i class="bi bi-box-arrow-in-right"></i> Nu Inloggen
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="mb-4">
+                            <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 4rem;"></i>
+                        </div>
+                        <h4 class="text-danger mb-3">@Model.StatusMessage</h4>
+                        <p>Er is een probleem opgetreden bij het bevestigen van uw email.</p>
+                        <a asp-page="./Register" class="btn btn-primary mt-3">
+                            <i class="bi bi-arrow-left"></i> Terug naar Registratie
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

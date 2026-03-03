@@ -1,9 +1,13 @@
 ﻿using Marketio_Web.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.WebUtilities;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
+using System.Text.Encodings.Web;
 
 namespace Marketio_Web.Areas.Identity.Pages.Account
 {
@@ -14,18 +18,21 @@ namespace Marketio_Web.Areas.Identity.Pages.Account
         private readonly IUserStore<ApplicationUser> _userStore;
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
+        private readonly IEmailSender _emailSender;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
-            ILogger<RegisterModel> logger)
+            ILogger<RegisterModel> logger,
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
             _signInManager = signInManager;
             _logger = logger;
+            _emailSender = emailSender;
         }
 
         [BindProperty]
@@ -99,15 +106,32 @@ namespace Marketio_Web.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    // ✅ Automatically assign Customer role
+                    // Assign Customer role
                     var roleResult = await _userManager.AddToRoleAsync(user, "Customer");
                     if (roleResult.Succeeded)
                     {
                         _logger.LogInformation("Customer role assigned to user {Email}", Input.Email);
                     }
-                    else
+
+                    // Generate email confirmation token
+                    var userId = await _userManager.GetUserIdAsync(user);
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+                    var callbackUrl = Url.Page(
+                        "/Account/ConfirmEmail",
+                        pageHandler: null,
+                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                        protocol: Request.Scheme);
+
+                    // Send confirmation email
+                    await _emailSender.SendEmailAsync(Input.Email, "Bevestig uw email",
+                        $"Bevestig uw account door <a href='{HtmlEncoder.Default.Encode(callbackUrl!)}'>hier te klikken</a>.");
+
+                    // Redirect to confirmation page
+                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
-                        _logger.LogWarning("Failed to assign Customer role to user {Email}", Input.Email);
+                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
                     }
 
                     await _signInManager.SignInAsync(user, isPersistent: false);

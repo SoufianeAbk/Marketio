@@ -4,6 +4,7 @@ using Marketio_Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Marketio_Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260303183429_SyncModelChanges")]
+    partial class SyncModelChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -190,7 +193,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 1,
                             Category = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 393, DateTimeKind.Utc).AddTicks(7482),
                             Description = "Krachtige laptop met 16GB RAM en 512GB SSD",
                             ImageUrl = "/images/laptop.jpg",
                             IsActive = true,
@@ -202,7 +205,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 2,
                             Category = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(664),
                             Description = "Nieuwste iPhone met A17 Pro chip",
                             ImageUrl = "/images/iphone.jpg",
                             IsActive = true,
@@ -214,7 +217,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 3,
                             Category = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(672),
                             Description = "Crystal UHD 4K Smart TV",
                             ImageUrl = "/images/tv.jpg",
                             IsActive = true,
@@ -226,7 +229,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 4,
                             Category = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(676),
                             Description = "Noise cancelling koptelefoon",
                             ImageUrl = "/images/headphones.jpg",
                             IsActive = true,
@@ -238,7 +241,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 6,
                             Category = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(680),
                             Description = "Comfortabele sportschoenen",
                             ImageUrl = "/images/sneakers.jpg",
                             IsActive = true,
@@ -250,7 +253,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 7,
                             Category = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(691),
                             Description = "Klassieke straight fit jeans",
                             ImageUrl = "/images/jeans.jpg",
                             IsActive = true,
@@ -262,7 +265,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 8,
                             Category = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(695),
                             Description = "Warme hoodie met logo",
                             ImageUrl = "/images/hoodie.jpg",
                             IsActive = true,
@@ -274,7 +277,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 9,
                             Category = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(698),
                             Description = "Katoenen polo shirt",
                             ImageUrl = "/images/polo.jpg",
                             IsActive = true,
@@ -286,7 +289,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 11,
                             Category = 3,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(702),
                             Description = "Handbook of Agile Software Craftsmanship",
                             ImageUrl = "/images/cleancode.jpg",
                             IsActive = true,
@@ -298,7 +301,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 12,
                             Category = 3,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(707),
                             Description = "From Journeyman to Master",
                             ImageUrl = "/images/pragmatic.jpg",
                             IsActive = true,
@@ -310,7 +313,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 13,
                             Category = 3,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(710),
                             Description = "Elements of Reusable Object-Oriented Software",
                             ImageUrl = "/images/patterns.jpg",
                             IsActive = true,
@@ -322,7 +325,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 14,
                             Category = 3,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(714),
                             Description = "Complete serie van 7 boeken",
                             ImageUrl = "/images/harrypotter.jpg",
                             IsActive = true,
@@ -334,7 +337,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 16,
                             Category = 4,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(718),
                             Description = "Draadloze stofzuiger met laser",
                             ImageUrl = "/images/vacuum.jpg",
                             IsActive = true,
@@ -346,7 +349,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 17,
                             Category = 4,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(721),
                             Description = "Hetelucht friteuse 7.3L",
                             ImageUrl = "/images/airfryer.jpg",
                             IsActive = true,
@@ -358,7 +361,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 18,
                             Category = 4,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(725),
                             Description = "Verstelbaar bureau 160x80cm",
                             ImageUrl = "/images/desk.jpg",
                             IsActive = true,
@@ -370,7 +373,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 19,
                             Category = 4,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(728),
                             Description = "Koffiemachine met melkopschuimer",
                             ImageUrl = "/images/nespresso.jpg",
                             IsActive = true,
@@ -382,7 +385,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 21,
                             Category = 5,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(732),
                             Description = "Extra dikke yoga mat 6mm",
                             ImageUrl = "/images/yogamat.jpg",
                             IsActive = true,
@@ -394,7 +397,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 22,
                             Category = 5,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(737),
                             Description = "Verstelbare dumbbell set",
                             ImageUrl = "/images/dumbbells.jpg",
                             IsActive = true,
@@ -406,7 +409,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 23,
                             Category = 5,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(740),
                             Description = "GPS hardloop smartwatch",
                             ImageUrl = "/images/garmin.jpg",
                             IsActive = true,
@@ -418,7 +421,7 @@ namespace Marketio_Web.Data.Migrations
                         {
                             Id = 24,
                             Category = 5,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 3, 3, 18, 34, 27, 394, DateTimeKind.Utc).AddTicks(744),
                             Description = "Officiële wedstrijdbal",
                             ImageUrl = "/images/football.jpg",
                             IsActive = true,

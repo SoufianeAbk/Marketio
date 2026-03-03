@@ -1,0 +1,152 @@
+﻿@model IEnumerable<Marketio_Web.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Gebruikersbeheer";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="bi bi-people"></i> Gebruikersbeheer
+        </h1>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Naam</th>
+                            <th>Email</th>
+                            <th>Email Bevestigd</th>
+                            <th>Geblokkeerd</th>
+                            <th>Mislukte Pogingen</th>
+                            <th>Acties</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            var isLockedOut = user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow;
+                            <tr class="@(isLockedOut ? "table-danger" : "")">
+                                <td>@user.FullName</td>
+                                <td>@user.Email</td>
+                                <td>
+                                    @if (user.EmailConfirmed)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> Ja
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">
+                                            <i class="bi bi-clock"></i> Nee
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (isLockedOut)
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-lock-fill"></i> Tot @user.LockoutEnd.Value.LocalDateTime.ToString("dd-MM-yyyy HH:mm")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-unlock-fill"></i> Actief
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (user.AccessFailedCount > 0)
+                                    {
+                                        <span class="badge bg-warning">@user.AccessFailedCount</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">0</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-info">
+                                        <i class="bi bi-eye"></i> Details
+                                    </a>
+
+                                    @if (isLockedOut)
+                                    {
+                                        <form asp-action="UnlockUser" method="post" class="d-inline">
+                                            <input type="hidden" name="userId" value="@user.Id" />
+                                            <button type="submit" class="btn btn-sm btn-success"
+                                                    onclick="return confirm('Weet u zeker dat u deze gebruiker wilt deblokkeren?')">
+                                                <i class="bi bi-unlock"></i> Deblokkeren
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-sm btn-danger"
+                                                data-bs-toggle="modal" data-bs-target="#lockModal-@user.Id">
+                                            <i class="bi bi-lock"></i> Blokkeren
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+
+                            <!-- Lock Modal -->
+                            <div class="modal fade" id="lockModal-@user.Id" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-danger text-white">
+                                            <h5 class="modal-title">Gebruiker Blokkeren</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <form asp-action="LockUser" method="post">
+                                            <div class="modal-body">
+                                                <input type="hidden" name="userId" value="@user.Id" />
+                                                <p>Weet u zeker dat u <strong>@user.Email</strong> wilt blokkeren?</p>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Blokkeer duur (dagen):</label>
+                                                    <select name="lockoutDays" class="form-select">
+                                                        <option value="1">1 dag</option>
+                                                        <option value="7">1 week</option>
+                                                        <option value="30" selected>1 maand</option>
+                                                        <option value="365">1 jaar</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+                                                <button type="submit" class="btn btn-danger">
+                                                    <i class="bi bi-lock"></i> Blokkeren
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
