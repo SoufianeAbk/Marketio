@@ -10,13 +10,16 @@ namespace Marketio_Web.Controllers
     public class UserManagementController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<UserManagementController> _logger;
 
         public UserManagementController(
             UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
             ILogger<UserManagementController> logger)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _logger = logger;
         }
 
@@ -99,6 +102,106 @@ namespace Marketio_Web.Controllers
             ViewBag.Roles = roles;
 
             return View(user);
+        }
+
+        // GET: UserManagement/ManageRoles
+        public async Task<IActionResult> ManageRoles(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var allRoles = await _roleManager.Roles.Select(r => r.Name).ToListAsync();
+
+            ViewBag.User = user;
+            ViewBag.UserRoles = userRoles;
+            ViewBag.AllRoles = allRoles;
+
+            return View();
+        }
+
+        // POST: UserManagement/AssignRole
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignRole(string userId, string role)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Checkt of de rol bestaat
+            if (!await _roleManager.RoleExistsAsync(role))
+            {
+                TempData["Error"] = $"Rol '{role}' bestaat niet.";
+                return RedirectToAction(nameof(ManageRoles), new { id = userId });
+            }
+
+            // Checkt of de user de rol al heeft
+            if (await _userManager.IsInRoleAsync(user, role))
+            {
+                TempData["Warning"] = $"Gebruiker {user.Email} heeft al de rol '{role}'.";
+                return RedirectToAction(nameof(ManageRoles), new { id = userId });
+            }
+
+            var result = await _userManager.AddToRoleAsync(user, role);
+
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("Role {Role} assigned to user {Email}", role, user.Email);
+                TempData["Success"] = $"Rol '{role}' is toegewezen aan {user.Email}.";
+            }
+            else
+            {
+                TempData["Error"] = "Fout bij het toewijzen van de rol.";
+                foreach (var error in result.Errors)
+                {
+                    _logger.LogError("Error assigning role: {Error}", error.Description);
+                }
+            }
+
+            return RedirectToAction(nameof(ManageRoles), new { id = userId });
+        }
+
+        // POST: UserManagement/RemoveRole
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveRole(string userId, string role)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Checkt of de user de rollen heeft
+            if (!await _userManager.IsInRoleAsync(user, role))
+            {
+                TempData["Warning"] = $"Gebruiker {user.Email} heeft de rol '{role}' niet.";
+                return RedirectToAction(nameof(ManageRoles), new { id = userId });
+            }
+
+            var result = await _userManager.RemoveFromRoleAsync(user, role);
+
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("Role {Role} removed from user {Email}", role, user.Email);
+                TempData["Success"] = $"Rol '{role}' is verwijderd van {user.Email}.";
+            }
+            else
+            {
+                TempData["Error"] = "Fout bij het verwijderen van de rol.";
+                foreach (var error in result.Errors)
+                {
+                    _logger.LogError("Error removing role: {Error}", error.Description);
+                }
+            }
+
+            return RedirectToAction(nameof(ManageRoles), new { id = userId });
         }
     }
 }

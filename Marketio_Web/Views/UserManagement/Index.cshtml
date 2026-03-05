@@ -5,148 +5,176 @@
 }
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>
-            <i class="bi bi-people"></i> Gebruikersbeheer
-        </h1>
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-4">
+                <i class="bi bi-people-fill"></i> Gebruikersbeheer
+            </h1>
+            <p class="lead text-muted">Beheer gebruikers, rollen en toegangsrechten</p>
+        </div>
     </div>
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show">
-            <i class="bi bi-check-circle"></i> @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
-
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger alert-dismissible fade show">
-            <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
 
-    <div class="card shadow">
-        <div class="card-body">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-list-ul"></i> Alle Gebruikers
+            </h5>
+        </div>
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
                             <th>Naam</th>
                             <th>Email</th>
+                            <th>Status</th>
                             <th>Email Bevestigd</th>
-                            <th>Geblokkeerd</th>
-                            <th>Mislukte Pogingen</th>
-                            <th>Acties</th>
+                            <th class="text-end">Acties</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var user in Model)
                         {
-                            var isLockedOut = user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow;
-                            <tr class="@(isLockedOut ? "table-danger" : "")">
-                                <td>@user.FullName</td>
+                            <tr>
+                                <td>
+                                    <strong>@user.FullName</strong>
+                                </td>
                                 <td>@user.Email</td>
+                                <td>
+                                    @if (user.LockoutEnd.HasValue && user.LockoutEnd > DateTimeOffset.UtcNow)
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-lock-fill"></i> Geblokkeerd
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle-fill"></i> Actief
+                                        </span>
+                                    }
+                                </td>
                                 <td>
                                     @if (user.EmailConfirmed)
                                     {
                                         <span class="badge bg-success">
-                                            <i class="bi bi-check-circle"></i> Ja
+                                            <i class="bi bi-envelope-check"></i> Ja
                                         </span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-warning">
-                                            <i class="bi bi-clock"></i> Nee
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-envelope-x"></i> Nee
                                         </span>
                                     }
                                 </td>
-                                <td>
-                                    @if (isLockedOut)
-                                    {
-                                        <span class="badge bg-danger">
-                                            <i class="bi bi-lock-fill"></i> Tot @user.LockoutEnd.Value.LocalDateTime.ToString("dd-MM-yyyy HH:mm")
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-success">
-                                            <i class="bi bi-unlock-fill"></i> Actief
-                                        </span>
-                                    }
-                                </td>
-                                <td>
-                                    @if (user.AccessFailedCount > 0)
-                                    {
-                                        <span class="badge bg-warning">@user.AccessFailedCount</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary">0</span>
-                                    }
-                                </td>
-                                <td>
-                                    <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-info">
-                                        <i class="bi bi-eye"></i> Details
-                                    </a>
-
-                                    @if (isLockedOut)
-                                    {
-                                        <form asp-action="UnlockUser" method="post" class="d-inline">
-                                            <input type="hidden" name="userId" value="@user.Id" />
-                                            <button type="submit" class="btn btn-sm btn-success"
-                                                    onclick="return confirm('Weet u zeker dat u deze gebruiker wilt deblokkeren?')">
-                                                <i class="bi bi-unlock"></i> Deblokkeren
+                                <td class="text-end">
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-outline-info" title="Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="ManageRoles" asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary" title="Beheer Rollen">
+                                            <i class="bi bi-shield-check"></i>
+                                        </a>
+                                        @if (user.LockoutEnd.HasValue && user.LockoutEnd > DateTimeOffset.UtcNow)
+                                        {
+                                            <form asp-action="UnlockUser" method="post" class="d-inline">
+                                                <input type="hidden" name="userId" value="@user.Id" />
+                                                <button type="submit" class="btn btn-sm btn-outline-success" title="Deblokkeer">
+                                                    <i class="bi bi-unlock"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-warning"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#lockModal"
+                                                    data-user-id="@user.Id"
+                                                    data-user-email="@user.Email"
+                                                    title="Blokkeer">
+                                                <i class="bi bi-lock"></i>
                                             </button>
-                                        </form>
-                                    }
-                                    else
-                                    {
-                                        <button type="button" class="btn btn-sm btn-danger"
-                                                data-bs-toggle="modal" data-bs-target="#lockModal-@user.Id">
-                                            <i class="bi bi-lock"></i> Blokkeren
-                                        </button>
-                                    }
+                                        }
+                                    </div>
                                 </td>
                             </tr>
-
-                            <!-- Lock Modal -->
-                            <div class="modal fade" id="lockModal-@user.Id" tabindex="-1">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header bg-danger text-white">
-                                            <h5 class="modal-title">Gebruiker Blokkeren</h5>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <form asp-action="LockUser" method="post">
-                                            <div class="modal-body">
-                                                <input type="hidden" name="userId" value="@user.Id" />
-                                                <p>Weet u zeker dat u <strong>@user.Email</strong> wilt blokkeren?</p>
-                                                <div class="mb-3">
-                                                    <label class="form-label">Blokkeer duur (dagen):</label>
-                                                    <select name="lockoutDays" class="form-select">
-                                                        <option value="1">1 dag</option>
-                                                        <option value="7">1 week</option>
-                                                        <option value="30" selected>1 maand</option>
-                                                        <option value="365">1 jaar</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
-                                                <button type="submit" class="btn btn-danger">
-                                                    <i class="bi bi-lock"></i> Blokkeren
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
                         }
                     </tbody>
                 </table>
             </div>
         </div>
+        <div class="card-footer text-muted">
+            <i class="bi bi-info-circle"></i> Totaal <strong>@Model.Count()</strong> gebruiker(s)
+        </div>
     </div>
 </div>
+
+<!-- Lock User Modal -->
+<div class="modal fade" id="lockModal" tabindex="-1" aria-labelledby="lockModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="lockModalLabel">
+                    <i class="bi bi-lock"></i> Gebruiker Blokkeren
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="LockUser" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="userId" id="modalUserId" />
+                    <p>Weet u zeker dat u gebruiker <strong id="modalUserEmail"></strong> wilt blokkeren?</p>
+                    <div class="mb-3">
+                        <label for="lockoutDays" class="form-label">Blokkeer voor (dagen)</label>
+                        <input type="number" class="form-control" name="lockoutDays" id="lockoutDays" value="30" min="1" max="365" />
+                        <div class="form-text">Standaard: 30 dagen</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-lock"></i> Blokkeer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-dismiss alerts na 5 seconden
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 5000);
+
+        // Set user data in lock modal
+        var lockModal = document.getElementById('lockModal');
+        lockModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var userId = button.getAttribute('data-user-id');
+            var userEmail = button.getAttribute('data-user-email');
+
+            var modalUserId = lockModal.querySelector('#modalUserId');
+            var modalUserEmail = lockModal.querySelector('#modalUserEmail');
+
+            modalUserId.value = userId;
+            modalUserEmail.textContent = userEmail;
+        });
+    </script>
+}
