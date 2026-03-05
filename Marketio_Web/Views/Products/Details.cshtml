@@ -160,8 +160,8 @@
         </div>
     </div>
 
-    <!-- Admin Actions -->
-    @if (User.IsInRole("Admin"))
+    <!-- Admin/Manager Actions -->
+    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
     {
         <div class="row mt-4">
             <div class="col-12">
@@ -176,10 +176,19 @@
                             <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
                                 <i class="bi bi-pencil"></i> @Localizer["Edit"]
                             </a>
-                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
-                                <i class="bi bi-trash"></i> @Localizer["Delete"]
-                            </a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                                    <i class="bi bi-trash"></i> @Localizer["Delete"]
+                                </a>
+                            }
                         </div>
+                        @if (User.IsInRole("Manager") && !User.IsInRole("Admin"))
+                        {
+                            <small class="text-muted ms-3">
+                                <i class="bi bi-info-circle"></i> Alleen Admin kan producten verwijderen
+                            </small>
+                        }
                     </div>
                 </div>
             </div>

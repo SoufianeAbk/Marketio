@@ -41,6 +41,15 @@ namespace Marketio_Web.Controllers
                 return NotFound();
             }
 
+            //  Voorkomt blokkeren van Admin gebruikers
+            var userRoles = await _userManager.GetRolesAsync(user);
+            if (userRoles.Contains("Admin"))
+            {
+                _logger.LogWarning("Attempt to lock Admin user {Email} blocked", user.Email);
+                TempData["Error"] = "Admin gebruikers kunnen niet worden geblokkeerd voor veiligheidsredenen.";
+                return RedirectToAction(nameof(Index));
+            }
+
             // Set lockout end date
             var lockoutEnd = DateTimeOffset.UtcNow.AddDays(lockoutDays);
             var result = await _userManager.SetLockoutEndDateAsync(user, lockoutEnd);

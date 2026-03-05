@@ -116,8 +116,8 @@ namespace Marketio_Web.Controllers
             }
         }
 
-        // GET: Products/Create - ✅ Alleen Admin
-        [Authorize(Roles = "Admin")]
+        // GET: Products/Create - Admin en Manager
+        [Authorize(Roles = "Admin,Manager")]
         public IActionResult Create()
         {
             ViewBag.Categories = Enum.GetValues<ProductCategory>();
@@ -125,7 +125,7 @@ namespace Marketio_Web.Controllers
         }
 
         // POST: Products/Create
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductDto productDto)
@@ -139,6 +139,7 @@ namespace Marketio_Web.Controllers
             try
             {
                 await _productService.CreateProductAsync(productDto);
+                _logger.LogInformation("Product created by {User}: {ProductName}", User.Identity?.Name, productDto.Name);
                 TempData["Success"] = "Product succesvol aangemaakt!";
                 return RedirectToAction(nameof(Index));
             }
@@ -152,7 +153,7 @@ namespace Marketio_Web.Controllers
         }
 
         // GET: Products/Edit/5
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Edit(int id)
         {
             try
@@ -175,7 +176,7 @@ namespace Marketio_Web.Controllers
         }
 
         // POST: Products/Edit/5
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ProductDto productDto)
@@ -194,6 +195,7 @@ namespace Marketio_Web.Controllers
             try
             {
                 await _productService.UpdateProductAsync(productDto);
+                _logger.LogInformation("Product updated by {User}: {ProductName}", User.Identity?.Name, productDto.Name);
                 TempData["Success"] = "Product succesvol bijgewerkt!";
                 return RedirectToAction(nameof(Index));
             }
@@ -206,7 +208,7 @@ namespace Marketio_Web.Controllers
             }
         }
 
-        // GET: Products/Delete/5
+        // GET: Products/Delete/5 - Alleen Admin kan verwijderen
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -228,7 +230,7 @@ namespace Marketio_Web.Controllers
             }
         }
 
-        // POST: Products/Delete/5
+        // POST: Products/Delete/5 - Alleen Admin kan verwijderen
         [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -237,6 +239,7 @@ namespace Marketio_Web.Controllers
             try
             {
                 await _productService.DeleteProductAsync(id);
+                _logger.LogWarning("Product deleted by {User}: ID {ProductId}", User.Identity?.Name, id);
                 TempData["Success"] = "Product succesvol verwijderd!";
                 return RedirectToAction(nameof(Index));
             }
