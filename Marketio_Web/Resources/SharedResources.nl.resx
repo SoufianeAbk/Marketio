@@ -82,6 +82,148 @@
 		<value>Taal</value>
 	</data>
 
+	<!-- _LoginPartial.cshtml -->
+	<data name="LoginPartial_Hello" xml:space="preserve">
+		<value>Hallo</value>
+	</data>
+	<data name="Login" xml:space="preserve">
+		<value>Inloggen</value>
+	</data>
+	<data name="Register" xml:space="preserve">
+		<value>Registreren</value>
+	</data>
+	<data name="Logout" xml:space="preserve">
+		<value>Uitloggen</value>
+	</data>
+	<data name="Manage" xml:space="preserve">
+		<value>Beheren</value>
+	</data>
+
+	<!-- Account/Register.cshtml -->
+	<data name="Register_Title" xml:space="preserve">
+		<value>Registreren</value>
+	</data>
+	<data name="Register_CreateNewAccount" xml:space="preserve">
+		<value>Nieuwe Account Aanmaken</value>
+	</data>
+	<data name="Register_FirstName" xml:space="preserve">
+		<value>Voornaam</value>
+	</data>
+	<data name="Register_FirstNamePlaceholder" xml:space="preserve">
+		<value>John</value>
+	</data>
+	<data name="Register_LastName" xml:space="preserve">
+		<value>Achternaam</value>
+	</data>
+	<data name="Register_LastNamePlaceholder" xml:space="preserve">
+		<value>Doe</value>
+	</data>
+	<data name="Register_Email" xml:space="preserve">
+		<value>Email</value>
+	</data>
+	<data name="Register_EmailPlaceholder" xml:space="preserve">
+		<value>naam@voorbeeld.nl</value>
+	</data>
+	<data name="Register_Address" xml:space="preserve">
+		<value>Adres</value>
+	</data>
+	<data name="Register_AddressPlaceholder" xml:space="preserve">
+		<value>Straat 123, 1234 AB Stad</value>
+	</data>
+	<data name="Register_Password" xml:space="preserve">
+		<value>Wachtwoord</value>
+	</data>
+	<data name="Register_PasswordPlaceholder" xml:space="preserve">
+		<value>Minimaal 6 tekens</value>
+	</data>
+	<data name="Register_ConfirmPassword" xml:space="preserve">
+		<value>Bevestig wachtwoord</value>
+	</data>
+	<data name="Register_SubmitButton" xml:space="preserve">
+		<value>Registreren</value>
+	</data>
+	<data name="Register_AlreadyHaveAccount" xml:space="preserve">
+		<value>Al een account?</value>
+	</data>
+	<data name="Register_LoginHere" xml:space="preserve">
+		<value>Log hier in</value>
+	</data>
+
+	<!-- Account/Login.cshtml -->
+	<data name="Login_Title" xml:space="preserve">
+		<value>Inloggen</value>
+	</data>
+	<data name="Login_WelcomeBack" xml:space="preserve">
+		<value>Welkom Terug</value>
+	</data>
+	<data name="Login_EmailLabel" xml:space="preserve">
+		<value>Email</value>
+	</data>
+	<data name="Login_PasswordLabel" xml:space="preserve">
+		<value>Wachtwoord</value>
+	</data>
+	<data name="Login_RememberMe" xml:space="preserve">
+		<value>Onthoud mij</value>
+	</data>
+	<data name="Login_SubmitButton" xml:space="preserve">
+		<value>Inloggen</value>
+	</data>
+	<data name="Login_ForgotPassword" xml:space="preserve">
+		<value>Wachtwoord vergeten?</value>
+	</data>
+	<data name="Login_NoAccount" xml:space="preserve">
+		<value>Nog geen account?</value>
+	</data>
+	<data name="Login_RegisterHere" xml:space="preserve">
+		<value>Registreer hier</value>
+	</data>
+
+	<!-- Account/ConfirmEmail.cshtml -->
+	<data name="ConfirmEmail_Title" xml:space="preserve">
+		<value>Email Bevestiging</value>
+	</data>
+	<data name="ConfirmEmail_Success" xml:space="preserve">
+		<value>Bedankt voor het bevestigen van uw email.</value>
+	</data>
+	<data name="ConfirmEmail_AccountActive" xml:space="preserve">
+		<value>Uw account is nu actief. U kunt nu inloggen met uw gegevens.</value>
+	</data>
+	<data name="ConfirmEmail_LoginNow" xml:space="preserve">
+		<value>Nu Inloggen</value>
+	</data>
+	<data name="ConfirmEmail_Error" xml:space="preserve">
+		<value>Fout bij het bevestigen van uw email.</value>
+	</data>
+	<data name="ConfirmEmail_ErrorMessage" xml:space="preserve">
+		<value>Er is een probleem opgetreden bij het bevestigen van uw email.</value>
+	</data>
+	<data name="ConfirmEmail_BackToRegister" xml:space="preserve">
+		<value>Terug naar Registratie</value>
+	</data>
+
+	<!-- Account/RegisterConfirmation.cshtml -->
+	<data name="RegisterConfirmation_Title" xml:space="preserve">
+		<value>Registratie bevestiging</value>
+	</data>
+	<data name="RegisterConfirmation_Success" xml:space="preserve">
+		<value>Registratie Succesvol</value>
+	</data>
+	<data name="RegisterConfirmation_ConfirmEmail" xml:space="preserve">
+		<value>Bevestig uw email adres</value>
+	</data>
+	<data name="RegisterConfirmation_EmailSentTo" xml:space="preserve">
+		<value>Er is een bevestigingsmail verzonden naar</value>
+	</data>
+	<data name="RegisterConfirmation_CheckInbox" xml:space="preserve">
+		<value>Klik op de link in de email om uw account te activeren. Controleer ook uw spam folder als u de email niet binnen enkele minuten ontvangt.</value>
+	</data>
+	<data name="RegisterConfirmation_CloseWindow" xml:space="preserve">
+		<value>U kunt dit venster sluiten en inloggen zodra u uw email heeft bevestigd.</value>
+	</data>
+	<data name="RegisterConfirmation_GoToLogin" xml:space="preserve">
+		<value>Naar Login</value>
+	</data>
+
 	<!-- Home\Index.cshtml -->
 	<data name="WelcomeToMarketio" xml:space="preserve">
 		<value>Welkom bij Marketio</value>

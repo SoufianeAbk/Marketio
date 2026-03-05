@@ -82,6 +82,148 @@
 		<value>Langue</value>
 	</data>
 
+	<!-- _LoginPartial.cshtml -->
+	<data name="LoginPartial_Hello" xml:space="preserve">
+		<value>Bonjour</value>
+	</data>
+	<data name="Login" xml:space="preserve">
+		<value>Connexion</value>
+	</data>
+	<data name="Register" xml:space="preserve">
+		<value>S'inscrire</value>
+	</data>
+	<data name="Logout" xml:space="preserve">
+		<value>Déconnexion</value>
+	</data>
+	<data name="Manage" xml:space="preserve">
+		<value>Gérer</value>
+	</data>
+
+	<!-- Account/Register.cshtml -->
+	<data name="Register_Title" xml:space="preserve">
+		<value>S'inscrire</value>
+	</data>
+	<data name="Register_CreateNewAccount" xml:space="preserve">
+		<value>Créer un Nouveau Compte</value>
+	</data>
+	<data name="Register_FirstName" xml:space="preserve">
+		<value>Prénom</value>
+	</data>
+	<data name="Register_FirstNamePlaceholder" xml:space="preserve">
+		<value>Jean</value>
+	</data>
+	<data name="Register_LastName" xml:space="preserve">
+		<value>Nom</value>
+	</data>
+	<data name="Register_LastNamePlaceholder" xml:space="preserve">
+		<value>Dupont</value>
+	</data>
+	<data name="Register_Email" xml:space="preserve">
+		<value>Email</value>
+	</data>
+	<data name="Register_EmailPlaceholder" xml:space="preserve">
+		<value>nom@exemple.com</value>
+	</data>
+	<data name="Register_Address" xml:space="preserve">
+		<value>Adresse</value>
+	</data>
+	<data name="Register_AddressPlaceholder" xml:space="preserve">
+		<value>Rue 123, 1234 AB Ville</value>
+	</data>
+	<data name="Register_Password" xml:space="preserve">
+		<value>Mot de passe</value>
+	</data>
+	<data name="Register_PasswordPlaceholder" xml:space="preserve">
+		<value>Minimum 6 caractères</value>
+	</data>
+	<data name="Register_ConfirmPassword" xml:space="preserve">
+		<value>Confirmer le mot de passe</value>
+	</data>
+	<data name="Register_SubmitButton" xml:space="preserve">
+		<value>S'inscrire</value>
+	</data>
+	<data name="Register_AlreadyHaveAccount" xml:space="preserve">
+		<value>Vous avez déjà un compte?</value>
+	</data>
+	<data name="Register_LoginHere" xml:space="preserve">
+		<value>Connectez-vous ici</value>
+	</data>
+
+	<!-- Account/Login.cshtml -->
+	<data name="Login_Title" xml:space="preserve">
+		<value>Connexion</value>
+	</data>
+	<data name="Login_WelcomeBack" xml:space="preserve">
+		<value>Bon Retour</value>
+	</data>
+	<data name="Login_EmailLabel" xml:space="preserve">
+		<value>Email</value>
+	</data>
+	<data name="Login_PasswordLabel" xml:space="preserve">
+		<value>Mot de passe</value>
+	</data>
+	<data name="Login_RememberMe" xml:space="preserve">
+		<value>Se souvenir de moi</value>
+	</data>
+	<data name="Login_SubmitButton" xml:space="preserve">
+		<value>Se connecter</value>
+	</data>
+	<data name="Login_ForgotPassword" xml:space="preserve">
+		<value>Mot de passe oublié?</value>
+	</data>
+	<data name="Login_NoAccount" xml:space="preserve">
+		<value>Vous n'avez pas de compte?</value>
+	</data>
+	<data name="Login_RegisterHere" xml:space="preserve">
+		<value>Inscrivez-vous ici</value>
+	</data>
+
+	<!-- Account/ConfirmEmail.cshtml -->
+	<data name="ConfirmEmail_Title" xml:space="preserve">
+		<value>Confirmation d'Email</value>
+	</data>
+	<data name="ConfirmEmail_Success" xml:space="preserve">
+		<value>Merci d'avoir confirmé votre email.</value>
+	</data>
+	<data name="ConfirmEmail_AccountActive" xml:space="preserve">
+		<value>Votre compte est maintenant actif. Vous pouvez maintenant vous connecter avec vos identifiants.</value>
+	</data>
+	<data name="ConfirmEmail_LoginNow" xml:space="preserve">
+		<value>Se Connecter Maintenant</value>
+	</data>
+	<data name="ConfirmEmail_Error" xml:space="preserve">
+		<value>Erreur lors de la confirmation de votre email.</value>
+	</data>
+	<data name="ConfirmEmail_ErrorMessage" xml:space="preserve">
+		<value>Un problème est survenu lors de la confirmation de votre email.</value>
+	</data>
+	<data name="ConfirmEmail_BackToRegister" xml:space="preserve">
+		<value>Retour à l'Inscription</value>
+	</data>
+
+	<!-- Account/RegisterConfirmation.cshtml -->
+	<data name="RegisterConfirmation_Title" xml:space="preserve">
+		<value>Confirmation d'Inscription</value>
+	</data>
+	<data name="RegisterConfirmation_Success" xml:space="preserve">
+		<value>Inscription Réussie</value>
+	</data>
+	<data name="RegisterConfirmation_ConfirmEmail" xml:space="preserve">
+		<value>Confirmez votre adresse email</value>
+	</data>
+	<data name="RegisterConfirmation_EmailSentTo" xml:space="preserve">
+		<value>Un email de confirmation a été envoyé à</value>
+	</data>
+	<data name="RegisterConfirmation_CheckInbox" xml:space="preserve">
+		<value>Cliquez sur le lien dans l'email pour activer votre compte. Vérifiez également votre dossier spam si vous ne recevez pas l'email dans quelques minutes.</value>
+	</data>
+	<data name="RegisterConfirmation_CloseWindow" xml:space="preserve">
+		<value>Vous pouvez fermer cette fenêtre et vous connecter une fois que vous avez confirmé votre email.</value>
+	</data>
+	<data name="RegisterConfirmation_GoToLogin" xml:space="preserve">
+		<value>Aller à la Connexion</value>
+	</data>
+
 	<!-- Home\Index.cshtml -->
 	<data name="WelcomeToMarketio" xml:space="preserve">
 		<value>Bienvenue chez Marketio</value>

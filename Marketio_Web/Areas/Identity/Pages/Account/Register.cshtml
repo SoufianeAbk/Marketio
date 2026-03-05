@@ -1,7 +1,10 @@
 ﻿@page
+@using Marketio_Web
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
 @model RegisterModel
 @{
-    ViewData["Title"] = "Registreren";
+    ViewData["Title"] = Localizer["Register_Title"];
 }
 
 <div class="container">
@@ -10,7 +13,7 @@
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
                     <h2 class="mb-0">
-                        <i class="bi bi-person-plus"></i> Nieuwe Account Aanmaken
+                        <i class="bi bi-person-plus"></i> @Localizer["Register_CreateNewAccount"]
                     </h2>
                 </div>
                 <div class="card-body">
@@ -18,48 +21,48 @@
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
                         <div class="mb-3">
-                            <label asp-for="Input.FirstName" class="form-label"></label>
-                            <input asp-for="Input.FirstName" class="form-control" autocomplete="given-name" aria-required="true" placeholder="John" />
+                            <label asp-for="Input.FirstName" class="form-label">@Localizer["Register_FirstName"]</label>
+                            <input asp-for="Input.FirstName" class="form-control" autocomplete="given-name" aria-required="true" placeholder="@Localizer["Register_FirstNamePlaceholder"]" />
                             <span asp-validation-for="Input.FirstName" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Input.LastName" class="form-label"></label>
-                            <input asp-for="Input.LastName" class="form-control" autocomplete="family-name" aria-required="true" placeholder="Doe" />
+                            <label asp-for="Input.LastName" class="form-label">@Localizer["Register_LastName"]</label>
+                            <input asp-for="Input.LastName" class="form-control" autocomplete="family-name" aria-required="true" placeholder="@Localizer["Register_LastNamePlaceholder"]" />
                             <span asp-validation-for="Input.LastName" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Input.Email" class="form-label"></label>
-                            <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="naam@example.com" />
+                            <label asp-for="Input.Email" class="form-label">@Localizer["Register_Email"]</label>
+                            <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="@Localizer["Register_EmailPlaceholder"]" />
                             <span asp-validation-for="Input.Email" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Input.Address" class="form-label"></label>
-                            <textarea asp-for="Input.Address" class="form-control" rows="2" placeholder="Straat 123, 1234 AB Stad"></textarea>
+                            <label asp-for="Input.Address" class="form-label">@Localizer["Register_Address"]</label>
+                            <textarea asp-for="Input.Address" class="form-control" rows="2" placeholder="@Localizer["Register_AddressPlaceholder"]"></textarea>
                             <span asp-validation-for="Input.Address" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Input.Password" class="form-label"></label>
-                            <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Minimaal 6 tekens" />
+                            <label asp-for="Input.Password" class="form-label">@Localizer["Register_Password"]</label>
+                            <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="@Localizer["Register_PasswordPlaceholder"]" />
                             <span asp-validation-for="Input.Password" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Input.ConfirmPassword" class="form-label"></label>
+                            <label asp-for="Input.ConfirmPassword" class="form-label">@Localizer["Register_ConfirmPassword"]</label>
                             <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
                             <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                         </div>
 
                         <button id="registerSubmit" type="submit" class="btn btn-primary w-100">
-                            <i class="bi bi-person-check"></i> Registreren
+                            <i class="bi bi-person-check"></i> @Localizer["Register_SubmitButton"]
                         </button>
 
                         <div class="mt-3 text-center">
                             <p>
-                                Al een account? <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Log hier in</a>
+                                @Localizer["Register_AlreadyHaveAccount"] <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">@Localizer["Register_LoginHere"]</a>
                             </p>
                         </div>
                     </form>
