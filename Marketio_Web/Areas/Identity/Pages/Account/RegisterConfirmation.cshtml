@@ -1,7 +1,10 @@
 ﻿@page
+@using Marketio_Web
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
 @model RegisterConfirmationModel
 @{
-    ViewData["Title"] = "Registratie bevestiging";
+    ViewData["Title"] = Localizer["RegisterConfirmation_Title"];
 }
 
 <div class="container">
@@ -10,28 +13,27 @@
             <div class="card shadow">
                 <div class="card-header bg-success text-white">
                     <h2 class="mb-0">
-                        <i class="bi bi-check-circle"></i> Registratie Succesvol
+                        <i class="bi bi-check-circle"></i> @Localizer["RegisterConfirmation_Success"]
                     </h2>
                 </div>
                 <div class="card-body text-center">
                     <div class="mb-4">
                         <i class="bi bi-envelope-check" style="font-size: 4rem; color: #198754;"></i>
                     </div>
-                    <h4 class="mb-3">Bevestig uw email adres</h4>
+                    <h4 class="mb-3">@Localizer["RegisterConfirmation_ConfirmEmail"]</h4>
                     <p class="lead">
-                        Er is een bevestigingsmail verzonden naar <strong>@Model.Email</strong>
+                        @Localizer["RegisterConfirmation_EmailSentTo"] <strong>@Model.Email</strong>
                     </p>
                     <p>
-                        Klik op de link in de email om uw account te activeren.
-                        Controleer ook uw spam folder als u de email niet binnen enkele minuten ontvangt.
+                        @Localizer["RegisterConfirmation_CheckInbox"]
                     </p>
                     <hr class="my-4">
                     <p class="text-muted">
                         <i class="bi bi-info-circle"></i>
-                        U kunt dit venster sluiten en inloggen zodra u uw email heeft bevestigd.
+                        @Localizer["RegisterConfirmation_CloseWindow"]
                     </p>
                     <a asp-page="./Login" class="btn btn-primary mt-3">
-                        <i class="bi bi-box-arrow-in-right"></i> Naar Login
+                        <i class="bi bi-box-arrow-in-right"></i> @Localizer["RegisterConfirmation_GoToLogin"]
                     </a>
                 </div>
             </div>

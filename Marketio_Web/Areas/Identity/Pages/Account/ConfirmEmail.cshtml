@@ -1,29 +1,32 @@
 ﻿@page
+@using Marketio_Web
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
 @model ConfirmEmailModel
 @{
-    ViewData["Title"] = "Email Bevestiging";
+    ViewData["Title"] = Localizer["ConfirmEmail_Title"];
 }
 
 <div class="container">
     <div class="row justify-content-center mt-5">
         <div class="col-md-8">
             <div class="card shadow">
-                <div class="card-header @(Model.StatusMessage.Contains("bedankt") ? "bg-success" : "bg-danger") text-white">
+                <div class="card-header @(Model.StatusMessage.Contains("bedankt") || Model.StatusMessage.Contains("confirming") ? "bg-success" : "bg-danger") text-white">
                     <h2 class="mb-0">
-                        <i class="bi @(Model.StatusMessage.Contains("bedankt") ? "bi-check-circle" : "bi-exclamation-triangle")"></i>
-                        Email Bevestiging
+                        <i class="bi @(Model.StatusMessage.Contains("bedankt") || Model.StatusMessage.Contains("confirming") ? "bi-check-circle" : "bi-exclamation-triangle")"></i>
+                        @Localizer["ConfirmEmail_Title"]
                     </h2>
                 </div>
                 <div class="card-body text-center">
-                    @if (Model.StatusMessage.Contains("bedankt"))
+                    @if (Model.StatusMessage.Contains("bedankt") || Model.StatusMessage.Contains("confirming"))
                     {
                         <div class="mb-4">
                             <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
                         </div>
-                        <h4 class="text-success mb-3">@Model.StatusMessage</h4>
-                        <p>Uw account is nu actief. U kunt nu inloggen met uw gegevens.</p>
+                        <h4 class="text-success mb-3">@Localizer["ConfirmEmail_Success"]</h4>
+                        <p>@Localizer["ConfirmEmail_AccountActive"]</p>
                         <a asp-page="./Login" class="btn btn-success btn-lg mt-3">
-                            <i class="bi bi-box-arrow-in-right"></i> Nu Inloggen
+                            <i class="bi bi-box-arrow-in-right"></i> @Localizer["ConfirmEmail_LoginNow"]
                         </a>
                     }
                     else
@@ -31,10 +34,10 @@
                         <div class="mb-4">
                             <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 4rem;"></i>
                         </div>
-                        <h4 class="text-danger mb-3">@Model.StatusMessage</h4>
-                        <p>Er is een probleem opgetreden bij het bevestigen van uw email.</p>
+                        <h4 class="text-danger mb-3">@Localizer["ConfirmEmail_Error"]</h4>
+                        <p>@Localizer["ConfirmEmail_ErrorMessage"]</p>
                         <a asp-page="./Register" class="btn btn-primary mt-3">
-                            <i class="bi bi-arrow-left"></i> Terug naar Registratie
+                            <i class="bi bi-arrow-left"></i> @Localizer["ConfirmEmail_BackToRegister"]
                         </a>
                     }
                 </div>
