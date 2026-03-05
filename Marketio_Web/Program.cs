@@ -1,13 +1,15 @@
 ﻿using Marketio_Shared.Interfaces;
+using Marketio_Web;
 using Marketio_Web.Data;
+using Marketio_Web.Localization;
+using Marketio_Web.Middleware;
 using Marketio_Web.Models;
 using Marketio_Web.Repositories;
 using Marketio_Web.Services;
-using Marketio_Web.Middleware;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -89,11 +91,16 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders(); // Voor email confirmation tokens
+    .AddDefaultTokenProviders()
+    .AddErrorDescriber<LocalizedIdentityErrorDescriber>(); // Add custom error describer
 
 builder.Services.AddControllersWithViews()
     .AddViewLocalization()
-    .AddDataAnnotationsLocalization();
+    .AddDataAnnotationsLocalization(options =>
+    {
+        options.DataAnnotationLocalizerProvider = (type, factory) =>
+            factory.Create(typeof(SharedResources));
+    });
 
 var app = builder.Build();
 
@@ -189,7 +196,7 @@ async Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
         {
             UserName = adminEmail,
             Email = adminEmail,
-            EmailConfirmed = true, // Admin doesn't need to confirm
+            EmailConfirmed = true, // Admin hoeft niet te bevestigen
             FirstName = "Admin",
             LastName = "Marketio",
             Address = "Hoofdstraat 1, 1000 AA Amsterdam"
