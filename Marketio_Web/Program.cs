@@ -6,11 +6,14 @@ using Marketio_Web.Middleware;
 using Marketio_Web.Models;
 using Marketio_Web.Repositories;
 using Marketio_Web.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +46,8 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ICartService, CartService>();
+// JWT Token Service
+builder.Services.AddScoped<JwtTokenService>();
 
 // Email Service (implementeer IEmailSender)
 builder.Services.AddTransient<IEmailSender, EmailSenderService>();
@@ -93,6 +98,60 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders()
     .AddErrorDescriber<LocalizedIdentityErrorDescriber>(); // Add custom error describer
+
+// ✅ JWT Authentication Configuration
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var secretKey = builder.Configuration["JwtSettings:SecretKey"]
+    ?? throw new InvalidOperationException("JWT SecretKey not found in configuration.");
+
+builder.Services.AddAuthentication(options =>
+{
+    // Default schema blijft Cookies voor Razor Pages
+    options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+})
+.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+        ClockSkew = TimeSpan.Zero // Geen extra tijd tolerantie
+    };
+
+    // Event handlers voor debugging
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogWarning("JWT Authentication failed: {Message}", context.Exception.Message);
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            var userName = context.Principal?.Identity?.Name ?? "Unknown";
+            logger.LogInformation("JWT Token validated for user: {UserName}", userName);
+            return Task.CompletedTask;
+        },
+        OnChallenge = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogWarning("JWT Challenge triggered: {Error} - {ErrorDescription}",
+                context.Error, context.ErrorDescription);
+            return Task.CompletedTask;
+        }
+    };
+});
 
 builder.Services.AddControllersWithViews()
     .AddViewLocalization()
