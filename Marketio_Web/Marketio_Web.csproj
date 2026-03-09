@@ -41,5 +41,8 @@
 			<LogicalName>Marketio_Web.Resources.SharedResources.fr.resources</LogicalName>
 		</EmbeddedResource>
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="wwwroot\images\" />
+	</ItemGroup>
 
 </Project>
