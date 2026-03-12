@@ -1,15 +1,23 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Localization;
 
 namespace Marketio_Web.Localization
 {
     public class LocalizedIdentityErrorDescriber : IdentityErrorDescriber
     {
+        private readonly IStringLocalizer<SharedResources> _localizer;
+
+        public LocalizedIdentityErrorDescriber(IStringLocalizer<SharedResources> localizer)
+        {
+            _localizer = localizer;
+        }
+
         public override IdentityError DuplicateEmail(string email)
         {
             return new IdentityError
             {
                 Code = nameof(DuplicateEmail),
-                Description = $"Email '{email}' is al in gebruik."
+                Description = _localizer["IdentityError_DuplicateEmail", email]
             };
         }
 
@@ -18,7 +26,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(DuplicateUserName),
-                Description = $"Gebruikersnaam '{userName}' is al in gebruik."
+                Description = _localizer["IdentityError_DuplicateUserName", userName]
             };
         }
 
@@ -27,7 +35,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(InvalidEmail),
-                Description = $"Email '{email}' is ongeldig."
+                Description = _localizer["IdentityError_InvalidEmail", email ?? ""]
             };
         }
 
@@ -36,7 +44,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(DuplicateRoleName),
-                Description = $"Rol '{role}' is al in gebruik."
+                Description = _localizer["IdentityError_DuplicateRoleName", role]
             };
         }
 
@@ -45,7 +53,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(InvalidRoleName),
-                Description = $"Rolnaam '{role}' is ongeldig."
+                Description = _localizer["IdentityError_InvalidRoleName", role ?? ""]
             };
         }
 
@@ -54,7 +62,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(InvalidToken),
-                Description = "Ongeldige token."
+                Description = _localizer["IdentityError_InvalidToken"]
             };
         }
 
@@ -63,7 +71,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(InvalidUserName),
-                Description = $"Gebruikersnaam '{userName}' is ongeldig. Gebruikersnamen mogen alleen letters en cijfers bevatten."
+                Description = _localizer["IdentityError_InvalidUserName", userName ?? ""]
             };
         }
 
@@ -72,7 +80,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(LoginAlreadyAssociated),
-                Description = "Er bestaat al een gebruiker met deze login."
+                Description = _localizer["IdentityError_LoginAlreadyAssociated"]
             };
         }
 
@@ -81,7 +89,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(PasswordMismatch),
-                Description = "Onjuist wachtwoord."
+                Description = _localizer["IdentityError_PasswordMismatch"]
             };
         }
 
@@ -90,7 +98,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(PasswordRequiresDigit),
-                Description = "Wachtwoorden moeten minimaal één cijfer bevatten ('0'-'9')."
+                Description = _localizer["IdentityError_PasswordRequiresDigit"]
             };
         }
 
@@ -99,7 +107,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(PasswordRequiresLower),
-                Description = "Wachtwoorden moeten minimaal één kleine letter bevatten ('a'-'z')."
+                Description = _localizer["IdentityError_PasswordRequiresLower"]
             };
         }
 
@@ -108,7 +116,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(PasswordRequiresNonAlphanumeric),
-                Description = "Wachtwoorden moeten minimaal één speciaal teken bevatten."
+                Description = _localizer["IdentityError_PasswordRequiresNonAlphanumeric"]
             };
         }
 
@@ -117,7 +125,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(PasswordRequiresUpper),
-                Description = "Wachtwoorden moeten minimaal één hoofdletter bevatten ('A'-'Z')."
+                Description = _localizer["IdentityError_PasswordRequiresUpper"]
             };
         }
 
@@ -126,7 +134,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(PasswordRequiresUniqueChars),
-                Description = $"Wachtwoorden moeten minimaal {uniqueChars} unieke tekens gebruiken."
+                Description = _localizer["IdentityError_PasswordRequiresUniqueChars", uniqueChars]
             };
         }
 
@@ -135,7 +143,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(PasswordTooShort),
-                Description = $"Wachtwoorden moeten minimaal {length} tekens lang zijn."
+                Description = _localizer["IdentityError_PasswordTooShort", length]
             };
         }
 
@@ -144,7 +152,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(UserAlreadyHasPassword),
-                Description = "Gebruiker heeft al een wachtwoord ingesteld."
+                Description = _localizer["IdentityError_UserAlreadyHasPassword"]
             };
         }
 
@@ -153,7 +161,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(UserAlreadyInRole),
-                Description = $"Gebruiker heeft al de rol '{role}'."
+                Description = _localizer["IdentityError_UserAlreadyInRole", role]
             };
         }
 
@@ -162,7 +170,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(UserNotInRole),
-                Description = $"Gebruiker heeft geen rol '{role}'."
+                Description = _localizer["IdentityError_UserNotInRole", role]
             };
         }
 
@@ -171,7 +179,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(UserLockoutNotEnabled),
-                Description = "Lockout is niet ingeschakeld voor deze gebruiker."
+                Description = _localizer["IdentityError_UserLockoutNotEnabled"]
             };
         }
 
@@ -180,7 +188,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(RecoveryCodeRedemptionFailed),
-                Description = "Herstelcode kon niet worden ingewisseld."
+                Description = _localizer["IdentityError_RecoveryCodeRedemptionFailed"]
             };
         }
 
@@ -189,7 +197,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(ConcurrencyFailure),
-                Description = "Optimistische concurrency fout, object is gewijzigd."
+                Description = _localizer["IdentityError_ConcurrencyFailure"]
             };
         }
 
@@ -198,7 +206,7 @@ namespace Marketio_Web.Localization
             return new IdentityError
             {
                 Code = nameof(DefaultError),
-                Description = "Er is een onbekende fout opgetreden."
+                Description = _localizer["IdentityError_DefaultError"]
             };
         }
     }
