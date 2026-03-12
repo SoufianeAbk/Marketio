@@ -12,7 +12,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Globalization;
+using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -97,7 +99,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders()
-    .AddErrorDescriber<LocalizedIdentityErrorDescriber>(); // Add custom error describer
+    .AddErrorDescriber<LocalizedIdentityErrorDescriber>();
 
 // ✅ JWT Authentication Configuration
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -124,7 +126,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-        ClockSkew = TimeSpan.Zero // Geen extra tijd tolerantie
+        ClockSkew = TimeSpan.Zero
     };
 
     // Event handlers voor debugging
@@ -161,6 +163,58 @@ builder.Services.AddControllersWithViews()
             factory.Create(typeof(SharedResources));
     });
 
+// ✅ Swagger/OpenAPI Configuration
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Marketio API",
+        Version = "v1",
+        Description = "REST API voor Marketio e-commerce platform met JWT authenticatie",
+        Contact = new OpenApiContact
+        {
+            Name = "Marketio Support",
+            Email = "support@marketio.nl",
+            Url = new Uri("https://github.com/SoufianeAbk/Marketio")
+        }
+    });
+
+    // JWT Authentication in Swagger UI
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Voer je JWT token in. Voorbeeld: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+
+    // Lees XML comments voor betere documentatie (optioneel)
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath);
+    }
+});
+
 var app = builder.Build();
 
 // Ensure database is created and apply migrations
@@ -172,12 +226,10 @@ await using (var scope = app.Services.CreateAsyncScope())
         var context = services.GetRequiredService<ApplicationDbContext>();
         var logger = services.GetRequiredService<ILogger<Program>>();
 
-        // Apply any pending migrations and create database if it doesn't exist
         logger.LogInformation("Applying database migrations...");
         await context.Database.MigrateAsync();
         logger.LogInformation("Database migrations applied successfully.");
 
-        // Seed rollen en admin gebruiker
         logger.LogInformation("Seeding roles and admin user...");
         await SeedRolesAndAdminAsync(services);
         logger.LogInformation("Seeding completed successfully.");
@@ -194,6 +246,19 @@ await using (var scope = app.Services.CreateAsyncScope())
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+
+    // Enable Swagger in Development
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Marketio API v1");
+        options.RoutePrefix = "api-docs";
+        options.DocumentTitle = "Marketio API Documentation";
+        options.DefaultModelsExpandDepth(2);
+        options.DefaultModelExpandDepth(2);
+        options.DisplayRequestDuration();
+        options.EnableTryItOutByDefault();
+    });
 }
 else
 {
@@ -204,18 +269,11 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// Custom Request Logging Middleware
 app.UseMiddleware<RequestLoggingMiddleware>();
-
-// Cookie Management Middleware
 app.UseCookieManagement();
-
-// Request Localization Middleware
 app.UseRequestLocalization();
 
 app.UseRouting();
-
-// Session middleware
 app.UseSession();
 
 app.UseAuthentication();
@@ -229,13 +287,11 @@ app.MapRazorPages();
 
 app.Run();
 
-// Helper method om rollen en admin te seeden
 async Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
 {
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-    // Maak rollen aan - inclusief Manager
     string[] roles = { "Admin", "Manager", "Customer" };
     foreach (var role in roles)
     {
@@ -245,7 +301,6 @@ async Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
         }
     }
 
-    // Maak admin gebruiker aan
     var adminEmail = "admin@marketio.nl";
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
@@ -255,7 +310,7 @@ async Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
         {
             UserName = adminEmail,
             Email = adminEmail,
-            EmailConfirmed = true, // Admin hoeft niet te bevestigen
+            EmailConfirmed = true,
             FirstName = "Admin",
             LastName = "Marketio",
             Address = "Hoofdstraat 1, 1000 AA Amsterdam"
