@@ -1,4 +1,5 @@
-﻿using Marketio_Shared.Interfaces;
+﻿using Marketio_Shared.DTOs;
+using Marketio_Shared.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,78 +14,77 @@ namespace Marketio_Web.Controllers.Api
         private readonly IProductService _productService;
         private readonly ILogger<ProductsApiController> _logger;
 
-        public ProductsApiController(IProductService productService, ILogger<ProductsApiController> logger)
+        public ProductsApiController(
+            IProductService productService,
+            ILogger<ProductsApiController> logger)
         {
             _productService = productService;
             _logger = logger;
         }
 
         /// <summary>
-        /// Get all products - Requires JWT authentication
+        /// Get all products
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAll()
         {
-            try
-            {
-                var products = await _productService.GetAllProductsAsync();
-                return Ok(products);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving products via API");
-                return StatusCode(500, new { message = "Internal server error" });
-            }
+            var products = await _productService.GetAllProductsAsync();
+            return Ok(products);
         }
 
         /// <summary>
-        /// Get product by ID - Requires JWT authentication
+        /// Get product by ID
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [AllowAnonymous]
+        public async Task<ActionResult<ProductDto>> GetById(int id)
         {
-            try
-            {
-                var product = await _productService.GetProductByIdAsync(id);
-                if (product == null)
-                {
-                    return NotFound(new { message = $"Product with ID {id} not found" });
-                }
+            var product = await _productService.GetProductByIdAsync(id);
 
-                return Ok(product);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving product {ProductId} via API", id);
-                return StatusCode(500, new { message = "Internal server error" });
-            }
+            if (product == null)
+                return NotFound(new { message = $"Product with ID {id} not found" });
+
+            return Ok(product);
         }
 
         /// <summary>
-        /// Create product - Requires Admin or Manager role
+        /// Create new product (Admin/Manager only)
         /// </summary>
         [HttpPost]
         [Authorize(Roles = "Admin,Manager")]
-        public async Task<IActionResult> Create([FromBody] Marketio_Shared.DTOs.ProductDto product)
+        public async Task<ActionResult<ProductDto>> Create([FromBody] ProductDto productDto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            try
-            {
-                await _productService.CreateProductAsync(product);
-                _logger.LogInformation("Product created via API: {ProductName} by {User}",
-                    product.Name, User.Identity?.Name);
+            var created = await _productService.CreateProductAsync(productDto);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        }
 
-                return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creating product via API");
-                return StatusCode(500, new { message = "Internal server error" });
-            }
+        /// <summary>
+        /// Update product (Admin/Manager only)
+        /// </summary>
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<IActionResult> Update(int id, [FromBody] ProductDto productDto)
+        {
+            if (id != productDto.Id)
+                return BadRequest(new { message = "ID mismatch" });
+
+            await _productService.UpdateProductAsync(productDto);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Delete product (Admin only)
+        /// </summary>
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _productService.DeleteProductAsync(id);
+            return NoContent();
         }
     }
 }
