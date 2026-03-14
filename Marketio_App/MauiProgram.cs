@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Marketio_App.Services;
 using Marketio_App.ViewModels;
+using Marketio_App.Pages;
 
 namespace Marketio_App
 {
@@ -43,6 +44,15 @@ namespace Marketio_App
             builder.Services.AddSingleton<ProductsViewModel>();
             builder.Services.AddSingleton<ProductDetailViewModel>();
             builder.Services.AddSingleton<OrdersViewModel>();
+
+            // Pages (registry zodat constructor injection werkt vanuit DI)
+            builder.Services.AddSingleton<AppShell>();
+            builder.Services.AddSingleton<LoginPage>();
+            builder.Services.AddSingleton<RegisterPage>();
+            builder.Services.AddSingleton<ProductsPage>();
+            builder.Services.AddSingleton<ProductDetailPage>();
+            builder.Services.AddSingleton<OrdersPage>();
+            builder.Services.AddSingleton<OrderDetailPage>();
 
             var app = builder.Build();
 

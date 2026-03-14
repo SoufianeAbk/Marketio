@@ -3,12 +3,47 @@
     x:Class="Marketio_App.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:Marketio_App"
-    Title="Marketio_App">
+    xmlns:local="clr-namespace:Marketio_App.Pages"
+    Title="Marketio">
 
+    <!-- Authentication Routes (accessible without tabbar) -->
+    <ShellContent 
+        Title="Login"
+        ContentTemplate="{DataTemplate local:LoginPage}"
+        Route="login" />
+
+    <ShellContent 
+        Title="Register"
+        ContentTemplate="{DataTemplate local:RegisterPage}"
+        Route="register" />
+
+    <!-- Main App with TabBar (after authentication) -->
+    <TabBar>
+        <!-- Products Tab -->
+        <ShellContent 
+            Title="Producten"
+            Icon="shop.png"
+            ContentTemplate="{DataTemplate local:ProductsPage}"
+            Route="producten" />
+
+        <!-- Orders Tab -->
+        <ShellContent 
+            Title="Bestellingen"
+            Icon="bag.png"
+            ContentTemplate="{DataTemplate local:OrdersPage}"
+            Route="orders" />
+    </TabBar>
+
+    <!-- Detail Routes (nested under producten for modal navigation) -->
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+        Title="Product Detail"
+        ContentTemplate="{DataTemplate local:ProductDetailPage}"
+        Route="product-detail" />
+
+    <!-- Order Detail Route (nested under orders for modal navigation) -->
+    <ShellContent
+        Title="Order Detail"
+        ContentTemplate="{DataTemplate local:OrderDetailPage}"
+        Route="order-detail" />
 
 </Shell>
