@@ -33,6 +33,22 @@ namespace Marketio_App.Services
             }
         }
 
+        public async Task<OrderDto?> GetOrderByIdAsync(int orderId)
+        {
+            if (!_connectivity.IsConnected)
+                return null;
+
+            try
+            {
+                var order = await _api.GetAsync<OrderDto>($"api/orders/{orderId}");
+                return order;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public async Task<OrderDto?> CreateOrderAsync(CreateOrderDto createOrderDto)
         {
             if (!_connectivity.IsConnected)
