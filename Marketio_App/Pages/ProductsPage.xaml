@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Marketio_App.Pages.ProductsPage"
+             Title="Producten"
+             BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#1F1F1F}">
+
+    <Grid RowDefinitions="Auto,*" Padding="0">
+
+        <!-- Header with Search and Filter -->
+        <VerticalStackLayout Padding="16" Spacing="12" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}">
+
+            <Label 
+                Text="Producten"
+                FontSize="24"
+                FontAttributes="Bold"
+                TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
+
+            <!-- Search Bar -->
+            <SearchBar 
+                Placeholder="Zoeken naar producten..."
+                Text="{Binding SearchQuery}"
+                CancelButtonColor="#007AFF"
+                PlaceholderColor="{AppThemeBinding Light=#999999, Dark=#666666}" />
+
+            <!-- Category Filter -->
+            <Picker 
+                Title="Selecteer categorie"
+                SelectedItem="{Binding SelectedCategory}"
+                FontSize="14"
+                TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}"
+                BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#3A3A3A}">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Alle categorieën</x:String>
+                        <x:String>Elektronica</x:String>
+                        <x:String>Kleding</x:String>
+                        <x:String>Boeken</x:String>
+                        <x:String>Huis &amp; Tuin</x:String>
+                        <x:String>Sport</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
+
+        </VerticalStackLayout>
+
+        <!-- Error Message -->
+        <Frame 
+            Grid.Row="1"
+            BorderColor="Red"
+            CornerRadius="8"
+            Padding="12"
+            Margin="16"
+            IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}"
+            HasShadow="True">
+            <Label 
+                Text="{Binding ErrorMessage}"
+                TextColor="White"
+                BackgroundColor="#FF6B6B"
+                FontSize="12" />
+        </Frame>
+
+        <!-- Products Grid or Empty State -->
+        <RefreshView 
+            Grid.Row="1"
+            Command="{Binding RefreshProductsCommand}"
+            IsRefreshing="{Binding IsRefreshing}">
+
+            <CollectionView 
+                ItemsSource="{Binding Products}"
+                SelectionMode="Single"
+                SelectionChangedCommand="{Binding SelectProductCommand}">
+
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout 
+                        Orientation="Vertical"
+                        HorizontalItemSpacing="12"
+                        VerticalItemSpacing="12" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout Padding="12" Spacing="8">
+                            <Frame 
+                                CornerRadius="12"
+                                Padding="0"
+                                HasShadow="True"
+                                BorderColor="Transparent">
+                                <Image 
+                                    Source="product_placeholder.png"
+                                    Aspect="AspectFill"
+                                    HeightRequest="150" />
+                            </Frame>
+
+                            <Label 
+                                Text="{Binding Name}"
+                                FontSize="14"
+                                FontAttributes="Bold"
+                                TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}"
+                                LineBreakMode="TailTruncation" />
+
+                            <Label 
+                                Text="{Binding Description}"
+                                FontSize="12"
+                                TextColor="{AppThemeBinding Light=#666666, Dark=#CCCCCC}"
+                                LineBreakMode="TailTruncation" />
+
+                            <StackLayout Orientation="Horizontal" Spacing="8">
+                                <Label 
+                                    Text="{Binding Price, StringFormat='€{0:F2}'}"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    TextColor="#34C759" />
+                                <Label 
+                                    Text="{Binding Stock, StringFormat='Voorraad: {0}'}"
+                                    FontSize="12"
+                                    TextColor="{AppThemeBinding Light=#999999, Dark=#AAAAAA}" />
+                            </StackLayout>
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout Spacing="16" Padding="20" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Label 
+                            Text="Geen producten gevonden"
+                            FontSize="18"
+                            FontAttributes="Bold"
+                            TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}"
+                            HorizontalOptions="Center" />
+                        <Label 
+                            Text="Probeer uw zoekopdracht aan te passen"
+                            FontSize="14"
+                            TextColor="{AppThemeBinding Light=#666666, Dark=#CCCCCC}"
+                            HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+
+        </RefreshView>
+
+        <!-- Loading Indicator -->
+        <ActivityIndicator 
+            Grid.Row="1"
+            IsRunning="{Binding IsLoading}"
+            IsVisible="{Binding IsLoading}"
+            Color="#007AFF"
+            VerticalOptions="Center"
+            HorizontalOptions="Center" />
+
+    </Grid>
+
+</ContentPage>

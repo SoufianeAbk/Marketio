@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Marketio_App.Pages.LoginPage"
+             Title="Inloggen"
+             BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#1F1F1F}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <!-- Header -->
+            <Label 
+                Text="Welkom bij Marketio"
+                FontSize="28"
+                FontAttributes="Bold"
+                HorizontalTextAlignment="Center"
+                TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}"
+                Margin="0,20,0,10" />
+
+            <Label 
+                Text="Meld u aan met uw inloggegevens"
+                FontSize="14"
+                HorizontalTextAlignment="Center"
+                TextColor="{AppThemeBinding Light=#666666, Dark=#CCCCCC}"
+                Margin="0,0,0,20" />
+
+            <!-- Error Message -->
+            <Frame 
+                BorderColor="Red"
+                CornerRadius="8"
+                Padding="12"
+                IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}"
+                HasShadow="True">
+                <Label 
+                    Text="{Binding ErrorMessage}"
+                    TextColor="White"
+                    BackgroundColor="#FF6B6B"
+                    FontSize="12" />
+            </Frame>
+
+            <!-- Email Input -->
+            <VerticalStackLayout Spacing="8">
+                <Label 
+                    Text="E-mailadres"
+                    FontSize="14"
+                    FontAttributes="Bold"
+                    TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
+                <Entry 
+                    x:Name="EmailEntry"
+                    Placeholder="uw@email.com"
+                    Text="{Binding Email}"
+                    Keyboard="Email"
+                    FontSize="14"
+                    PlaceholderColor="{AppThemeBinding Light=#999999, Dark=#666666}" />
+            </VerticalStackLayout>
+
+            <!-- Password Input -->
+            <VerticalStackLayout Spacing="8">
+                <Label 
+                    Text="Wachtwoord"
+                    FontSize="14"
+                    FontAttributes="Bold"
+                    TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
+                <Entry 
+                    x:Name="PasswordEntry"
+                    Placeholder="Voer uw wachtwoord in"
+                    Text="{Binding Password}"
+                    IsPassword="True"
+                    FontSize="14"
+                    PlaceholderColor="{AppThemeBinding Light=#999999, Dark=#666666}" />
+            </VerticalStackLayout>
+
+            <!-- Remember Me Checkbox -->
+            <StackLayout Orientation="Horizontal" Spacing="12" Margin="0,8">
+                <CheckBox 
+                    IsChecked="{Binding RememberMe}"
+                    VerticalOptions="Center" />
+                <Label 
+                    Text="Onthoud mij"
+                    VerticalOptions="Center"
+                    FontSize="14"
+                    TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
+            </StackLayout>
+
+            <!-- Login Button -->
+            <Button 
+                Text="Inloggen"
+                Command="{Binding LoginCommand}"
+                BackgroundColor="#007AFF"
+                TextColor="White"
+                FontSize="16"
+                FontAttributes="Bold"
+                CornerRadius="8"
+                Padding="16"
+                IsEnabled="{Binding IsLoading, Converter={StaticResource IsNotTrueConverter}}"
+                Margin="0,16" />
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator 
+                IsRunning="{Binding IsLoading}"
+                IsVisible="{Binding IsLoading}"
+                Color="#007AFF"
+                HorizontalOptions="Center"
+                Margin="0,16" />
+
+            <!-- Register Link -->
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="4" Margin="0,20">
+                <Label 
+                    Text="Nog geen account?"
+                    FontSize="14"
+                    TextColor="{AppThemeBinding Light=#666666, Dark=#CCCCCC}" />
+                <Button 
+                    Text="Registreer nu"
+                    Command="{Binding NavigateToRegisterCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="#007AFF"
+                    FontSize="14"
+                    FontAttributes="Bold"
+                    Padding="0" />
+            </StackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
