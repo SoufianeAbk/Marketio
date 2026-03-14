@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Marketio_App.Services
 {
-    internal class LocalDatabaseService
+    public class LocalDatabaseService
     {
         private SQLiteAsyncConnection? _db;
 

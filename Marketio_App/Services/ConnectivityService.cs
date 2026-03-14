@@ -3,7 +3,7 @@ using Microsoft.Maui.Networking;
 
 namespace Marketio_App.Services
 {
-    internal class ConnectivityService : IDisposable
+    public class ConnectivityService : IDisposable
     {
         public bool IsConnected { get; private set; }
 

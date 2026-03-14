@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Marketio_App.Services
 {
-    internal class ProductApiService
+    public class ProductApiService
     {
         private readonly ApiService _api;
         private readonly LocalDatabaseService _localDb;

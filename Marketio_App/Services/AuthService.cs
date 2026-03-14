@@ -4,7 +4,7 @@ using Marketio_Shared.DTOs;
 
 namespace Marketio_App.Services
 {
-    internal class AuthService
+    public class AuthService
     {
         private readonly ApiService _api;
 

@@ -8,7 +8,7 @@ using Microsoft.Maui.Storage;
 
 namespace Marketio_App.Services
 {
-    internal class ApiService
+    public class ApiService
     {
         private readonly HttpClient _client;
         private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };

@@ -6,7 +6,7 @@ using Marketio_Shared.DTOs;
 
 namespace Marketio_App.Services
 {
-    internal class OrderApiService
+    public class OrderApiService
     {
         private readonly ApiService _api;
         private readonly ConnectivityService _connectivity;
