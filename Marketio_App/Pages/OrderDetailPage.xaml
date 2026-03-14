@@ -2,19 +2,244 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Marketio_App.Pages.OrderDetailPage"
-             Title="Order Details">
+             Title="Bestellingdetails">
 
-    <VerticalStackLayout Padding="20" Spacing="10">
-        <Label 
-            Text="Order Details" 
-            FontSize="24" 
-            FontAttributes="Bold" />
+    <Grid RowDefinitions="*, Auto" RowSpacing="0" Padding="0">
+        <!-- Loading State -->
+        <VerticalStackLayout 
+            Grid.Row="0"
+            IsVisible="{Binding IsLoading}"
+            Padding="20"
+            Spacing="10"
+            VerticalOptions="Center"
+            HorizontalOptions="Center">
+            <ActivityIndicator 
+                IsRunning="True" 
+                IsVisible="{Binding IsLoading}"
+                Scale="1.5" />
+            <Label 
+                Text="Bestelling wordt geladen..." 
+                FontSize="14"
+                HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
 
-        <!-- Placeholder content -->
-        <Label 
-            Text="Order information will be displayed here" 
-            FontSize="14" 
-            TextColor="Gray" />
-    </VerticalStackLayout>
+        <!-- Error State -->
+        <VerticalStackLayout 
+            Grid.Row="0"
+            IsVisible="{Binding HasOrder, Converter={StaticResource IsNotTrueConverter}}"
+            Padding="20"
+            Spacing="10"
+            VerticalOptions="Center"
+            HorizontalOptions="FillAndExpand">
+            <Label 
+                Text="⚠️ Fout"
+                FontSize="18"
+                FontAttributes="Bold"
+                TextColor="#FF6B6B" />
+            <Label 
+                Text="{Binding ErrorMessage}"
+                FontSize="14"
+                TextColor="Gray"
+                LineBreakMode="WordWrap" />
+            <Button 
+                Text="Terug"
+                Command="{Binding GoBackCommand}"
+                Background="#007AFF"
+                TextColor="White"
+                CornerRadius="8" />
+        </VerticalStackLayout>
+
+        <!-- Content State -->
+        <ScrollView 
+            Grid.Row="0"
+            IsVisible="{Binding HasOrder}">
+            <VerticalStackLayout Padding="20" Spacing="15">
+                <!-- Order Header -->
+                <Frame 
+                    Padding="15"
+                    CornerRadius="10"
+                    Background="#F5F5F5"
+                    BorderColor="#E0E0E0">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="5">
+                                <Label 
+                                    Text="{Binding Order.OrderNumber, StringFormat='Bestelling {0}'}"
+                                    FontSize="16"
+                                    FontAttributes="Bold" />
+                                <Label 
+                                    Text="{Binding Order.OrderDate, StringFormat='Datum: {0:dd MMMM yyyy HH:mm}'}"
+                                    FontSize="12"
+                                    TextColor="Gray" />
+                            </VerticalStackLayout>
+                            <Frame 
+                                Grid.Column="1"
+                                Padding="8"
+                                CornerRadius="4"
+                                Background="{Binding Order.Status, Converter={StaticResource StatusToColorConverter}}"
+                                BorderColor="Transparent"
+                                HasShadow="False">
+                                <Label 
+                                    Text="{Binding Order.StatusName}"
+                                    FontSize="12"
+                                    FontAttributes="Bold"
+                                    TextColor="White"
+                                    VerticalTextAlignment="Center"
+                                    HorizontalTextAlignment="Center" />
+                            </Frame>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Order Summary -->
+                <Frame 
+                    Padding="15"
+                    CornerRadius="10"
+                    Background="#F5F5F5"
+                    BorderColor="#E0E0E0">
+                    <VerticalStackLayout Spacing="10">
+                        <Label 
+                            Text="Bestelgegevens"
+                            FontSize="14"
+                            FontAttributes="Bold" />
+
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                            <Label Grid.Column="0" Text="Betalingsmethode:" FontAttributes="Bold" />
+                            <Label Grid.Column="1" Text="{Binding Order.PaymentMethodName}" TextColor="Gray" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                            <Label Grid.Column="0" Text="Aantal items:" FontAttributes="Bold" />
+                            <Label Grid.Column="1" Text="{Binding Order.OrderItems.Count}" TextColor="Gray" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Order Items -->
+                <Frame 
+                    Padding="15"
+                    CornerRadius="10"
+                    Background="#F5F5F5"
+                    BorderColor="#E0E0E0">
+                    <VerticalStackLayout Spacing="10">
+                        <Label 
+                            Text="Bestelde Producten"
+                            FontSize="14"
+                            FontAttributes="Bold" />
+
+                        <CollectionView 
+                            ItemsSource="{Binding Order.OrderItems}"
+                            SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Frame 
+                                        Padding="12"
+                                        CornerRadius="8"
+                                        Background="White"
+                                        BorderColor="#E0E0E0"
+                                        Margin="0,5">
+                                        <Grid ColumnDefinitions="*, 60, 80" ColumnSpacing="10">
+                                            <!-- Product Name -->
+                                            <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                                <Label 
+                                                    Text="{Binding ProductName}"
+                                                    FontSize="13"
+                                                    FontAttributes="Bold" />
+                                                <Label 
+                                                    Text="{Binding UnitPrice, StringFormat='€{0:N2} per stuk'}"
+                                                    FontSize="11"
+                                                    TextColor="Gray" />
+                                            </VerticalStackLayout>
+
+                                            <!-- Quantity -->
+                                            <Label 
+                                                Grid.Column="1"
+                                                Text="{Binding Quantity, StringFormat='x{0}'}"
+                                                FontSize="12"
+                                                VerticalTextAlignment="Center"
+                                                HorizontalTextAlignment="Center" />
+
+                                            <!-- Total -->
+                                            <Label 
+                                                Grid.Column="2"
+                                                Text="{Binding TotalPrice, StringFormat='€{0:N2}'}"
+                                                FontSize="12"
+                                                FontAttributes="Bold"
+                                                VerticalTextAlignment="Center"
+                                                HorizontalTextAlignment="End" />
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Shipping Address -->
+                <Frame 
+                    Padding="15"
+                    CornerRadius="10"
+                    Background="#F5F5F5"
+                    BorderColor="#E0E0E0">
+                    <VerticalStackLayout Spacing="10">
+                        <Label 
+                            Text="📦 Verzendadres"
+                            FontSize="14"
+                            FontAttributes="Bold" />
+                        <Label 
+                            Text="{Binding Order.ShippingAddress}"
+                            FontSize="12"
+                            TextColor="Gray"
+                            LineBreakMode="WordWrap" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Order Total -->
+                <Frame 
+                    Padding="15"
+                    CornerRadius="10"
+                    Background="#E8F5E9"
+                    BorderColor="#4CAF50">
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                        <Label 
+                            Grid.Column="0"
+                            Text="Totaalbedrag"
+                            FontSize="14"
+                            FontAttributes="Bold"
+                            VerticalTextAlignment="Center" />
+                        <Label 
+                            Grid.Column="1"
+                            Text="{Binding Order.TotalAmount, StringFormat='€{0:N2}'}"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            TextColor="#4CAF50"
+                            VerticalTextAlignment="Center"
+                            HorizontalTextAlignment="End" />
+                    </Grid>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bottom Actions -->
+        <VerticalStackLayout 
+            Grid.Row="1"
+            Padding="20"
+            Spacing="10">
+            <Button 
+                Text="🔄 Vernieuwen"
+                Command="{Binding RefreshOrderCommand}"
+                Background="#007AFF"
+                TextColor="White"
+                CornerRadius="8" />
+            <Button 
+                Text="← Terug naar bestellingen"
+                Command="{Binding GoBackCommand}"
+                Background="Transparent"
+                TextColor="#007AFF"
+                BorderColor="#007AFF"
+                BorderWidth="1"
+                CornerRadius="8" />
+        </VerticalStackLayout>
+    </Grid>
 
 </ContentPage>
