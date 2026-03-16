@@ -8,7 +8,7 @@
     <Grid RowDefinitions="Auto,*" Padding="0">
 
         <!-- Header -->
-        <VerticalStackLayout Padding="16" Spacing="12" BackgroundColor="{AppThemeBinding Light#FFFFFF, Dark=#2A2A2A}">
+        <VerticalStackLayout Padding="16" Spacing="12" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}">
 
             <Label 
                 Text="Mijn bestellingen"

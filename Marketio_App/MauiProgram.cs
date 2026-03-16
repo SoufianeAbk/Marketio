@@ -45,9 +45,8 @@ namespace Marketio_App
             builder.Services.AddSingleton<ProductDetailViewModel>();
             builder.Services.AddSingleton<OrdersViewModel>();
             builder.Services.AddSingleton<OrderDetailViewModel>();
-            builder.Services.AddSingleton<OrderDetailPage>();
 
-            // Pages (registry zodat constructor injection werkt vanuit DI)
+            // Pages (AppShell moet VOOR App worden geregistreerd)
             builder.Services.AddSingleton<AppShell>();
             builder.Services.AddSingleton<LoginPage>();
             builder.Services.AddSingleton<RegisterPage>();
@@ -55,6 +54,9 @@ namespace Marketio_App
             builder.Services.AddSingleton<ProductDetailPage>();
             builder.Services.AddSingleton<OrdersPage>();
             builder.Services.AddSingleton<OrderDetailPage>();
+
+            // App met dependency injection (NA AppShell)
+            builder.Services.AddSingleton<App>();
 
             var app = builder.Build();
 
