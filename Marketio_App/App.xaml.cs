@@ -38,7 +38,10 @@ namespace Marketio_App
         {
             try
             {
-                if (_hasNavigated || Shell.Current == null)
+                // Add delay to ensure Shell.Current is fully initialized on all platforms
+                await Task.Delay(100);
+
+                if (_hasNavigated)
                     return;
 
                 _hasNavigated = true;

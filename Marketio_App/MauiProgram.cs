@@ -24,21 +24,33 @@ namespace Marketio_App
             builder.Logging.AddDebug();
 #endif
 
-            var apiBase = builder.Configuration["ApiBaseUrl"] ?? "https://10.0.2.2:5001/";
+            var apiBase = builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7170/";
 
+            // ─── HttpClient with SSL bypass (dev only) ────────────────────────────────
             builder.Services.AddHttpClient<ApiService>(client =>
             {
                 client.BaseAddress = new Uri(apiBase);
+                client.Timeout = TimeSpan.FromSeconds(30);
+            })
+#if DEBUG
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                // Trust self-signed certs from the ASP.NET Core dev server
+                ServerCertificateCustomValidationCallback =
+                    HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
             });
+#else
+            ;
+#endif
 
-            // Core app services
+            // ─── Core app services ────────────────────────────────────────────────────
             builder.Services.AddSingleton<ConnectivityService>();
             builder.Services.AddSingleton<LocalDatabaseService>();
             builder.Services.AddSingleton<ProductApiService>();
             builder.Services.AddSingleton<OrderApiService>();
             builder.Services.AddSingleton<AuthService>();
 
-            // ViewModels met dependency injection
+            // ─── ViewModels ───────────────────────────────────────────────────────────
             builder.Services.AddSingleton<LoginViewModel>();
             builder.Services.AddSingleton<RegisterViewModel>();
             builder.Services.AddSingleton<ProductsViewModel>();
@@ -46,7 +58,7 @@ namespace Marketio_App
             builder.Services.AddSingleton<OrdersViewModel>();
             builder.Services.AddSingleton<OrderDetailViewModel>();
 
-            // Pages (AppShell moet VOOR App worden geregistreerd)
+            // ─── Pages (AppShell vóór App registreren) ────────────────────────────────
             builder.Services.AddSingleton<AppShell>();
             builder.Services.AddSingleton<LoginPage>();
             builder.Services.AddSingleton<RegisterPage>();
@@ -55,25 +67,22 @@ namespace Marketio_App
             builder.Services.AddSingleton<OrdersPage>();
             builder.Services.AddSingleton<OrderDetailPage>();
 
-            // App met dependency injection (NA AppShell)
-            builder.Services.AddSingleton<App>();
-
             var app = builder.Build();
 
-            try
+            // ─── Initialize ApiService (loads stored JWT into Authorization header) ──
+            var apiService = app.Services.GetRequiredService<ApiService>();
+            Task.Run(async () =>
             {
-                var apiService = app.Services.GetRequiredService<ApiService>();
-                apiService.InitializeAsync().GetAwaiter().GetResult();
-
-                var localDb = app.Services.GetRequiredService<LocalDatabaseService>();
-                localDb.InitializeAsync().GetAwaiter().GetResult();
-            }
-            catch (Exception ex)
-            {
-                var loggerFactory = app.Services.GetService<ILoggerFactory>();
-                var logger = loggerFactory?.CreateLogger("MauiProgram");
-                logger?.LogWarning(ex, "One or more startup initializers failed.");
-            }
+                try
+                {
+                    await apiService.InitializeAsync();
+                }
+                catch (Exception ex)
+                {
+                    // Non-fatal: app can still run; user will just need to log in again
+                    System.Diagnostics.Debug.WriteLine($"[MauiProgram] ApiService.InitializeAsync failed: {ex.Message}");
+                }
+            });
 
             return app;
         }
