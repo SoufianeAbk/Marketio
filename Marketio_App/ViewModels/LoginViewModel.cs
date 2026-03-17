@@ -57,7 +57,7 @@ namespace Marketio_App.ViewModels
                 IsLoading = true;
                 ErrorMessage = string.Empty;
 
-                var success = await _authService.LoginAsync(Email, Password);
+                var (success, errorMessage) = await _authService.LoginAsync(Email, Password);
 
                 if (success)
                 {
@@ -70,8 +70,12 @@ namespace Marketio_App.ViewModels
                 }
                 else
                 {
-                    ErrorMessage = "Inloggen mislukt. Controleer uw gegevens.";
+                    ErrorMessage = errorMessage ?? "Inloggen mislukt. Controleer uw e-mailadres en wachtwoord.";
                 }
+            }
+            catch (System.Net.Http.HttpRequestException)
+            {
+                ErrorMessage = "Kan geen verbinding maken met de server. Controleer of de API actief is.";
             }
             catch (Exception ex)
             {
@@ -86,7 +90,7 @@ namespace Marketio_App.ViewModels
         [RelayCommand]
         public async Task NavigateToRegisterAsync()
         {
-            await Shell.Current.GoToAsync("register");
+            await Shell.Current.GoToAsync("///register");
         }
 
         [RelayCommand]

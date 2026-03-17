@@ -24,6 +24,7 @@ namespace Marketio_App.Services
             public string? LastName { get; set; }
             public string[]? Roles { get; set; }
             public int ExpiresIn { get; set; }
+            public string? Message { get; set; }
         }
 
         private class RegisterResponse
@@ -37,39 +38,50 @@ namespace Marketio_App.Services
             public int ExpiresIn { get; set; }
         }
 
-        public async Task<bool> LoginAsync(string email, string password)
+        public async Task<(bool Success, string? ErrorMessage)> LoginAsync(string email, string password)
         {
             var req = new LoginRequest(email, password);
             try
             {
-                var resp = await _api.PostAsync<LoginRequest, LoginResponse>("api/auth/login", req);
+                // Use the tolerant overload that doesn't throw on non-success status codes
+                var resp = await _api.PostAsync<LoginRequest, LoginResponse>("api/auth/login", req, allowNonSuccess: true);
+
                 if (resp == null || string.IsNullOrWhiteSpace(resp.Token))
-                    return false;
+                {
+                    // Extract error message from response if available
+                    var errorMsg = resp?.Message ?? "Login failed. Please check your credentials.";
+                    return (false, errorMsg);
+                }
 
                 await _api.SaveTokenAsync(resp.Token);
-                return true;
+                return (true, null);
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                return (false, $"An error occurred: {ex.Message}");
             }
         }
 
-        public async Task<bool> RegisterAsync(string email, string firstName, string lastName, string? address, string password)
+        public async Task<(bool Success, string? ErrorMessage)> RegisterAsync(string email, string firstName, string lastName, string? address, string password)
         {
             var req = new RegisterRequest(email, firstName, lastName, address, password);
             try
             {
-                var resp = await _api.PostAsync<RegisterRequest, RegisterResponse>("api/auth/register", req);
+                // Use the tolerant overload
+                var resp = await _api.PostAsync<RegisterRequest, RegisterResponse>("api/auth/register", req, allowNonSuccess: true);
+
                 if (resp == null || string.IsNullOrWhiteSpace(resp.Token))
-                    return false;
+                {
+                    var errorMsg = resp?.Message ?? "Registration failed. Please try again.";
+                    return (false, errorMsg);
+                }
 
                 await _api.SaveTokenAsync(resp.Token);
-                return true;
+                return (true, null);
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                return (false, $"An error occurred: {ex.Message}");
             }
         }
 

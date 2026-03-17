@@ -63,7 +63,7 @@ namespace Marketio_App.ViewModels
                 IsLoading = true;
                 ErrorMessage = string.Empty;
 
-                var success = await _authService.RegisterAsync(
+                var (success, errorMessage) = await _authService.RegisterAsync(
                     Email,
                     FirstName,
                     LastName,
@@ -76,8 +76,12 @@ namespace Marketio_App.ViewModels
                 }
                 else
                 {
-                    ErrorMessage = "Registratie mislukt. Probeer het later opnieuw.";
+                    ErrorMessage = errorMessage ?? "Registratie mislukt. Probeer het later opnieuw.";
                 }
+            }
+            catch (System.Net.Http.HttpRequestException)
+            {
+                ErrorMessage = "Kan geen verbinding maken met de server. Controleer of de API actief is.";
             }
             catch (Exception ex)
             {
@@ -92,7 +96,7 @@ namespace Marketio_App.ViewModels
         [RelayCommand]
         public async Task NavigateToLoginAsync()
         {
-            await Shell.Current.GoToAsync("../login");
+            await Shell.Current.GoToAsync("///login");
         }
 
         private bool ValidateForm()
