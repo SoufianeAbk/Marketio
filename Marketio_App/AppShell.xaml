@@ -46,4 +46,10 @@
         ContentTemplate="{DataTemplate local:OrderDetailPage}"
         Route="order-detail" />
 
+    <!-- Create Order Route -->
+    <ShellContent
+        Title="Create Order"
+        ContentTemplate="{DataTemplate local:CreateOrderPage}"
+        Route="create-order" />
+
 </Shell>

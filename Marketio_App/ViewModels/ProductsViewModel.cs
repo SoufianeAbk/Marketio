@@ -112,11 +112,13 @@ namespace Marketio_App.ViewModels
         {
             var filtered = _allProducts.AsEnumerable();
 
+            // Filter op categorie (null betekent "geen filter")
             if (SelectedCategory.HasValue)
             {
                 filtered = filtered.Where(p => p.Category == SelectedCategory.Value);
             }
 
+            // Filter op zoekterm
             if (!string.IsNullOrWhiteSpace(SearchQuery))
             {
                 var query = SearchQuery.ToLower();

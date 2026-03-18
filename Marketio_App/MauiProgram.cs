@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Marketio_App.Services;
 using Marketio_App.ViewModels;
 using Marketio_App.Pages;
@@ -24,12 +26,13 @@ namespace Marketio_App
             builder.Logging.AddDebug();
 #endif
 
-            var apiBase = builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7170/";
+            // ─── Resolve platform-specific API base URL ────────────────────────────
+            var apiBaseUrl = GetPlatformApiBaseUrl();
 
             // ─── HttpClient with SSL bypass (dev only) ────────────────────────────────
             builder.Services.AddHttpClient<ApiService>(client =>
             {
-                client.BaseAddress = new Uri(apiBase);
+                client.BaseAddress = new Uri(apiBaseUrl);
                 client.Timeout = TimeSpan.FromSeconds(30);
             })
 #if DEBUG
@@ -48,6 +51,7 @@ namespace Marketio_App
             builder.Services.AddSingleton<LocalDatabaseService>();
             builder.Services.AddSingleton<ProductApiService>();
             builder.Services.AddSingleton<OrderApiService>();
+            builder.Services.AddSingleton<CartService>();
             builder.Services.AddSingleton<AuthService>();
 
             // ─── ViewModels ───────────────────────────────────────────────────────────
@@ -57,6 +61,7 @@ namespace Marketio_App
             builder.Services.AddSingleton<ProductDetailViewModel>();
             builder.Services.AddSingleton<OrdersViewModel>();
             builder.Services.AddSingleton<OrderDetailViewModel>();
+            builder.Services.AddSingleton<CreateOrderViewModel>();
 
             // ─── Pages (AppShell vóór App registreren) ────────────────────────────────
             builder.Services.AddSingleton<AppShell>();
@@ -66,6 +71,7 @@ namespace Marketio_App
             builder.Services.AddSingleton<ProductDetailPage>();
             builder.Services.AddSingleton<OrdersPage>();
             builder.Services.AddSingleton<OrderDetailPage>();
+            builder.Services.AddSingleton<CreateOrderPage>();
 
             var app = builder.Build();
 
@@ -85,6 +91,42 @@ namespace Marketio_App
             });
 
             return app;
+        }
+
+        /// <summary>
+        /// Bepaalt de platform-specifieke API base URL
+        /// </summary>
+        private static string GetPlatformApiBaseUrl()
+        {
+            var platformKey = GetPlatformKey();
+
+            // Hardcoded URLs per platform
+            return platformKey switch
+            {
+                "Android" => "https://10.0.2.2:7170/",
+                "iOS" => "https://localhost:7170/",
+                "MacCatalyst" => "https://localhost:7170/",
+                "Windows" => "https://localhost:7170/",
+                _ => "https://10.0.2.2:7170/"
+            };
+        }
+
+        /// <summary>
+        /// Bepaalt het platform-specifieke sleutelnaam voor de configuratie
+        /// </summary>
+        private static string GetPlatformKey()
+        {
+#if ANDROID
+            return "Android";
+#elif IOS
+            return "iOS";
+#elif MACCATALYST
+            return "MacCatalyst";
+#elif WINDOWS
+            return "Windows";
+#else
+            return "Default";
+#endif
         }
     }
 }

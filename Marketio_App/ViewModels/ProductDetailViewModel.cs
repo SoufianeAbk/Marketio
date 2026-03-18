@@ -11,6 +11,7 @@ namespace Marketio_App.ViewModels
     public partial class ProductDetailViewModel : ObservableObject
     {
         private readonly ProductApiService _productService;
+        private readonly CartService _cartService;
 
         [ObservableProperty]
         private ProductDto? product;
@@ -30,9 +31,10 @@ namespace Marketio_App.ViewModels
         [ObservableProperty]
         private decimal totalPrice;
 
-        public ProductDetailViewModel(ProductApiService productService)
+        public ProductDetailViewModel(ProductApiService productService, CartService cartService)
         {
             _productService = productService;
+            _cartService = cartService;
         }
 
         partial void OnProductIdChanged(int value)
@@ -109,13 +111,20 @@ namespace Marketio_App.ViewModels
 
             try
             {
-                // TODO: Implementeer toevoegen aan winkelwagen
-                await Shell.Current.DisplayAlert("Succes", $"{Product.Name} toegevoegd aan winkelwagen", "OK");
+                await _cartService.AddToCartAsync(Product, Quantity);
+                await Shell.Current.DisplayAlert(
+                    "Succes",
+                    $"{Product.Name} ({Quantity}x) toegevoegd aan winkelwagen",
+                    "OK");
                 await Shell.Current.GoToAsync("..");
+            }
+            catch (InvalidOperationException ex)
+            {
+                ErrorMessage = ex.Message;
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Fout: {ex.Message}";
+                ErrorMessage = $"Fout bij toevoegen aan winkelwagen: {ex.Message}";
             }
         }
 
