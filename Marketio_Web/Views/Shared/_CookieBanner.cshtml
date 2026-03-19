@@ -1,0 +1,59 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Marketio_Web.SharedResources> Localizer
+
+@{
+    // Toont de banner enkel als er nog geen cookiekeuze gemaakt werd
+    var consentCookie = HttpContextAccessor.HttpContext?.Request.Cookies["CookieConsent"];
+    var showBanner = string.IsNullOrEmpty(consentCookie);
+}
+
+@if (showBanner)
+{
+    <div id="cookieBanner"
+         class="position-fixed bottom-0 start-0 end-0 bg-dark text-white p-3 shadow-lg"
+         style="z-index: 9999;"
+         role="dialog"
+         aria-live="polite"
+         aria-label="@Localizer["Cookie_BannerAriaLabel"]">
+        <div class="container">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-shield-lock-fill fs-4 text-warning mt-1 flex-shrink-0"></i>
+                        <div>
+                            <strong>@Localizer["Cookie_Title"]</strong>
+                            <p class="mb-0 small text-white-50 mt-1">
+                                @Localizer["Cookie_Description"]
+                                <a asp-controller="Home" asp-action="Privacy"
+                                   class="text-warning text-decoration-underline ms-1"
+                                   target="_blank">
+                                    @Localizer["Cookie_PrivacyPolicyLink"]
+                                </a>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="d-flex gap-2 justify-content-lg-end flex-wrap">
+                        <form asp-controller="CookieConsent" asp-action="Accept" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="returnUrl" value="@HttpContextAccessor.HttpContext?.Request.Path@HttpContextAccessor.HttpContext?.Request.QueryString" />
+                            <button type="submit" class="btn btn-warning fw-bold px-4">
+                                <i class="bi bi-check-circle-fill"></i> @Localizer["Cookie_Accept"]
+                            </button>
+                        </form>
+                        <form asp-controller="CookieConsent" asp-action="Decline" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="returnUrl" value="@HttpContextAccessor.HttpContext?.Request.Path@HttpContextAccessor.HttpContext?.Request.QueryString" />
+                            <button type="submit" class="btn btn-outline-light px-4">
+                                <i class="bi bi-x-circle"></i> @Localizer["Cookie_Decline"]
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

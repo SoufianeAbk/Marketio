@@ -1,4 +1,5 @@
 ﻿using Marketio_Web.Models;
+using Marketio_Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -19,13 +20,15 @@ namespace Marketio_Web.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IGdprAuditService _gdprAuditService;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IGdprAuditService gdprAuditService)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -33,6 +36,7 @@ namespace Marketio_Web.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _gdprAuditService = gdprAuditService;
         }
 
         [BindProperty]
@@ -135,8 +139,50 @@ namespace Marketio_Web.Areas.Identity.Pages.Account
                         _logger.LogInformation("Customer role assigned to user {Email}", Input.Email);
                     }
 
-                    // Generate email confirmation token
+                    // GDPR: Log consent events in audit trail
                     var userId = await _userManager.GetUserIdAsync(user);
+                    var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+                    var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
+
+                    try
+                    {
+                        await _gdprAuditService.LogConsentEventAsync(
+                            userId,
+                            "terms",
+                            Input.TermsConsentGiven,
+                            ipAddress,
+                            userAgent,
+                            $"Toestemming gegeven bij registratie op {DateTime.UtcNow:dd-MM-yyyy HH:mm:ss} UTC");
+
+                        await _gdprAuditService.LogConsentEventAsync(
+                            userId,
+                            "privacy",
+                            Input.PrivacyConsentGiven,
+                            ipAddress,
+                            userAgent,
+                            $"Toestemming gegeven bij registratie op {DateTime.UtcNow:dd-MM-yyyy HH:mm:ss} UTC");
+
+                        await _gdprAuditService.LogConsentEventAsync(
+                            userId,
+                            "marketing",
+                            Input.MarketingOptIn,
+                            ipAddress,
+                            userAgent,
+                            $"Marketing opt-{(Input.MarketingOptIn ? "in" : "out")} bij registratie op {DateTime.UtcNow:dd-MM-yyyy HH:mm:ss} UTC");
+
+                        _logger.LogInformation(
+                            "GDPR audit logs aangemaakt voor gebruiker {UserId} bij registratie.",
+                            userId);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Audit logging mag registratie niet blokkeren — enkel loggen
+                        _logger.LogError(ex,
+                            "Fout bij aanmaken GDPR audit logs voor gebruiker {UserId}. Registratie gaat door.",
+                            userId);
+                    }
+
+                    // Generate email confirmation token
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 

@@ -66,6 +66,18 @@
                             </li>
                         }
 
+                        <!--  Mijn Privacy (alleen voor ingelogde gebruikers) -->
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Privacy" ? "active" : "")"
+                                   asp-controller="Privacy"
+                                   asp-action="MyPrivacy">
+                                    <i class="bi bi-shield-lock"></i> Mijn Privacy
+                                </a>
+                            </li>
+                        }
+
                         <!--  Bestellingen beheer (alleen voor Admin) -->
                         @if (User.IsInRole("Admin"))
                         {
@@ -167,9 +179,6 @@
         </div>
     </footer>
 
-    <!-- Cookie Consent Banner -->
-    <partial name="_CookieConsentPartial" />
-
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -195,5 +204,8 @@
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
+    @* AVG Cookie Banner: altijd als laatste renderen zodat z-index 9999 boven alles staat *@
+    @await Html.PartialAsync("_CookieBanner")
 </body>
 </html>
