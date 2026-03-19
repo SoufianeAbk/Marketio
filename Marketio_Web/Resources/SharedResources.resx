@@ -960,4 +960,156 @@
 	<data name="ViewDetails" xml:space="preserve">
 		<value>View Details</value>
 	</data>
+
+	<!-- Home\Terms.cshtml -->
+	<data name="TermsOfService" xml:space="preserve">
+		<value>Terms of Service</value>
+	</data>
+	<data name="TermsIntroduction" xml:space="preserve">
+		<value>Introduction</value>
+	</data>
+	<data name="TermsIntroductionText" xml:space="preserve">
+		<value>Welcome to Marketio. These Terms of Service (hereinafter "Terms") govern your use of our website, mobile application, and services. By accessing and using Marketio, you accept and agree to be bound by all the terms and conditions outlined herein. If you do not agree with any part of these Terms, you may not use our services.</value>
+	</data>
+	<data name="UserAgreement" xml:space="preserve">
+		<value>User Agreement</value>
+	</data>
+	<data name="UserAgreementText" xml:space="preserve">
+		<value>By using the Marketio platform, you agree that you are at least 18 years of age and possess the legal authority to enter into this agreement. You further agree to comply with all applicable laws and regulations. Marketio reserves the right to deny access to anyone who violates these Terms.</value>
+	</data>
+	<data name="UserAccounts" xml:space="preserve">
+		<value>User Accounts</value>
+	</data>
+	<data name="UserAccountsIntro" xml:space="preserve">
+		<value>To use certain features of our platform, you may need to create an account. You are responsible for maintaining the confidentiality of your account information and password.</value>
+	</data>
+	<data name="AccountCreation" xml:space="preserve">
+		<value>Account Creation</value>
+	</data>
+	<data name="AccountCreationDesc" xml:space="preserve">
+		<value>You must provide accurate, current, and complete information during registration. You agree not to impersonate any person or entity or provide false information.</value>
+	</data>
+	<data name="AccountResponsibility" xml:space="preserve">
+		<value>Account Responsibility</value>
+	</data>
+	<data name="AccountResponsibilityDesc" xml:space="preserve">
+		<value>You are responsible for all activities that occur under your account, whether authorized by you or not. Notify us immediately of any unauthorized use of your account.</value>
+	</data>
+	<data name="AccountSecurity" xml:space="preserve">
+		<value>Account Security</value>
+	</data>
+	<data name="AccountSecurityDesc" xml:space="preserve">
+		<value>You agree to maintain the security of your account and are fully responsible for all activities that occur under your account. Marketio will not be liable for losses caused by unauthorized use of your account.</value>
+	</data>
+	<data name="TerminationRights" xml:space="preserve">
+		<value>Termination Rights</value>
+	</data>
+	<data name="TerminationRightsDesc" xml:space="preserve">
+		<value>Marketio reserves the right to terminate or suspend your account immediately, without prior notice or liability, for any reason or no reason, including if you breach any provision of these Terms.</value>
+	</data>
+	<data name="OrdersAndPayments" xml:space="preserve">
+		<value>Orders and Payments</value>
+	</data>
+	<data name="OrdersAndPaymentsIntro" xml:space="preserve">
+		<value>All purchases on Marketio are subject to acceptance and processing. We reserve the right to refuse or cancel any order.</value>
+	</data>
+	<data name="OrderPlacement" xml:space="preserve">
+		<value>Order Placement</value>
+	</data>
+	<data name="OrderPlacementDesc" xml:space="preserve">
+		<value>When you place an order, you are offering to purchase products at the listed price. Marketio will confirm your order via email.</value>
+	</data>
+	<data name="PaymentTerms" xml:space="preserve">
+		<value>Payment Terms</value>
+	</data>
+	<data name="PaymentTermsDesc" xml:space="preserve">
+		<value>Payment must be received before order shipment. We accept multiple payment methods including credit cards, debit cards, PayPal, and bank transfers.</value>
+	</data>
+	<data name="Shipping" xml:space="preserve">
+		<value>Shipping</value>
+	</data>
+	<data name="ShippingDesc" xml:space="preserve">
+		<value>Delivery times are estimates only. Marketio is not responsible for delays beyond our control. Risk of loss transfers to you upon delivery to the carrier.</value>
+	</data>
+	<data name="ReturnsAndRefunds" xml:space="preserve">
+		<value>Returns and Refunds</value>
+	</data>
+	<data name="ReturnsAndRefundsDesc" xml:space="preserve">
+		<value>Products may be returned within 30 days of purchase for a full refund, provided they are in original condition. Refunds will be processed within 7 business days.</value>
+	</data>
+	<data name="ProductWarranty" xml:space="preserve">
+		<value>Product Warranty</value>
+	</data>
+	<data name="ProductWarrantyText" xml:space="preserve">
+		<value>All products sold on Marketio come with the manufacturer's warranty. Some products may have extended warranty options available for purchase. This warranty covers defects in materials and workmanship under normal use. Warranties do not cover damage caused by accident, misuse, or unauthorized modifications.</value>
+	</data>
+	<data name="Limitations" xml:space="preserve">
+		<value>Limitations of Liability</value>
+	</data>
+	<data name="LimitationsIntro" xml:space="preserve">
+		<value>TO THE FULLEST EXTENT PERMITTED BY LAW, MARKETIO SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, PUNITIVE, OR EXEMPLARY DAMAGES, INCLUDING BUT NOT LIMITED TO DAMAGES FOR LOSS OF PROFITS, GOODWILL, USE, DATA, OR OTHER INTANGIBLE LOSSES.</value>
+	</data>
+	<data name="Warning" xml:space="preserve">
+		<value>Warning</value>
+	</data>
+	<data name="LiabilityLimitationWarning" xml:space="preserve">
+		<value>Our total liability for any claim arising out of or related to this agreement shall not exceed the amount you paid for the product or service in question.</value>
+	</data>
+	<data name="IntellectualProperty" xml:space="preserve">
+		<value>Intellectual Property Rights</value>
+	</data>
+	<data name="IntellectualPropertyText" xml:space="preserve">
+		<value>All content on the Marketio website and application, including text, graphics, logos, images, and software, is the exclusive property of Marketio or its content suppliers and is protected by international copyright laws. You may not reproduce, distribute, or transmit any content without our prior written consent.</value>
+	</data>
+	<data name="ProhibitedActivities" xml:space="preserve">
+		<value>Prohibited Activities</value>
+	</data>
+	<data name="ProhibitedActivitiesIntro" xml:space="preserve">
+		<value>You agree that you will not engage in any of the following prohibited activities:</value>
+	</data>
+	<data name="ProhibitedActivity1" xml:space="preserve">
+		<value>Violate any applicable laws or regulations</value>
+	</data>
+	<data name="ProhibitedActivity2" xml:space="preserve">
+		<value>Infringe on any intellectual property rights of third parties</value>
+	</data>
+	<data name="ProhibitedActivity3" xml:space="preserve">
+		<value>Engage in unauthorized access to our systems or networks</value>
+	</data>
+	<data name="ProhibitedActivity4" xml:space="preserve">
+		<value>Transmit viruses, malware, or any code of destructive nature</value>
+	</data>
+	<data name="ProhibitedActivity5" xml:space="preserve">
+		<value>Harass, threaten, or defame any person or entity</value>
+	</data>
+	<data name="ProhibitedActivity6" xml:space="preserve">
+		<value>Engage in any fraudulent or deceptive conduct</value>
+	</data>
+	<data name="Modifications" xml:space="preserve">
+		<value>Modifications to Terms</value>
+	</data>
+	<data name="ModificationsText" xml:space="preserve">
+		<value>Marketio reserves the right to modify these Terms at any time without notice. Your continued use of the platform following the posting of revised Terms means you accept and agree to the changes.</value>
+	</data>
+	<data name="Indemnification" xml:space="preserve">
+		<value>Indemnification</value>
+	</data>
+	<data name="IndemnificationText" xml:space="preserve">
+		<value>You agree to indemnify, defend, and hold harmless Marketio and its officers, directors, employees, and agents from any claims, damages, losses, liabilities, and expenses arising out of your use of the platform or breach of these Terms.</value>
+	</data>
+	<data name="Dispute" xml:space="preserve">
+		<value>Dispute Resolution</value>
+	</data>
+	<data name="DisputeText" xml:space="preserve">
+		<value>Any disputes arising from your use of Marketio shall be governed by the laws of the Netherlands. You agree to submit to the exclusive jurisdiction of the Dutch courts for resolution of any disputes.</value>
+	</data>
+	<data name="SeverabilityAndWaiver" xml:space="preserve">
+		<value>Severability and Waiver</value>
+	</data>
+	<data name="SeverabilityAndWaiverText" xml:space="preserve">
+		<value>If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions shall remain in effect. The failure of Marketio to enforce any right or provision shall not constitute a waiver of such right or provision.</value>
+	</data>
+	<data name="ContactUsIntro" xml:space="preserve">
+		<value>If you have any questions about these Terms of Service, please contact us:</value>
+	</data>
 </root>

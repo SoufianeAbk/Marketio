@@ -960,4 +960,156 @@
 	<data name="ViewDetails" xml:space="preserve">
 		<value>Bekijk Details</value>
 	</data>
+
+	<!-- Home\Terms.cshtml -->
+	<data name="TermsOfService" xml:space="preserve">
+		<value>Gebruiksvoorwaarden</value>
+	</data>
+	<data name="TermsIntroduction" xml:space="preserve">
+		<value>Inleiding</value>
+	</data>
+	<data name="TermsIntroductionText" xml:space="preserve">
+		<value>Welkom bij Marketio. Deze Gebruiksvoorwaarden (hierna "Voorwaarden") regelen uw gebruik van onze website, mobiele applicatie en diensten. Door Marketio te bezoeken en te gebruiken, aanvaardt u alle hierin vermelde voorwaarden en bepalingen. Als u het niet eens bent met enig deel van deze Voorwaarden, mag u onze diensten niet gebruiken.</value>
+	</data>
+	<data name="UserAgreement" xml:space="preserve">
+		<value>Gebruikersovereenkomst</value>
+	</data>
+	<data name="UserAgreementText" xml:space="preserve">
+		<value>Door gebruik te maken van het Marketio-platform bevestigt u dat u minimaal 18 jaar oud bent en de wettelijke bevoegdheid heeft om deze overeenkomst aan te gaan. U stemt er verder mee in om alle toepasselijke wet- en regelgeving na te leven. Marketio behoudt zich het recht voor om de toegang te weigeren aan iedereen die deze Voorwaarden overtreedt.</value>
+	</data>
+	<data name="UserAccounts" xml:space="preserve">
+		<value>Gebruikersaccounts</value>
+	</data>
+	<data name="UserAccountsIntro" xml:space="preserve">
+		<value>Om bepaalde functies van ons platform te gebruiken, dient u mogelijk een account aan te maken. U bent verantwoordelijk voor het vertrouwelijk houden van uw accountgegevens en wachtwoord.</value>
+	</data>
+	<data name="AccountCreation" xml:space="preserve">
+		<value>Account Aanmaken</value>
+	</data>
+	<data name="AccountCreationDesc" xml:space="preserve">
+		<value>U dient accurate, actuele en volledige informatie te verstrekken tijdens de registratie. U stemt ermee in geen persoon of entiteit na te bootsen of valse informatie te verstrekken.</value>
+	</data>
+	<data name="AccountResponsibility" xml:space="preserve">
+		<value>Accountverantwoordelijkheid</value>
+	</data>
+	<data name="AccountResponsibilityDesc" xml:space="preserve">
+		<value>U bent verantwoordelijk voor alle activiteiten die plaatsvinden onder uw account, al dan niet door u geautoriseerd. Stel ons onmiddellijk op de hoogte van ongeoorloofd gebruik van uw account.</value>
+	</data>
+	<data name="AccountSecurity" xml:space="preserve">
+		<value>Accountbeveiliging</value>
+	</data>
+	<data name="AccountSecurityDesc" xml:space="preserve">
+		<value>U stemt ermee in de beveiliging van uw account te handhaven en bent volledig verantwoordelijk voor alle activiteiten die plaatsvinden onder uw account. Marketio is niet aansprakelijk voor verliezen veroorzaakt door ongeoorloofd gebruik van uw account.</value>
+	</data>
+	<data name="TerminationRights" xml:space="preserve">
+		<value>Beëindigingsrechten</value>
+	</data>
+	<data name="TerminationRightsDesc" xml:space="preserve">
+		<value>Marketio behoudt zich het recht voor om uw account onmiddellijk te beëindigen of op te schorten, zonder voorafgaande kennisgeving of aansprakelijkheid, om welke reden dan ook, inclusief als u een bepaling van deze Voorwaarden schendt.</value>
+	</data>
+	<data name="OrdersAndPayments" xml:space="preserve">
+		<value>Bestellingen en Betalingen</value>
+	</data>
+	<data name="OrdersAndPaymentsIntro" xml:space="preserve">
+		<value>Alle aankopen op Marketio zijn onderworpen aan aanvaarding en verwerking. Wij behouden ons het recht voor om bestellingen te weigeren of te annuleren.</value>
+	</data>
+	<data name="OrderPlacement" xml:space="preserve">
+		<value>Bestelling Plaatsen</value>
+	</data>
+	<data name="OrderPlacementDesc" xml:space="preserve">
+		<value>Wanneer u een bestelling plaatst, doet u een aanbod om producten te kopen tegen de vermelde prijs. Marketio bevestigt uw bestelling per e-mail.</value>
+	</data>
+	<data name="PaymentTerms" xml:space="preserve">
+		<value>Betalingsvoorwaarden</value>
+	</data>
+	<data name="PaymentTermsDesc" xml:space="preserve">
+		<value>Betaling moet worden ontvangen vóór verzending van de bestelling. Wij accepteren meerdere betaalmethoden, waaronder creditcards, betaalpassen, PayPal en bankoverschrijvingen.</value>
+	</data>
+	<data name="Shipping" xml:space="preserve">
+		<value>Verzending</value>
+	</data>
+	<data name="ShippingDesc" xml:space="preserve">
+		<value>Levertijden zijn slechts schattingen. Marketio is niet verantwoordelijk voor vertragingen buiten onze controle. Het risico van verlies gaat over op u bij aflevering aan de vervoerder.</value>
+	</data>
+	<data name="ReturnsAndRefunds" xml:space="preserve">
+		<value>Retouren en Terugbetalingen</value>
+	</data>
+	<data name="ReturnsAndRefundsDesc" xml:space="preserve">
+		<value>Producten kunnen binnen 30 dagen na aankoop worden geretourneerd voor een volledige terugbetaling, mits ze in originele staat verkeren. Terugbetalingen worden binnen 7 werkdagen verwerkt.</value>
+	</data>
+	<data name="ProductWarranty" xml:space="preserve">
+		<value>Productgarantie</value>
+	</data>
+	<data name="ProductWarrantyText" xml:space="preserve">
+		<value>Alle producten die via Marketio worden verkocht, worden geleverd met de fabrieksgarantie. Voor sommige producten zijn verlengde garantieopties beschikbaar. Deze garantie dekt defecten in materialen en vakmanschap bij normaal gebruik. Garanties dekken geen schade veroorzaakt door ongeluk, misbruik of ongeautoriseerde wijzigingen.</value>
+	</data>
+	<data name="Limitations" xml:space="preserve">
+		<value>Aansprakelijkheidsbeperkingen</value>
+	</data>
+	<data name="LimitationsIntro" xml:space="preserve">
+		<value>VOOR ZOVER TOEGESTAAN DOOR DE WET IS MARKETIO NIET AANSPRAKELIJK VOOR ENIGE INDIRECTE, INCIDENTELE, BIJZONDERE, GEVOLGSCHADE, PUNITIEVE OF EXEMPLAIRE SCHADE, INCLUSIEF MAAR NIET BEPERKT TOT SCHADE WEGENS WINSTDERVING, GOODWILL, GEBRUIK, GEGEVENS OF ANDERE IMMATERIËLE VERLIEZEN.</value>
+	</data>
+	<data name="Warning" xml:space="preserve">
+		<value>Waarschuwing</value>
+	</data>
+	<data name="LiabilityLimitationWarning" xml:space="preserve">
+		<value>Onze totale aansprakelijkheid voor enige claim voortvloeiend uit of verband houdend met deze overeenkomst zal niet meer bedragen dan het bedrag dat u heeft betaald voor het betreffende product of de betreffende dienst.</value>
+	</data>
+	<data name="IntellectualProperty" xml:space="preserve">
+		<value>Intellectuele Eigendomsrechten</value>
+	</data>
+	<data name="IntellectualPropertyText" xml:space="preserve">
+		<value>Alle inhoud op de Marketio-website en -applicatie, inclusief tekst, afbeeldingen, logo's, afbeeldingen en software, is het exclusieve eigendom van Marketio of haar contentleveranciers en is beschermd door internationale auteursrechtwetten. U mag geen inhoud reproduceren, distribueren of verzenden zonder onze voorafgaande schriftelijke toestemming.</value>
+	</data>
+	<data name="ProhibitedActivities" xml:space="preserve">
+		<value>Verboden Activiteiten</value>
+	</data>
+	<data name="ProhibitedActivitiesIntro" xml:space="preserve">
+		<value>U stemt ermee in dat u zich niet zult bezighouden met de volgende verboden activiteiten:</value>
+	</data>
+	<data name="ProhibitedActivity1" xml:space="preserve">
+		<value>Toepasselijke wet- en regelgeving overtreden</value>
+	</data>
+	<data name="ProhibitedActivity2" xml:space="preserve">
+		<value>Inbreuk maken op intellectuele eigendomsrechten van derden</value>
+	</data>
+	<data name="ProhibitedActivity3" xml:space="preserve">
+		<value>Ongeautoriseerde toegang tot onze systemen of netwerken verkrijgen</value>
+	</data>
+	<data name="ProhibitedActivity4" xml:space="preserve">
+		<value>Virussen, malware of andere destructieve code verspreiden</value>
+	</data>
+	<data name="ProhibitedActivity5" xml:space="preserve">
+		<value>Personen of entiteiten lastigvallen, bedreigen of belasteren</value>
+	</data>
+	<data name="ProhibitedActivity6" xml:space="preserve">
+		<value>Frauduleus of misleidend gedrag vertonen</value>
+	</data>
+	<data name="Modifications" xml:space="preserve">
+		<value>Wijzigingen in de Voorwaarden</value>
+	</data>
+	<data name="ModificationsText" xml:space="preserve">
+		<value>Marketio behoudt zich het recht voor deze Voorwaarden op elk moment zonder kennisgeving te wijzigen. Uw voortgezet gebruik van het platform na het plaatsen van herziene Voorwaarden betekent dat u de wijzigingen aanvaardt en ermee instemt.</value>
+	</data>
+	<data name="Indemnification" xml:space="preserve">
+		<value>Vrijwaring</value>
+	</data>
+	<data name="IndemnificationText" xml:space="preserve">
+		<value>U stemt ermee in Marketio en haar functionarissen, directeuren, medewerkers en agenten te vrijwaren, verdedigen en schadeloos te stellen van enige claims, schade, verliezen, aansprakelijkheden en kosten die voortvloeien uit uw gebruik van het platform of schending van deze Voorwaarden.</value>
+	</data>
+	<data name="Dispute" xml:space="preserve">
+		<value>Geschillenbeslechting</value>
+	</data>
+	<data name="DisputeText" xml:space="preserve">
+		<value>Geschillen die voortvloeien uit uw gebruik van Marketio worden beheerst door het recht van Nederland. U stemt ermee in zich te onderwerpen aan de exclusieve bevoegdheid van de Nederlandse rechtbanken voor de beslechting van geschillen.</value>
+	</data>
+	<data name="SeverabilityAndWaiver" xml:space="preserve">
+		<value>Scheidbaarheid en Afstand van Recht</value>
+	</data>
+	<data name="SeverabilityAndWaiverText" xml:space="preserve">
+		<value>Als een bepaling van deze Voorwaarden ongeldig of niet-afdwingbaar wordt bevonden, blijven de overige bepalingen van kracht. Het niet handhaven door Marketio van een recht of bepaling vormt geen afstand van dat recht of die bepaling.</value>
+	</data>
+	<data name="ContactUsIntro" xml:space="preserve">
+		<value>Als u vragen heeft over deze Gebruiksvoorwaarden, neem dan contact met ons op:</value>
+	</data>
 </root>
