@@ -51,6 +51,9 @@ builder.Services.AddScoped<ICartService, CartService>();
 // JWT Token Service
 builder.Services.AddScoped<JwtTokenService>();
 
+// GDPR Compliance Service
+builder.Services.AddScoped<IGdprAuditService, GdprAuditService>();
+
 // Email Service (implementeer IEmailSender)
 builder.Services.AddTransient<IEmailSender, EmailSenderService>();
 
@@ -74,7 +77,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.RequestCultureProviders.Insert(1, new CookieRequestCultureProvider());
 });
 
-//  Identity met ApplicationUser en Rollen
+//  Identity mit ApplicationUser en Rollen
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     // Email Verification

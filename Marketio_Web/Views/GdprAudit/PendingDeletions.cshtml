@@ -1,0 +1,246 @@
+﻿@model IEnumerable<dynamic>
+@using Marketio_Web.Models
+@using Marketio_Web.Services
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
+
+@{
+    ViewData["Title"] = "Ausstehende Löschungsanforderungen";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="display-4">
+                <i class="bi bi-exclamation-triangle-fill"></i> Ausstehende Löschungsanforderungen
+            </h1>
+            <p class="lead text-muted">Verwalten Sie die Anforderungen zur Löschung von Benutzerkonten (Recht auf Vergessenwerden)</p>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> <strong>Keine ausstehenden Anforderungen</strong>
+            <p class="mb-0">Es gibt derzeit keine ausstehenden Löschungsanforderungen.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                var log = (GdprAuditLogDto)item.Log;
+                var user = (ApplicationUser)item.User;
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-danger">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-person-x-fill"></i> Löschungsanforderung
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-3">
+                                <dt class="col-sm-5">
+                                    <strong>Name:</strong>
+                                </dt>
+                                <dd class="col-sm-7">
+                                    @user?.FullName
+                                </dd>
+
+                                <dt class="col-sm-5">
+                                    <strong>E-Mail:</strong>
+                                </dt>
+                                <dd class="col-sm-7">
+                                    <code>@user?.Email</code>
+                                </dd>
+
+                                <dt class="col-sm-5">
+                                    <strong>Angefordert:</strong>
+                                </dt>
+                                <dd class="col-sm-7">
+                                    <small>@log.Timestamp.ToString("dd-MM-yyyy HH:mm:ss")</small>
+                                </dd>
+
+                                <dt class="col-sm-5">
+                                    <strong>Tage seit:</strong>
+                                </dt>
+                                <dd class="col-sm-7">
+                                    <small>@((DateTime.UtcNow - log.Timestamp).Days) Tage</small>
+                                </dd>
+                            </dl>
+
+                            <div class="alert alert-warning mb-3" role="alert">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                <strong>Warnung:</strong> Das Löschen dieses Kontos ist permanent und kann nicht rückgängig gemacht werden.
+                            </div>
+
+                            <div class="alert alert-info mb-0" role="alert">
+                                <small>
+                                    <i class="bi bi-info-circle"></i>
+                                    <strong>IP-Adresse:</strong> @(log.IpAddress ?? "Nicht verfügbar")
+                                </small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <div class="btn-group d-grid gap-2" role="group">
+                                <button type="button"
+                                        class="btn btn-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#confirmDeleteModal"
+                                        data-user-id="@user?.Id"
+                                        data-user-email="@user?.Email">
+                                    <i class="bi bi-trash-fill"></i> Bestätigen & Löschen
+                                </button>
+                                <button type="button"
+                                        class="btn btn-outline-secondary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#denyDeleteModal"
+                                        data-user-id="@user?.Id"
+                                        data-user-email="@user?.Email">
+                                    <i class="bi bi-x-circle"></i> Ablehnen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="confirmDeleteLabel">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Konto-Löschung bestätigen
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="ProcessDeletion" method="post">
+                <div class="modal-body">
+                    <div class="alert alert-danger" role="alert">
+                        <strong>Achtung!</strong> Sie sind dabei, das folgende Benutzerkonto permanent zu löschen:
+                    </div>
+
+                    <input type="hidden" name="userId" id="deleteUserId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <strong>E-Mail:</strong>
+                        </label>
+                        <p id="deleteUserEmail" class="form-control-plaintext"></p>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="confirmCheckbox" required />
+                        <label class="form-check-label" for="confirmCheckbox">
+                            Ich verstehe, dass dieser Vorgang <strong>nicht rückgängig</strong> gemacht werden kann.
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Abbrechen
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash-fill"></i> Ja, Konto löschen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Deny Delete Modal -->
+<div class="modal fade" id="denyDeleteModal" tabindex="-1" aria-labelledby="denyDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-warning">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="denyDeleteLabel">
+                    <i class="bi bi-exclamation-circle"></i> Löschungsanforderung ablehnen
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="DenyDeletion" method="post">
+                <div class="modal-body">
+                    <p>Sie sind dabei, die Löschungsanforderung für das folgende Konto abzulehnen:</p>
+
+                    <input type="hidden" name="userId" id="denyUserId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <strong>E-Mail:</strong>
+                        </label>
+                        <p id="denyUserEmail" class="form-control-plaintext"></p>
+                    </div>
+
+                    <p class="text-muted">
+                        <small>Das Konto bleibt aktiv und der Benutzer wird benachrichtigt.</small>
+                    </p>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Abbrechen
+                    </button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-exclamation-circle"></i> Ablehnen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Confirm Delete Modal
+        const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+        confirmDeleteModal?.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const userId = button.getAttribute('data-user-id');
+            const userEmail = button.getAttribute('data-user-email');
+
+            document.getElementById('deleteUserId').value = userId;
+            document.getElementById('deleteUserEmail').textContent = userEmail;
+            document.getElementById('confirmCheckbox').checked = false;
+        });
+
+        // Deny Delete Modal
+        const denyDeleteModal = document.getElementById('denyDeleteModal');
+        denyDeleteModal?.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const userId = button.getAttribute('data-user-id');
+            const userEmail = button.getAttribute('data-user-email');
+
+            document.getElementById('denyUserId').value = userId;
+            document.getElementById('denyUserEmail').textContent = userEmail;
+        });
+
+        // Auto-dismiss alerts
+        setTimeout(function () {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => alert.remove(), 5000);
+            });
+        }, 100);
+    </script>
+}

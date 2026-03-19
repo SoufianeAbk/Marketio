@@ -56,6 +56,41 @@
                             <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                         </div>
 
+                        <!-- GDPR Consent: Terms of Service -->
+                        <div class="mb-3 form-check">
+                            <input asp-for="Input.TermsConsentGiven" class="form-check-input" aria-required="true" />
+                            <label asp-for="Input.TermsConsentGiven" class="form-check-label">
+                                @Localizer["Register_IAccept"]
+                                <a href="@Url.Page("/Terms")" target="_blank" class="text-primary fw-bold">@Localizer["Register_TermsOfService"]</a>
+                            </label>
+                            <span asp-validation-for="Input.TermsConsentGiven" class="d-block text-danger mt-1"></span>
+                        </div>
+
+                        <!-- GDPR Consent: Privacy Policy -->
+                        <div class="mb-3 form-check">
+                            <input asp-for="Input.PrivacyConsentGiven" class="form-check-input" aria-required="true" />
+                            <label asp-for="Input.PrivacyConsentGiven" class="form-check-label">
+                                @Localizer["Register_IAccept"]
+                                <a href="@Url.Page("/Home/Privacy")" target="_blank" class="text-primary fw-bold">@Localizer["Register_PrivacyPolicy"]</a>
+                            </label>
+                            <span asp-validation-for="Input.PrivacyConsentGiven" class="d-block text-danger mt-1"></span>
+                        </div>
+
+                        <!-- Marketing Opt-in -->
+                        <div class="mb-3 form-check">
+                            <input asp-for="Input.MarketingOptIn" class="form-check-input" />
+                            <label asp-for="Input.MarketingOptIn" class="form-check-label">
+                                @Localizer["Register_ReceiveOffersAndNews"]
+                            </label>
+                        </div>
+
+                        <!-- GDPR Information Box -->
+                        <div class="alert alert-info mb-3">
+                            <i class="bi bi-shield-check"></i>
+                            <strong>@Localizer["GDPR_Title"]:</strong>
+                            @Localizer["GDPR_Description"]
+                        </div>
+
                         <button id="registerSubmit" type="submit" class="btn btn-primary w-100">
                             <i class="bi bi-person-check"></i> @Localizer["Register_SubmitButton"]
                         </button>

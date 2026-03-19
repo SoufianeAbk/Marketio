@@ -1,0 +1,268 @@
+﻿@model IEnumerable<GdprAuditLogDto>
+@using Marketio_Web.Models
+@using Marketio_Web.Services
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
+
+@{
+    ViewData["Title"] = $"Audit Trail - {((ApplicationUser)ViewBag.User)?.FullName}";
+    var user = (ApplicationUser)ViewBag.User;
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-4">
+                <i class="bi bi-person-lines-fill"></i> Audit Trail - @user?.FullName
+            </h1>
+            <p class="lead text-muted">Vollständige GDPR-Aktivitätshistorie für diesen Benutzer</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="AuditLogs" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Zurück
+            </a>
+        </div>
+    </div>
+
+    <!-- User Information Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-person-badge"></i> Benutzerinformationen
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-4">Name:</dt>
+                        <dd class="col-sm-8">@user?.FullName</dd>
+
+                        <dt class="col-sm-4">E-Mail:</dt>
+                        <dd class="col-sm-8"><code>@user?.Email</code></dd>
+
+                        <dt class="col-sm-4">User ID:</dt>
+                        <dd class="col-sm-8"><code class="text-muted">@user?.Id</code></dd>
+
+                        <dt class="col-sm-4">Registriert:</dt>
+                        <dd class="col-sm-8">@user?.LockoutEnd?.DateTime.ToString("dd-MM-yyyy")</dd>
+                    </dl>
+                </div>
+                <div class="col-md-6">
+                    <h6>Einwilligungsstatus:</h6>
+                    <dl class="row">
+                        <dt class="col-sm-6">
+                            <i class="bi bi-file-earmark-check"></i> Datenschutzerklärung:
+                        </dt>
+                        <dd class="col-sm-6">
+                            @if (user?.PrivacyConsentGiven == true)
+                            {
+                                <span class="badge bg-success">Akzeptiert</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Nicht akzeptiert</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-6">
+                            <i class="bi bi-file-earmark-check"></i> Bedingungen:
+                        </dt>
+                        <dd class="col-sm-6">
+                            @if (user?.TermsConsentGiven == true)
+                            {
+                                <span class="badge bg-success">Akzeptiert</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Nicht akzeptiert</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-6">
+                            <i class="bi bi-envelope"></i> Marketing:
+                        </dt>
+                        <dd class="col-sm-6">
+                            @if (user?.MarketingOptIn == true)
+                            {
+                                <span class="badge bg-success">Abonniert</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Nicht abonniert</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-6">
+                            <i class="bi bi-exclamation-triangle"></i> Löschung angefordert:
+                        </dt>
+                        <dd class="col-sm-6">
+                            @if (user?.IsDeletionRequested == true)
+                            {
+                                <span class="badge bg-danger">Ja</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Nein</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> <strong>Keine Audit-Einträge</strong>
+            <p class="mb-0">Es gibt noch keine Audit-Einträge für diesen Benutzer.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <!-- Timeline -->
+            <div class="col-md-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-clock-history"></i> Aktivitätsverlauf
+                            <span class="badge bg-light text-dark ms-2">@ViewBag.AuditLogsCount Einträge</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="timeline">
+                            @foreach (var log in Model)
+                            {
+                                var badgeClass = log.EventType switch
+                                {
+                                    "ConsentGiven" => "bg-success",
+                                    "ConsentWithdrawn" => "bg-warning",
+                                    "DeletionRequested" => "bg-danger",
+                                    "DataExported" => "bg-info",
+                                    _ => "bg-secondary"
+                                };
+
+                                var iconClass = log.EventType switch
+                                {
+                                    "ConsentGiven" => "bi-check-circle",
+                                    "ConsentWithdrawn" => "bi-exclamation-circle",
+                                    "DeletionRequested" => "bi-exclamation-triangle",
+                                    "DataExported" => "bi-download",
+                                    _ => "bi-question-circle"
+                                };
+
+                                <div class="timeline-item mb-4">
+                                    <div class="timeline-marker">
+                                        <span class="badge @badgeClass p-2">
+                                            <i class="bi @iconClass"></i>
+                                        </span>
+                                    </div>
+                                    <div class="timeline-content card">
+                                        <div class="card-header">
+                                            <strong>@log.EventType</strong>
+                                            <span class="text-muted float-end">
+                                                <small>@log.Timestamp.ToString("dd-MM-yyyy HH:mm:ss")</small>
+                                            </span>
+                                        </div>
+                                        <div class="card-body">
+                                            <dl class="row mb-2">
+                                                <dt class="col-sm-3">Typ:</dt>
+                                                <dd class="col-sm-9">
+                                                    <span class="badge bg-light text-dark">@log.ConsentType</span>
+                                                </dd>
+
+                                                <dt class="col-sm-3">Status:</dt>
+                                                <dd class="col-sm-9">
+                                                    @if (log.Granted)
+                                                    {
+                                                        <span class="badge bg-success">Gewährt</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-secondary">Verweigert</span>
+                                                    }
+                                                </dd>
+
+                                                <dt class="col-sm-3">IP-Adresse:</dt>
+                                                <dd class="col-sm-9">
+                                                    <code>@(log.IpAddress ?? "Nicht verfügbar")</code>
+                                                </dd>
+
+                                                @if (!string.IsNullOrEmpty(log.UserAgent))
+                                                {
+                                                    <dt class="col-sm-3">User-Agent:</dt>
+                                                    <dd class="col-sm-9">
+                                                        <small class="text-muted">@log.UserAgent</small>
+                                                    </dd>
+                                                }
+
+                                                @if (log.ProcessedDate.HasValue)
+                                                {
+                                                    <dt class="col-sm-3">Verarbeitet:</dt>
+                                                    <dd class="col-sm-9">
+                                                        <small>@log.ProcessedDate.Value.ToString("dd-MM-yyyy HH:mm") durch @(log.ProcessedBy ?? "System")</small>
+                                                    </dd>
+                                                }
+                                            </dl>
+
+                                            @if (!string.IsNullOrEmpty(log.Details))
+                                            {
+                                                <div class="alert alert-secondary mb-0">
+                                                    <small><code>@log.Details</code></small>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #dee2e6;
+        }
+
+    .timeline-item {
+        position: relative;
+        padding-left: 0;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: -25px;
+        top: 0;
+    }
+
+    .timeline-marker .badge {
+        display: inline-flex;
+        width: 40px;
+        height: 40px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        color: white !important;
+    }
+
+    .timeline-content {
+        margin-left: 0;
+    }
+</style>

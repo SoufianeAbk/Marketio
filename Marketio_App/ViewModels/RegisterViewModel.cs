@@ -38,6 +38,12 @@ namespace Marketio_App.ViewModels
         [ObservableProperty]
         private bool acceptTerms;
 
+        [ObservableProperty]
+        private bool acceptPrivacyPolicy;
+
+        [ObservableProperty]
+        private bool acceptMarketing;
+
         public RegisterViewModel(AuthService authService, ConnectivityService connectivity)
         {
             _authService = authService;
@@ -99,6 +105,32 @@ namespace Marketio_App.ViewModels
             await Shell.Current.GoToAsync("///login");
         }
 
+        [RelayCommand]
+        public async Task OpenPrivacyPolicyAsync()
+        {
+            try
+            {
+                await Launcher.Default.OpenAsync("https://yourapp.nl/privacy");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Kan privacyverklaring niet openen: {ex.Message}";
+            }
+        }
+
+        [RelayCommand]
+        public async Task OpenTermsAsync()
+        {
+            try
+            {
+                await Launcher.Default.OpenAsync("https://yourapp.nl/terms");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Kan voorwaarden niet openen: {ex.Message}";
+            }
+        }
+
         private bool ValidateForm()
         {
             if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(FirstName) ||
@@ -153,6 +185,12 @@ namespace Marketio_App.ViewModels
             if (!AcceptTerms)
             {
                 ErrorMessage = "U moet de voorwaarden accepteren.";
+                return false;
+            }
+
+            if (!AcceptPrivacyPolicy)
+            {
+                ErrorMessage = "U moet het privacybeleid accepteren.";
                 return false;
             }
 

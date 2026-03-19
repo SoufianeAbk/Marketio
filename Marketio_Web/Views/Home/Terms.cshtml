@@ -1,0 +1,247 @@
+﻿@using Marketio_Web
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
+
+@{
+    ViewData["Title"] = Localizer["TermsOfService"];
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-10 offset-lg-1">
+            <div class="text-center mb-5">
+                <h1 class="display-4">
+                    <i class="bi bi-file-text text-primary"></i> @Localizer["TermsOfService"]
+                </h1>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-info-circle text-primary"></i> @Localizer["TermsIntroduction"]
+                    </h2>
+                    <p>@Localizer["TermsIntroductionText"]</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-check-circle text-primary"></i> @Localizer["UserAgreement"]
+                    </h2>
+                    <p>@Localizer["UserAgreementText"]</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-person-fill text-primary"></i> @Localizer["UserAccounts"]
+                    </h2>
+                    <p>@Localizer["UserAccountsIntro"]</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>@Localizer["AccountCreation"]:</strong> @Localizer["AccountCreationDesc"]
+                        </li>
+                        <li class="list-group-item">
+                            <strong>@Localizer["AccountResponsibility"]:</strong> @Localizer["AccountResponsibilityDesc"]
+                        </li>
+                        <li class="list-group-item">
+                            <strong>@Localizer["AccountSecurity"]:</strong> @Localizer["AccountSecurityDesc"]
+                        </li>
+                        <li class="list-group-item">
+                            <strong>@Localizer["TerminationRights"]:</strong> @Localizer["TerminationRightsDesc"]
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-shopping-cart text-primary"></i> @Localizer["OrdersAndPayments"]
+                    </h2>
+                    <p>@Localizer["OrdersAndPaymentsIntro"]</p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card h-100 border-primary">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="bi bi-basket text-primary"></i> @Localizer["OrderPlacement"]
+                                    </h5>
+                                    <p class="card-text small">@Localizer["OrderPlacementDesc"]</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 border-info">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="bi bi-credit-card text-info"></i> @Localizer["PaymentTerms"]
+                                    </h5>
+                                    <p class="card-text small">@Localizer["PaymentTermsDesc"]</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 border-success">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="bi bi-truck text-success"></i> @Localizer["Shipping"]
+                                    </h5>
+                                    <p class="card-text small">@Localizer["ShippingDesc"]</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 border-warning">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="bi bi-arrow-counterclockwise text-warning"></i> @Localizer["ReturnsAndRefunds"]
+                                    </h5>
+                                    <p class="card-text small">@Localizer["ReturnsAndRefundsDesc"]</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-exclamation-triangle text-primary"></i> @Localizer["ProductWarranty"]
+                    </h2>
+                    <p>@Localizer["ProductWarrantyText"]</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-shield-exclamation text-primary"></i> @Localizer["Limitations"]
+                    </h2>
+                    <p>@Localizer["LimitationsIntro"]</p>
+                    <div class="alert alert-warning" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong> @Localizer["Warning"]:</strong> @Localizer["LiabilityLimitationWarning"]
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-file-earmark-check text-primary"></i> @Localizer["IntellectualProperty"]
+                    </h2>
+                    <p>@Localizer["IntellectualPropertyText"]</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-prohibition text-primary"></i> @Localizer["ProhibitedActivities"]
+                    </h2>
+                    <p>@Localizer["ProhibitedActivitiesIntro"]</p>
+                    <ul>
+                        <li>@Localizer["ProhibitedActivity1"]</li>
+                        <li>@Localizer["ProhibitedActivity2"]</li>
+                        <li>@Localizer["ProhibitedActivity3"]</li>
+                        <li>@Localizer["ProhibitedActivity4"]</li>
+                        <li>@Localizer["ProhibitedActivity5"]</li>
+                        <li>@Localizer["ProhibitedActivity6"]</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-pencil-square text-primary"></i> @Localizer["Modifications"]
+                    </h2>
+                    <p>@Localizer["ModificationsText"]</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-shield-check text-primary"></i> @Localizer["Indemnification"]
+                    </h2>
+                    <p>@Localizer["IndemnificationText"]</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-gear text-primary"></i> @Localizer["Dispute"]
+                    </h2>
+                    <p>@Localizer["DisputeText"]</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-bookmark-check text-primary"></i> @Localizer["SeverabilityAndWaiver"]
+                    </h2>
+                    <p>@Localizer["SeverabilityAndWaiverText"]</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4 border-primary">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-envelope-at text-primary"></i> @Localizer["ContactUs"]
+                    </h2>
+                    <p>@Localizer["ContactUsIntro"]</p>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="bi bi-envelope-fill text-primary"></i>
+                            <strong> @Localizer["Email"]:</strong> legal@marketio.nl
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-telephone-fill text-primary"></i>
+                            <strong> @Localizer["Phone"]:</strong> +31 (0)20 123 4567
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-geo-alt-fill text-primary"></i>
+                            <strong> @Localizer["Address"]:</strong> Marketio B.V., Voorbeeldstraat 123, 1234 AB Amsterdam
+                        </li>
+                    </ul>
+                    <div class="mt-3">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                            <i class="bi bi-house-door"></i> @Localizer["BackToHome"]
+                        </a>
+                        <a asp-controller="Home" asp-action="Privacy" class="btn btn-outline-primary">
+                            <i class="bi bi-shield-check"></i> @Localizer["PrivacyPolicy"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-secondary text-center" role="alert">
+                <small class="text-muted">
+                    <i class="bi bi-calendar-check"></i>
+                    @Localizer["LastUpdated", DateTime.Now.ToString("dd MMMM yyyy")]
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+}

@@ -73,6 +73,17 @@ namespace Marketio_Web.Areas.Identity.Pages.Account
             [Display(Name = "Bevestig wachtwoord")]
             [Compare("Password", ErrorMessage = "Het wachtwoord en bevestigingswachtwoord komen niet overeen.")]
             public string ConfirmPassword { get; set; } = string.Empty;
+
+            [Required(ErrorMessage = "U moet de voorwaarden accepteren")]
+            [Display(Name = "Ik accepteer de voorwaarden")]
+            public bool TermsConsentGiven { get; set; }
+
+            [Required(ErrorMessage = "U moet het privacybeleid accepteren")]
+            [Display(Name = "Ik accepteer het privacybeleid")]
+            public bool PrivacyConsentGiven { get; set; }
+
+            [Display(Name = "Ik wil graag aanbiedingen ontvangen")]
+            public bool MarketingOptIn { get; set; }
         }
 
         public async Task OnGetAsync(string? returnUrl = null)
@@ -94,7 +105,12 @@ namespace Marketio_Web.Areas.Identity.Pages.Account
                     Email = Input.Email,
                     FirstName = Input.FirstName,
                     LastName = Input.LastName,
-                    Address = Input.Address ?? string.Empty
+                    Address = Input.Address ?? string.Empty,
+                    // GDPR Consent
+                    TermsConsentGiven = Input.TermsConsentGiven,
+                    PrivacyConsentGiven = Input.PrivacyConsentGiven,
+                    MarketingOptIn = Input.MarketingOptIn,
+                    ConsentGivenDate = DateTime.UtcNow
                 };
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
@@ -104,7 +120,13 @@ namespace Marketio_Web.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    _logger.LogInformation(
+                        "User created a new account with password. Email: {Email} | Terms Accepted: {TermsAccepted} | Privacy Accepted: {PrivacyAccepted} | Marketing: {Marketing}",
+                        Input.Email,
+                        Input.TermsConsentGiven,
+                        Input.PrivacyConsentGiven,
+                        Input.MarketingOptIn
+                    );
 
                     // Assign Customer role
                     var roleResult = await _userManager.AddToRoleAsync(user, "Customer");

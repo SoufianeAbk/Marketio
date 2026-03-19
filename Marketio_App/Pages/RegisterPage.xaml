@@ -130,12 +130,72 @@
                 <CheckBox 
                     IsChecked="{Binding AcceptTerms}"
                     VerticalOptions="Center" />
+                <VerticalStackLayout Spacing="4" VerticalOptions="Center">
+                    <Label 
+                        Text="Ik accepteer de "
+                        FontSize="14"
+                        TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Ik accepteer de " TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
+                                <Span Text="voorwaarden" TextColor="#007AFF" FontAttributes="Bold">
+                                    <Span.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding OpenTermsCommand}" />
+                                    </Span.GestureRecognizers>
+                                </Span>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </VerticalStackLayout>
+            </StackLayout>
+
+            <!-- Accept Privacy Policy Checkbox -->
+            <StackLayout Orientation="Horizontal" Spacing="12" Margin="0,8">
+                <CheckBox 
+                    IsChecked="{Binding AcceptPrivacyPolicy}"
+                    VerticalOptions="Center" />
+                <VerticalStackLayout Spacing="4" VerticalOptions="Center">
+                    <Label 
+                        Text="Privacy Policy">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Ik accepteer het " TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
+                                <Span Text="privacybeleid" TextColor="#007AFF" FontAttributes="Bold">
+                                    <Span.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding OpenPrivacyPolicyCommand}" />
+                                    </Span.GestureRecognizers>
+                                </Span>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </VerticalStackLayout>
+            </StackLayout>
+
+            <!-- Marketing Opt-in (Optional) -->
+            <StackLayout Orientation="Horizontal" Spacing="12" Margin="0,8">
+                <CheckBox 
+                    IsChecked="{Binding AcceptMarketing}"
+                    VerticalOptions="Center" />
                 <Label 
-                    Text="Ik accepteer de voorwaarden"
+                    Text="Ik wil graag aanbiedingen en nieuwsberichten ontvangen"
                     VerticalOptions="Center"
                     FontSize="14"
-                    TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
+                    TextColor="{AppThemeBinding Light=#666666, Dark=#CCCCCC}" />
             </StackLayout>
+
+            <!-- GDPR Notice -->
+            <Frame 
+                BorderColor="#34C759"
+                CornerRadius="8"
+                Padding="12"
+                HasShadow="False"
+                BackgroundColor="{AppThemeBinding Light=#F0F9F4, Dark=#1a3a2a}">
+                <Label 
+                    Text="Uw gegevens worden veilig behandeld in overeenstemming met de AVG (GDPR). U kunt uw account op elk moment verwijderen."
+                    FontSize="12"
+                    TextColor="{AppThemeBinding Light=#1a3a2a, Dark=#90EE90}"
+                    LineBreakMode="WordWrap" />
+            </Frame>
 
             <!-- Register Button -->
             <Button 

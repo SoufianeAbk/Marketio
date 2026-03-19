@@ -1,4 +1,4 @@
-using Marketio_Web.Models;
+﻿using Marketio_Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -15,11 +15,16 @@ namespace Marketio_Web.Controllers
 
         public IActionResult Index()
         {
-            // Redirect naar Products/Index in plaats van een lege view
+            // Redirect към Products/Index instead of empty view
             return RedirectToAction("Index", "Products");
         }
 
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        public IActionResult Terms()
         {
             return View();
         }
