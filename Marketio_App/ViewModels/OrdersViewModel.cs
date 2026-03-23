@@ -32,10 +32,30 @@ namespace Marketio_App.ViewModels
         [ObservableProperty]
         private OrderStatus? selectedStatusFilter;
 
+        [ObservableProperty]
+        private bool isOffline;
+
         public OrdersViewModel(OrderApiService orderService, ConnectivityService connectivity)
         {
             _orderService = orderService;
             _connectivity = connectivity;
+
+            // Initialize offline state based on current connectivity
+            isOffline = !_connectivity.IsConnected;
+
+            // Subscribe to connectivity changes
+            _connectivity.ConnectivityChanged += OnConnectivityChanged;
+        }
+
+        private async void OnConnectivityChanged(object? sender, bool isConnected)
+        {
+            IsOffline = !isConnected;
+
+            // Automatically sync when connection is restored
+            if (isConnected && orders.Count > 0)
+            {
+                await RefreshOrdersCommand.ExecuteAsync(null);
+            }
         }
 
         [RelayCommand]
@@ -43,12 +63,6 @@ namespace Marketio_App.ViewModels
         {
             if (IsLoading)
                 return;
-
-            if (!_connectivity.IsConnected)
-            {
-                ErrorMessage = "Geen internetverbinding beschikbaar.";
-                return;
-            }
 
             try
             {
