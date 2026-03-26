@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using Marketio_App.Services;
 using Marketio_Shared.DTOs;
-using Marketio_Shared.Entities;
 using Marketio_Shared.Enums;
 using Microsoft.Maui.Controls;
 using System.Collections.ObjectModel;
@@ -36,8 +35,8 @@ namespace Marketio_App.ViewModels
 
         public ProductsViewModel(ProductApiService productService, ConnectivityService connectivity)
         {
-            _productService = productService;
-            _connectivity = connectivity;
+            _productService = productService ?? throw new ArgumentNullException(nameof(productService));
+            _connectivity = connectivity ?? throw new ArgumentNullException(nameof(connectivity));
         }
 
         [RelayCommand]
@@ -51,14 +50,25 @@ namespace Marketio_App.ViewModels
                 IsLoading = true;
                 ErrorMessage = string.Empty;
 
-                var products = await _productService.GetAllProductsAsync();
-                _allProducts = products ?? new List<ProductDto>();
+                System.Diagnostics.Debug.WriteLine("[ProductsViewModel] LoadProductsAsync started");
 
+                var products = await _productService.GetAllProductsAsync();
+                var productList = products?.ToList() ?? new List<ProductDto>();
+
+                System.Diagnostics.Debug.WriteLine($"[ProductsViewModel] Received {productList.Count} products from service");
+
+                // ✅ Update the all products list
+                _allProducts = productList;
+
+                // ✅ Update the UI collection
                 ApplyFilters();
+
+                System.Diagnostics.Debug.WriteLine($"[ProductsViewModel] LoadProductsAsync completed: {Products.Count} items in UI");
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"Fout bij laden producten: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"[ProductsViewModel] LoadProductsAsync error: {ex}");
             }
             finally
             {
@@ -74,14 +84,20 @@ namespace Marketio_App.ViewModels
                 IsRefreshing = true;
                 ErrorMessage = string.Empty;
 
-                var products = await _productService.GetAllProductsAsync();
-                _allProducts = products ?? new List<ProductDto>();
+                System.Diagnostics.Debug.WriteLine("[ProductsViewModel] RefreshProductsAsync started");
 
+                var products = await _productService.GetAllProductsAsync();
+                var productList = products?.ToList() ?? new List<ProductDto>();
+
+                _allProducts = productList;
                 ApplyFilters();
+
+                System.Diagnostics.Debug.WriteLine($"[ProductsViewModel] RefreshProductsAsync completed: {Products.Count} items");
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"Vernieuwen mislukt: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"[ProductsViewModel] RefreshProductsAsync error: {ex}");
             }
             finally
             {
@@ -95,7 +111,7 @@ namespace Marketio_App.ViewModels
             if (product == null)
                 return;
 
-            await Shell.Current.GoToAsync($"product-detail?productId={product.Id}");
+            await Shell.Current.GoToAsync($"///product-detail?productId={product.Id}");
         }
 
         partial void OnSearchQueryChanged(string value)
@@ -112,13 +128,11 @@ namespace Marketio_App.ViewModels
         {
             var filtered = _allProducts.AsEnumerable();
 
-            // Filter op categorie (null betekent "geen filter")
             if (SelectedCategory.HasValue)
             {
                 filtered = filtered.Where(p => p.Category == SelectedCategory.Value);
             }
 
-            // Filter op zoekterm
             if (!string.IsNullOrWhiteSpace(SearchQuery))
             {
                 var query = SearchQuery.ToLower();
@@ -127,7 +141,10 @@ namespace Marketio_App.ViewModels
                     p.Description.ToLower().Contains(query));
             }
 
-            Products = new ObservableCollection<ProductDto>(filtered);
+            var filteredList = filtered.ToList();
+            Products = new ObservableCollection<ProductDto>(filteredList);
+
+            System.Diagnostics.Debug.WriteLine($"[ProductsViewModel] ApplyFilters: {Products.Count} items after filtering");
         }
     }
 }

@@ -10,6 +10,7 @@ namespace Marketio_App.ViewModels
     public partial class LoginViewModel : ObservableValidator
     {
         private readonly AuthService _authService;
+        private readonly ApiService _apiService;
         private readonly ConnectivityService _connectivity;
 
         [ObservableProperty]
@@ -31,9 +32,10 @@ namespace Marketio_App.ViewModels
         [ObservableProperty]
         private bool rememberMe;
 
-        public LoginViewModel(AuthService authService, ConnectivityService connectivity)
+        public LoginViewModel(AuthService authService, ApiService apiService, ConnectivityService connectivity)
         {
             _authService = authService;
+            _apiService = apiService;
             _connectivity = connectivity;
         }
 
@@ -61,6 +63,13 @@ namespace Marketio_App.ViewModels
 
                 if (success)
                 {
+                    // Get the newly saved token and update ApiService
+                    var token = await _authService.GetTokenAsync();
+                    if (!string.IsNullOrWhiteSpace(token))
+                    {
+                        _apiService.SetAuthorizationHeader(token);
+                    }
+
                     if (RememberMe)
                     {
                         await SecureStorage.Default.SetAsync("remember_email", Email);

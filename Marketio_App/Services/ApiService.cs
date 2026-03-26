@@ -16,6 +16,11 @@ namespace Marketio_App.Services
         private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
         private const string JwtKey = "jwt_token";
 
+        /// <summary>
+        /// Exposes the base API URL for constructing absolute URLs (e.g., for images)
+        /// </summary>
+        public Uri? BaseAddress => _client.BaseAddress;
+
         public ApiService(HttpClient httpClient, ILogger<ApiService> logger)
         {
             _client = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
