@@ -51,7 +51,7 @@
                 BorderColor="Transparent"
                 IsVisible="{Binding Product, Converter={StaticResource IsNotNullConverter}}">
                 <Image 
-                    Source="{Binding Product.ImageUrl, StringFormat='https://localhost:7170{0}'}"
+                    Source="{Binding Product.ImageUrl}"
                     Aspect="AspectFill"
                     HeightRequest="300" />
             </Frame>

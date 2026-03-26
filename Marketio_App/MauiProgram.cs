@@ -51,6 +51,7 @@ namespace Marketio_App
             builder.Services.AddSingleton<LocalDatabaseService>();
             builder.Services.AddSingleton<ProductApiService>();
             builder.Services.AddSingleton<OrderApiService>();
+            builder.Services.AddSingleton<AccountApiService>();
             builder.Services.AddSingleton<CartService>();
             builder.Services.AddSingleton<AuthService>();
 
@@ -62,6 +63,7 @@ namespace Marketio_App
             builder.Services.AddSingleton<OrdersViewModel>();
             builder.Services.AddSingleton<OrderDetailViewModel>();
             builder.Services.AddSingleton<CreateOrderViewModel>();
+            builder.Services.AddSingleton<AccountSettingsViewModel>();
 
             // ─── Pages (AppShell vóór App registreren) ────────────────────────────────
             builder.Services.AddSingleton<AppShell>();
@@ -72,20 +74,34 @@ namespace Marketio_App
             builder.Services.AddSingleton<OrdersPage>();
             builder.Services.AddSingleton<OrderDetailPage>();
             builder.Services.AddSingleton<CreateOrderPage>();
+            builder.Services.AddSingleton<AccountSettingsPage>();
 
             var app = builder.Build();
 
-            // ─── Initialize ApiService (loads stored JWT into Authorization header) ──
-            var apiService = app.Services.GetRequiredService<ApiService>();
+            // ─── Initialize services on startup ──────────────────────────────────────
             Task.Run(async () =>
             {
                 try
                 {
-                    await apiService.InitializeAsync();
+                    // Initialize LocalDatabase first
+                    var localDb = app.Services.GetRequiredService<LocalDatabaseService>();
+                    await localDb.InitializeAsync();
+                    System.Diagnostics.Debug.WriteLine("[MauiProgram] LocalDatabaseService initialized successfully.");
                 }
                 catch (Exception ex)
                 {
-                    // Non-fatal: app can still run; user will just need to log in again
+                    System.Diagnostics.Debug.WriteLine($"[MauiProgram] LocalDatabaseService.InitializeAsync failed: {ex.Message}");
+                }
+
+                try
+                {
+                    // Initialize ApiService (loads stored JWT into Authorization header)
+                    var apiService = app.Services.GetRequiredService<ApiService>();
+                    await apiService.InitializeAsync();
+                    System.Diagnostics.Debug.WriteLine("[MauiProgram] ApiService initialized successfully.");
+                }
+                catch (Exception ex)
+                {
                     System.Diagnostics.Debug.WriteLine($"[MauiProgram] ApiService.InitializeAsync failed: {ex.Message}");
                 }
             });
