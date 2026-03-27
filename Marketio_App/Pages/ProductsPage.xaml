@@ -30,6 +30,7 @@
             <!-- Category Filter Picker -->
             <Picker 
                 Title="Selecteer categorie"
+                ItemsSource="{Binding Categories}"
                 SelectedItem="{Binding SelectedCategory}"
                 FontSize="14"
                 TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}"
@@ -162,7 +163,7 @@
                         <Label 
                             Text="Probeer uw zoekopdracht aan te passen"
                             FontSize="14"
-                            TextColor="{AppThemeBinding Light=#666666, Dark=#CCCCCC}"
+                            TextColor="{AppThemeBinding Light:#666666, Dark=#CCCCCC}"
                             HorizontalOptions="Center" />
                     </VerticalStackLayout>
                 </CollectionView.EmptyView>
