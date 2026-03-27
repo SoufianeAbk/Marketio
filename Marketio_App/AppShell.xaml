@@ -44,7 +44,7 @@
     <!-- Detail Routes (nested under producten for modal navigation) -->
     <ShellContent
         Title="Product Detail"
-        ContentTemplate="{DataTemplate local:AccountSettingsPage}"
+        ContentTemplate="{DataTemplate local:ProductDetailPage}"
         Route="product-detail" />
 
     <!-- Order Detail Route (nested under orders for modal navigation) -->
