@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Marketio_Shared.DTOs;
+using Microsoft.Maui.Storage;
 
 namespace Marketio_App.Services
 {
@@ -94,11 +97,52 @@ namespace Marketio_App.Services
         {
             try
             {
-                return await Microsoft.Maui.Storage.SecureStorage.Default.GetAsync("jwt_token");
+                return await SecureStorage.Default.GetAsync("jwt_token");
             }
             catch
             {
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Validates if the stored JWT token is still valid (not expired).
+        /// Returns true if token exists and is valid, false otherwise.
+        /// </summary>
+        public async Task<bool> IsTokenValidAsync()
+        {
+            try
+            {
+                var token = await GetTokenAsync();
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    return false;
+                }
+
+                var handler = new JwtSecurityTokenHandler();
+
+                // Try to parse the JWT
+                if (!handler.CanReadToken(token))
+                {
+                    return false;
+                }
+
+                var jwtToken = handler.ReadJwtToken(token);
+
+                // Check expiration time against UTC now
+                if (jwtToken.ValidTo <= DateTime.UtcNow)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[AuthService] JWT token expired at {jwtToken.ValidTo}");
+                    return false;
+                }
+
+                System.Diagnostics.Debug.WriteLine($"[AuthService] JWT token valid until {jwtToken.ValidTo}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[AuthService] Error validating token: {ex.Message}");
+                return false;
             }
         }
     }

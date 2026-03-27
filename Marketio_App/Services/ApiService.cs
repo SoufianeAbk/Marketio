@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -20,6 +21,11 @@ namespace Marketio_App.Services
         /// Exposes the base API URL for constructing absolute URLs (e.g., for images)
         /// </summary>
         public Uri? BaseAddress => _client.BaseAddress;
+
+        /// <summary>
+        /// Raised when a 401 Unauthorized response is received (token expired or invalid)
+        /// </summary>
+        public event EventHandler? TokenExpired;
 
         public ApiService(HttpClient httpClient, ILogger<ApiService> logger)
         {
@@ -116,6 +122,15 @@ namespace Marketio_App.Services
             {
                 using var res = await _client.GetAsync(endpoint);
                 _logger.LogDebug("[ApiService] GET {Endpoint} → {Status}", endpoint, (int)res.StatusCode);
+
+                // Handle 401 Unauthorized (token expired or invalid)
+                if (res.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    _logger.LogWarning("[ApiService] GET {Endpoint} returned 401 Unauthorized — token likely expired", endpoint);
+                    OnTokenExpired();
+                    throw new UnauthorizedAccessException("Token expired or invalid. Please log in again.");
+                }
+
                 res.EnsureSuccessStatusCode();
 
                 var json = await res.Content.ReadAsStringAsync();
@@ -123,6 +138,10 @@ namespace Marketio_App.Services
                     json.Length, Truncate(json, 500));
 
                 return JsonSerializer.Deserialize<T>(json, _jsonOptions);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                throw;
             }
             catch (HttpRequestException ex)
             {
@@ -147,6 +166,15 @@ namespace Marketio_App.Services
                 using var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
                 using var res = await _client.PostAsync(endpoint, content);
                 _logger.LogDebug("[ApiService] POST {Endpoint} → {Status}", endpoint, (int)res.StatusCode);
+
+                // Handle 401 Unauthorized
+                if (res.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    _logger.LogWarning("[ApiService] POST {Endpoint} returned 401 Unauthorized — token likely expired", endpoint);
+                    OnTokenExpired();
+                    throw new UnauthorizedAccessException("Token expired or invalid. Please log in again.");
+                }
+
                 res.EnsureSuccessStatusCode();
 
                 var json = await res.Content.ReadAsStringAsync();
@@ -154,6 +182,10 @@ namespace Marketio_App.Services
                     json.Length, Truncate(json, 500));
 
                 return JsonSerializer.Deserialize<TResponse>(json, _jsonOptions);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                throw;
             }
             catch (HttpRequestException ex)
             {
@@ -212,6 +244,11 @@ namespace Marketio_App.Services
         }
 
         // ─── Helpers ──────────────────────────────────────────────────────────────
+
+        private void OnTokenExpired()
+        {
+            TokenExpired?.Invoke(this, EventArgs.Empty);
+        }
 
         private static string Truncate(string value, int maxLength) =>
             value.Length <= maxLength ? value : value[..maxLength] + $"… (+{value.Length - maxLength} chars)";
