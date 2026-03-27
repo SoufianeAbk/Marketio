@@ -17,6 +17,9 @@ namespace Marketio_App.ViewModels
         private ObservableCollection<ProductDto> products = new();
 
         [ObservableProperty]
+        private ObservableCollection<ProductCategory> categories = new();
+
+        [ObservableProperty]
         private bool isLoading;
 
         [ObservableProperty]
@@ -37,6 +40,14 @@ namespace Marketio_App.ViewModels
         {
             _productService = productService ?? throw new ArgumentNullException(nameof(productService));
             _connectivity = connectivity ?? throw new ArgumentNullException(nameof(connectivity));
+
+            InitializeCategories();
+        }
+
+        private void InitializeCategories()
+        {
+            var categoryValues = Enum.GetValues<ProductCategory>();
+            categories = new ObservableCollection<ProductCategory>(categoryValues);
         }
 
         [RelayCommand]

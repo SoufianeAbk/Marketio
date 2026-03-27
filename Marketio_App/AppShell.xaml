@@ -32,12 +32,19 @@
             Icon="bag.png"
             ContentTemplate="{DataTemplate local:OrdersPage}"
             Route="orders" />
+
+        <!-- Account Settings Tab -->
+        <ShellContent 
+            Title="Instellingen"
+            Icon="settings.png"
+            ContentTemplate="{DataTemplate local:AccountSettingsPage}"
+            Route="account-settings" />
     </TabBar>
 
     <!-- Detail Routes (nested under producten for modal navigation) -->
     <ShellContent
         Title="Product Detail"
-        ContentTemplate="{DataTemplate local:ProductDetailPage}"
+        ContentTemplate="{DataTemplate local:AccountSettingsPage}"
         Route="product-detail" />
 
     <!-- Order Detail Route (nested under orders for modal navigation) -->
