@@ -34,12 +34,21 @@ namespace Marketio_App.ViewModels
         [ObservableProperty]
         private string errorMessage = string.Empty;
 
+        [ObservableProperty]
+        private bool isOffline;
+
         private IEnumerable<ProductDto> _allProducts = new List<ProductDto>();
 
         public ProductsViewModel(ProductApiService productService, ConnectivityService connectivity)
         {
             _productService = productService ?? throw new ArgumentNullException(nameof(productService));
             _connectivity = connectivity ?? throw new ArgumentNullException(nameof(connectivity));
+
+            // Initialize offline state based on current connectivity
+            IsOffline = !_connectivity.IsConnected;
+
+            // Subscribe to connectivity changes
+            _connectivity.ConnectivityChanged += OnConnectivityChanged;
 
             InitializeCategories();
         }
@@ -48,6 +57,17 @@ namespace Marketio_App.ViewModels
         {
             var categoryValues = Enum.GetValues<ProductCategory>();
             categories = new ObservableCollection<ProductCategory>(categoryValues);
+        }
+
+        private async void OnConnectivityChanged(object? sender, bool isConnected)
+        {
+            IsOffline = !isConnected;
+
+            // Automatically sync when connection is restored
+            if (isConnected && _allProducts.Any())
+            {
+                await RefreshProductsCommand.ExecuteAsync(null);
+            }
         }
 
         [RelayCommand]
