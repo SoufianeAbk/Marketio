@@ -2,9 +2,9 @@ using Marketio_App.ViewModels;
 
 namespace Marketio_App.Pages
 {
-    public partial class ProductDetailPage : ContentPage
+    public partial class CartPage : ContentPage
     {
-        public ProductDetailPage(ProductDetailViewModel viewModel)
+        public CartPage(CartViewModel viewModel)
         {
             InitializeComponent();
             BindingContext = viewModel;
@@ -14,9 +14,9 @@ namespace Marketio_App.Pages
         {
             base.OnAppearing();
 
-            if (BindingContext is ProductDetailViewModel viewModel && viewModel.ProductId > 0)
+            if (BindingContext is CartViewModel viewModel)
             {
-                await viewModel.LoadProductCommand.ExecuteAsync(viewModel.ProductId);
+                await viewModel.LoadCartCommand.ExecuteAsync(null);
             }
         }
     }

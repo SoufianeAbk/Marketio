@@ -70,6 +70,11 @@
 		<ProjectReference Include="..\Marketio_Shared\Marketio_Shared.csproj" />
 	</ItemGroup>
 	<ItemGroup>
+	  <Compile Update="Pages\CartPage.xaml.cs">
+	    <DependentUpon>CartPage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+	<ItemGroup>
 		<MauiXaml Update="Pages\AccountSettingsPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
@@ -78,6 +83,9 @@
 		</MauiXaml>
 		<MauiXaml Update="Pages\LoginPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Pages\CartPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Pages\OrderDetailPage.xaml">
 			<Generator>MSBuild:Compile</Generator>

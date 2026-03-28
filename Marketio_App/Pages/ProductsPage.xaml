@@ -163,7 +163,7 @@
                         <Label 
                             Text="Probeer uw zoekopdracht aan te passen"
                             FontSize="14"
-                            TextColor="{AppThemeBinding Light:#666666, Dark=#CCCCCC}"
+                            TextColor="{AppThemeBinding Light=#666666, Dark=#CCCCCC}"
                             HorizontalOptions="Center" />
                     </VerticalStackLayout>
                 </CollectionView.EmptyView>
