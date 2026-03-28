@@ -142,7 +142,7 @@ namespace Marketio_App.ViewModels
             if (product == null)
                 return;
 
-            await Shell.Current.GoToAsync($"///product-detail?productId={product.Id}");
+            await Shell.Current.GoToAsync($"product-detail?ProductId={product.Id}");
         }
 
         partial void OnSearchQueryChanged(string value)

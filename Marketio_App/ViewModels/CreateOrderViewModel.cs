@@ -159,7 +159,7 @@ namespace Marketio_App.ViewModels
         [RelayCommand]
         public async Task GoBackAsync()
         {
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.GoToAsync("///cart");
         }
 
         partial void OnSameAsShippingChanged(bool value)

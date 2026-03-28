@@ -116,7 +116,7 @@ namespace Marketio_App.ViewModels
                     "Succes",
                     $"{Product.Name} ({Quantity}x) toegevoegd aan winkelwagen",
                     "OK");
-                await Shell.Current.GoToAsync("..");
+                await Shell.Current.GoToAsync("///producten");
             }
             catch (InvalidOperationException ex)
             {
@@ -131,7 +131,7 @@ namespace Marketio_App.ViewModels
         [RelayCommand]
         public async Task GoBackAsync()
         {
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.GoToAsync("///producten");
         }
 
         private void UpdateTotalPrice()
