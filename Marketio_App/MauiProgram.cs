@@ -60,6 +60,7 @@ namespace Marketio_App
             builder.Services.AddSingleton<RegisterViewModel>();
             builder.Services.AddSingleton<ProductsViewModel>();
             builder.Services.AddSingleton<ProductDetailViewModel>();
+            builder.Services.AddSingleton<CartViewModel>();
             builder.Services.AddSingleton<OrdersViewModel>();
             builder.Services.AddSingleton<OrderDetailViewModel>();
             builder.Services.AddSingleton<CreateOrderViewModel>();
@@ -71,6 +72,7 @@ namespace Marketio_App
             builder.Services.AddSingleton<RegisterPage>();
             builder.Services.AddSingleton<ProductsPage>();
             builder.Services.AddSingleton<ProductDetailPage>();
+            builder.Services.AddSingleton<CartPage>();
             builder.Services.AddSingleton<OrdersPage>();
             builder.Services.AddSingleton<OrderDetailPage>();
             builder.Services.AddSingleton<CreateOrderPage>();

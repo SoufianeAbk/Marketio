@@ -26,6 +26,13 @@
             ContentTemplate="{DataTemplate local:ProductsPage}"
             Route="producten" />
 
+        <!-- Cart Tab -->
+        <ShellContent 
+            Title="Winkelwagen"
+            Icon="bag.png"
+            ContentTemplate="{DataTemplate local:CartPage}"
+            Route="cart" />
+
         <!-- Orders Tab -->
         <ShellContent 
             Title="Bestellingen"
@@ -40,23 +47,5 @@
             ContentTemplate="{DataTemplate local:AccountSettingsPage}"
             Route="account-settings" />
     </TabBar>
-
-    <!-- Detail Routes (nested under producten for modal navigation) -->
-    <ShellContent
-        Title="Product Detail"
-        ContentTemplate="{DataTemplate local:ProductDetailPage}"
-        Route="product-detail" />
-
-    <!-- Order Detail Route (nested under orders for modal navigation) -->
-    <ShellContent
-        Title="Order Detail"
-        ContentTemplate="{DataTemplate local:OrderDetailPage}"
-        Route="order-detail" />
-
-    <!-- Create Order Route -->
-    <ShellContent
-        Title="Create Order"
-        ContentTemplate="{DataTemplate local:CreateOrderPage}"
-        Route="create-order" />
 
 </Shell>
