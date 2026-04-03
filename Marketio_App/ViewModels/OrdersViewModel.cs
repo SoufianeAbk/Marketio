@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using Marketio_App.Services;
 using Marketio_Shared.DTOs;
-using Marketio_Shared.Entities;
 using Marketio_Shared.Enums;
 using Microsoft.Maui.Controls;
 using System.Collections.ObjectModel;
@@ -127,12 +126,66 @@ namespace Marketio_App.ViewModels
         }
 
         [RelayCommand]
-        public async Task SelectOrderAsync(OrderDto order)
+        public async Task SelectOrderAsync(OrderDto? order)
         {
             if (order == null)
                 return;
 
             await Shell.Current.GoToAsync($"order-detail?orderId={order.Id}");
+        }
+
+        [RelayCommand]
+        public async Task DeleteOrderAsync(OrderDto? order)
+        {
+            if (order == null)
+                return;
+
+            bool confirm = await Application.Current!.MainPage!.DisplayAlert(
+                "Bestelling verwijderen",
+                $"Weet u zeker dat u bestelling {order.OrderNumber} wilt verwijderen?",
+                "Ja",
+                "Nee");
+
+            if (!confirm)
+                return;
+
+            try
+            {
+                IsLoading = true;
+                ErrorMessage = string.Empty;
+
+                bool deleted = await _orderService.DeleteOrderAsync(order.Id);
+
+                if (deleted)
+                {
+                    Orders.Remove(order);
+                    HasOrders = Orders.Any();
+                    await Application.Current.MainPage!.DisplayAlert(
+                        "Succes",
+                        "Bestelling is verwijderd.",
+                        "OK");
+                }
+                else
+                {
+                    ErrorMessage = "Bestelling kon niet worden verwijderd.";
+                    await Application.Current.MainPage!.DisplayAlert(
+                        "Fout",
+                        ErrorMessage,
+                        "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Fout bij verwijderen: {ex.Message}";
+                await Application.Current.MainPage!.DisplayAlert(
+                    "Fout",
+                    ErrorMessage,
+                    "OK");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         [RelayCommand]

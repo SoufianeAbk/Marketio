@@ -105,5 +105,27 @@ namespace Marketio_Web.Controllers.Api
 
             return NoContent();
         }
+
+        /// <summary>
+        /// Delete order
+        /// </summary>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var order = await _orderService.GetOrderByIdAsync(id);
+
+            if (order == null)
+                return NotFound(new { message = $"Order with ID {id} not found" });
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Check if user owns this order or is admin/manager
+            if (order.CustomerId != userId && !User.IsInRole("Admin") && !User.IsInRole("Manager"))
+                return Forbid();
+
+            await _orderService.DeleteOrderAsync(id);
+
+            return NoContent();
+        }
     }
 }

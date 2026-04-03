@@ -93,6 +93,26 @@ namespace Marketio_Web.Services
             return await _orderRepository.UpdateOrderStatusAsync(orderId, OrderStatus.Cancelled);
         }
 
+        public async Task DeleteOrderAsync(int orderId)
+        {
+            var order = await _orderRepository.GetByIdAsync(orderId);
+            if (order != null)
+            {
+                // Restore stock voor alle items
+                foreach (var item in order.OrderItems)
+                {
+                    var product = await _productRepository.GetByIdAsync(item.ProductId);
+                    if (product != null)
+                    {
+                        await _productRepository.UpdateStockAsync(product.Id, product.Stock + item.Quantity);
+                    }
+                }
+
+                // Delete the order
+                await _orderRepository.DeleteAsync(orderId);
+            }
+        }
+
         private static string GenerateOrderNumber()
         {
             return $"ORD-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString()[..8].ToUpper()}";

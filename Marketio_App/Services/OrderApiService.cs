@@ -98,5 +98,24 @@ namespace Marketio_App.Services
 
             return null;
         }
+
+        public async Task<bool> DeleteOrderAsync(int orderId)
+        {
+            if (!_connectivity.IsConnected)
+                return false;
+
+            try
+            {
+                await _api.DeleteAsync($"api/orders/{orderId}");
+                await _localDb.DeleteOrderAsync(orderId);
+                System.Diagnostics.Debug.WriteLine($"[OrderApiService] Order deleted successfully: ID={orderId}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[OrderApiService] DeleteOrderAsync failed: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

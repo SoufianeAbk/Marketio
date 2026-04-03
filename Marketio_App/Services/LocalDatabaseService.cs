@@ -221,5 +221,16 @@ namespace Marketio_App.Services
             var o = await _db.FindAsync<LocalOrder>(id);
             return o == null ? null : FromLocal(o);
         }
+
+        public async Task DeleteOrderAsync(int orderId)
+        {
+            if (_db == null)
+                await InitializeAsync();
+
+            if (_db == null)
+                return;
+
+            await _db.DeleteAsync<LocalOrder>(orderId);
+        }
     }
 }

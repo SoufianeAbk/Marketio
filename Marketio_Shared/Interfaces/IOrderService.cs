@@ -8,5 +8,6 @@ namespace Marketio_Shared.Interfaces
         Task<OrderDto?> GetOrderByIdAsync(int orderId);
         Task<IEnumerable<OrderDto>> GetCustomerOrdersAsync(string customerId);
         Task<bool> CancelOrderAsync(int orderId);
+        Task DeleteOrderAsync(int orderId);
     }
 }

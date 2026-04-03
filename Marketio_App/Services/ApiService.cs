@@ -265,6 +265,42 @@ namespace Marketio_App.Services
             }
         }
 
+        public async Task DeleteAsync(string endpoint)
+        {
+            await EnsureAuthHeaderAsync();
+            _logger.LogDebug("[ApiService] DELETE {Endpoint}", endpoint);
+            try
+            {
+                using var res = await _client.DeleteAsync(endpoint);
+                _logger.LogDebug("[ApiService] DELETE {Endpoint} → {Status}", endpoint, (int)res.StatusCode);
+
+                // Handle 401 Unauthorized (token expired or invalid)
+                if (res.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    _logger.LogWarning("[ApiService] DELETE {Endpoint} returned 401 Unauthorized — token likely expired", endpoint);
+                    OnTokenExpired();
+                    throw new UnauthorizedAccessException("Token expired or invalid. Please log in again.");
+                }
+
+                res.EnsureSuccessStatusCode();
+                _logger.LogDebug("[ApiService] DELETE {Endpoint} completed successfully", endpoint);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                throw;
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "[ApiService] DELETE {Endpoint} failed — HttpRequestException", endpoint);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[ApiService] DELETE {Endpoint} failed — unexpected error", endpoint);
+                throw;
+            }
+        }
+
         // ─── Helpers ──────────────────────────────────────────────────────────────
 
         private void OnTokenExpired()
