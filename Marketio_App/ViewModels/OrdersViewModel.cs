@@ -131,7 +131,7 @@ namespace Marketio_App.ViewModels
             if (order == null)
                 return;
 
-            await Shell.Current.GoToAsync($"order-detail?orderId={order.Id}");
+            await Shell.Current.GoToAsync($"order-detail?OrderId={order.Id}");
         }
 
         [RelayCommand]
