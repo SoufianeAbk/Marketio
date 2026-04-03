@@ -17,6 +17,22 @@
         ContentTemplate="{DataTemplate local:RegisterPage}"
         Route="register" />
 
+    <!-- Global Routes (outside TabBar, accessible from anywhere) -->
+    <ShellContent 
+        Title="Order Details"
+        ContentTemplate="{DataTemplate local:OrderDetailPage}"
+        Route="order-detail" />
+
+    <ShellContent 
+        Title="Product Details"
+        ContentTemplate="{DataTemplate local:ProductDetailPage}"
+        Route="product-detail" />
+
+    <ShellContent 
+        Title="Nieuwe Bestelling"
+        ContentTemplate="{DataTemplate local:CreateOrderPage}"
+        Route="create-order" />
+
     <!-- Main App with TabBar (after authentication) -->
     <TabBar>
         <!-- Products Tab -->

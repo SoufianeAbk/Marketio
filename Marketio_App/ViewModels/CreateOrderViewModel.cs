@@ -12,6 +12,7 @@ namespace Marketio_App.ViewModels
         private readonly CartService _cartService;
         private readonly OrderApiService _orderService;
         private readonly ConnectivityService _connectivity;
+        private readonly AuthService _authService;
 
         [ObservableProperty]
         private ObservableCollection<CartItemDto> cartItems = new();
@@ -40,11 +41,13 @@ namespace Marketio_App.ViewModels
         public CreateOrderViewModel(
             CartService cartService,
             OrderApiService orderService,
-            ConnectivityService connectivity)
+            ConnectivityService connectivity,
+            AuthService authService)
         {
             _cartService = cartService;
             _orderService = orderService;
             _connectivity = connectivity;
+            _authService = authService;
         }
 
         [RelayCommand]
@@ -132,19 +135,26 @@ namespace Marketio_App.ViewModels
 
                 var order = await _orderService.CreateOrderAsync(createOrderDto);
 
-                if (order != null)
+                if (order != null && order.Id > 0)
                 {
                     await _cartService.ClearCartAsync();
                     await Shell.Current.DisplayAlert(
                         "Succes",
                         $"Bestelling {order.OrderNumber} succesvol geplaatst!",
                         "OK");
-                    await Shell.Current.GoToAsync($"order-detail?orderId={order.Id}");
+                    await Shell.Current.GoToAsync($"order-detail?OrderId={order.Id}");
                 }
                 else
                 {
                     ErrorMessage = "Kon bestelling niet plaatsen. Probeer later opnieuw.";
                 }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                // Token expired or invalid - redirect to login
+                ErrorMessage = "Sessie verlopen. U wordt teruggeleid naar inloggen.";
+                await _authService.LogoutAsync();
+                await Shell.Current.GoToAsync("///login");
             }
             catch (Exception ex)
             {
@@ -159,7 +169,7 @@ namespace Marketio_App.ViewModels
         [RelayCommand]
         public async Task GoBackAsync()
         {
-            await Shell.Current.GoToAsync("///cart");
+            await Shell.Current.GoToAsync("cart");
         }
 
         partial void OnSameAsShippingChanged(bool value)

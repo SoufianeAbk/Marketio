@@ -30,6 +30,7 @@ namespace Marketio_App
             var apiBaseUrl = GetPlatformApiBaseUrl();
 
             // ─── HttpClient with SSL bypass (dev only) ────────────────────────────────
+            // Register ApiService as both HttpClient and Singleton for DI compatibility
             builder.Services.AddHttpClient<ApiService>(client =>
             {
                 client.BaseAddress = new Uri(apiBaseUrl);

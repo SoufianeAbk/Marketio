@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Marketio_Shared.DTOs;
 
-
 namespace Marketio_App.Services
 {
     public class OrderApiService
@@ -73,12 +72,27 @@ namespace Marketio_App.Services
                 var created = await _api.PostAsync<CreateOrderDto, OrderDto>("api/orders", createOrderDto);
                 if (created != null)
                 {
-                    await _localDb.SaveOrderAsync(created);
-                    return created;
+                    // Ensure the order has a valid ID before caching
+                    if (created.Id > 0)
+                    {
+                        await _localDb.SaveOrderAsync(created);
+                        System.Diagnostics.Debug.WriteLine($"[OrderApiService] Order created successfully: ID={created.Id}, OrderNumber={created.OrderNumber}");
+                        return created;
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[OrderApiService] Invalid order ID returned: {created.Id}");
+                        return null;
+                    }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("[OrderApiService] CreateOrderAsync returned null response");
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"[OrderApiService] CreateOrderAsync failed: {ex.Message}");
                 return null;
             }
 

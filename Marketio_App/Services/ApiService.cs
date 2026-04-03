@@ -60,6 +60,26 @@ namespace Marketio_App.Services
             }
         }
 
+        private async Task EnsureAuthHeaderAsync()
+        {
+            if (_client.DefaultRequestHeaders.Authorization != null)
+                return; // already set
+
+            try
+            {
+                var token = await SecureStorage.Default.GetAsync(JwtKey);
+                if (!string.IsNullOrWhiteSpace(token))
+                {
+                    SetAuthorizationHeader(token);
+                    _logger.LogDebug("[ApiService] EnsureAuthHeader: token restored from SecureStorage.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "[ApiService] EnsureAuthHeader: SecureStorage.GetAsync failed.");
+            }
+        }
+
         // ─── Token management ─────────────────────────────────────────────────────
 
         public void SetAuthorizationHeader(string? token)
@@ -117,6 +137,7 @@ namespace Marketio_App.Services
 
         public async Task<T?> GetAsync<T>(string endpoint)
         {
+            await EnsureAuthHeaderAsync();
             _logger.LogDebug("[ApiService] GET {Endpoint}", endpoint);
             try
             {
@@ -157,6 +178,7 @@ namespace Marketio_App.Services
 
         public async Task<TResponse?> PostAsync<TRequest, TResponse>(string endpoint, TRequest payload)
         {
+            await EnsureAuthHeaderAsync();
             var jsonPayload = JsonSerializer.Serialize(payload);
             _logger.LogDebug("[ApiService] POST {Endpoint} | body ({Len} chars): {Body}",
                 endpoint, jsonPayload.Length, Truncate(jsonPayload, 500));

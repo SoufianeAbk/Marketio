@@ -132,13 +132,13 @@ namespace Marketio_App.ViewModels
             if (order == null)
                 return;
 
-            await Shell.Current.GoToAsync($"///order-detail?orderId={order.Id}");
+            await Shell.Current.GoToAsync($"order-detail?orderId={order.Id}");
         }
 
         [RelayCommand]
         public async Task CreateNewOrderAsync()
         {
-            await Shell.Current.GoToAsync("///create-order");
+            await Shell.Current.GoToAsync("create-order");
         }
 
         partial void OnSelectedStatusFilterChanged(OrderStatus? value)
