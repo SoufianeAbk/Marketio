@@ -158,6 +158,20 @@ namespace Marketio_App.Services
                 _logger.LogDebug("[ApiService] GET response body ({Len} chars): {Body}",
                     json.Length, Truncate(json, 500));
 
+                // Validate response is JSON before attempting deserialization
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    _logger.LogWarning("[ApiService] GET {Endpoint} returned empty response body", endpoint);
+                    throw new InvalidOperationException("API returned empty response. This may indicate a server error or redirect.");
+                }
+
+                if (!IsValidJson(json))
+                {
+                    _logger.LogError("[ApiService] GET {Endpoint} returned non-JSON response. Body: {Body}",
+                        endpoint, Truncate(json, 500));
+                    throw new InvalidOperationException($"API returned invalid JSON. Response starts with: {Truncate(json, 100)}. This may indicate a server error page or HTML response.");
+                }
+
                 return JsonSerializer.Deserialize<T>(json, _jsonOptions);
             }
             catch (UnauthorizedAccessException)
@@ -167,6 +181,10 @@ namespace Marketio_App.Services
             catch (HttpRequestException ex)
             {
                 _logger.LogError(ex, "[ApiService] GET {Endpoint} failed — HttpRequestException", endpoint);
+                throw;
+            }
+            catch (InvalidOperationException)
+            {
                 throw;
             }
             catch (Exception ex)
@@ -203,6 +221,20 @@ namespace Marketio_App.Services
                 _logger.LogDebug("[ApiService] POST response body ({Len} chars): {Body}",
                     json.Length, Truncate(json, 500));
 
+                // Validate response is JSON before attempting deserialization
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    _logger.LogWarning("[ApiService] POST {Endpoint} returned empty response body", endpoint);
+                    throw new InvalidOperationException("API returned empty response. This may indicate a server error or redirect.");
+                }
+
+                if (!IsValidJson(json))
+                {
+                    _logger.LogError("[ApiService] POST {Endpoint} returned non-JSON response. Body: {Body}",
+                        endpoint, Truncate(json, 500));
+                    throw new InvalidOperationException($"API returned invalid JSON. Response starts with: {Truncate(json, 100)}. This may indicate a server error page or HTML response.");
+                }
+
                 return JsonSerializer.Deserialize<TResponse>(json, _jsonOptions);
             }
             catch (UnauthorizedAccessException)
@@ -212,6 +244,10 @@ namespace Marketio_App.Services
             catch (HttpRequestException ex)
             {
                 _logger.LogError(ex, "[ApiService] POST {Endpoint} failed — HttpRequestException", endpoint);
+                throw;
+            }
+            catch (InvalidOperationException)
+            {
                 throw;
             }
             catch (Exception ex)
@@ -250,6 +286,20 @@ namespace Marketio_App.Services
                 var json = await res.Content.ReadAsStringAsync();
                 _logger.LogDebug("[ApiService] POST (tolerant) response body ({Len} chars): {Body}",
                     json.Length, Truncate(json, 500));
+
+                // Validate response is JSON before attempting deserialization
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    _logger.LogWarning("[ApiService] POST (tolerant) {Endpoint} returned empty response body", endpoint);
+                    return default;
+                }
+
+                if (!IsValidJson(json))
+                {
+                    _logger.LogError("[ApiService] POST (tolerant) {Endpoint} returned non-JSON response. Body: {Body}",
+                        endpoint, Truncate(json, 500));
+                    return default;
+                }
 
                 return JsonSerializer.Deserialize<TResponse>(json, _jsonOptions);
             }
@@ -310,5 +360,38 @@ namespace Marketio_App.Services
 
         private static string Truncate(string value, int maxLength) =>
             value.Length <= maxLength ? value : value[..maxLength] + $"… (+{value.Length - maxLength} chars)";
+
+        /// <summary>
+        /// Validates if a string is valid JSON without fully deserializing it.
+        /// Helps detect HTML or other non-JSON responses early.
+        /// </summary>
+        private static bool IsValidJson(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return false;
+
+            var trimmed = value.Trim();
+
+            // JSON must start with { [ " or be true/false/null
+            if (!((trimmed.StartsWith('{') && trimmed.EndsWith('}')) ||
+                  (trimmed.StartsWith('[') && trimmed.EndsWith(']')) ||
+                  (trimmed.StartsWith('"') && trimmed.EndsWith('"')) ||
+                  trimmed.Equals("true", StringComparison.OrdinalIgnoreCase) ||
+                  trimmed.Equals("false", StringComparison.OrdinalIgnoreCase) ||
+                  trimmed.Equals("null", StringComparison.OrdinalIgnoreCase)))
+            {
+                return false;
+            }
+
+            try
+            {
+                JsonDocument.Parse(value);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Marketio_Web.Models;
 using Marketio_Web.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@ namespace Marketio_Web.Controllers.Api
 {
     [ApiController]
     [Route("api/account")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AccountApiController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -182,29 +183,33 @@ namespace Marketio_Web.Controllers.Api
                 return BadRequest(new { message = "Invalid password" });
             }
 
-            if (user.IsDeletionRequested)
-            {
-                return BadRequest(new { message = "Deletion request already pending" });
-            }
-
             var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
             var ua = HttpContext.Request.Headers["User-Agent"].ToString();
 
             try
             {
-                await _gdprAuditService.LogDeletionRequestAsync(userId, ip, ua);
+                // Immediately delete the account instead of just logging a request
+                var result = await _gdprAuditService.DeleteUserAccountAsync(userId, "User");
 
-                _logger.LogWarning(
-                    "User {UserId} requested account deletion via API | Email: {Email} | IP: {IP}",
-                    userId,
-                    user.Email,
-                    ip);
+                if (result)
+                {
+                    _logger.LogWarning(
+                        "User {UserId} account permanently deleted via API | Email: {Email} | IP: {IP}",
+                        userId,
+                        user.Email,
+                        ip);
 
-                return Ok(new { message = "Deletion request submitted successfully" });
+                    return Ok(new { message = "Account successfully deleted" });
+                }
+                else
+                {
+                    _logger.LogError("Failed to delete account for user {UserId}", userId);
+                    return BadRequest(new { message = "Failed to delete account" });
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error processing deletion request for user {UserId}", userId);
+                _logger.LogError(ex, "Error processing account deletion for user {UserId}", userId);
                 return BadRequest(new { message = "Failed to process deletion request" });
             }
         }

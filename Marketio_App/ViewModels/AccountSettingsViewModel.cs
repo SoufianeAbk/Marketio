@@ -262,6 +262,36 @@ namespace Marketio_App.ViewModels
             }
         }
 
+        /// <summary>
+        /// Clears all cached data and refreshes the profile
+        /// Call this when logging in with a new user
+        /// </summary>
+        [RelayCommand]
+        public async Task RefreshProfileDataAsync()
+        {
+            try
+            {
+                // Clear all cached properties
+                Email = string.Empty;
+                FirstName = string.Empty;
+                LastName = string.Empty;
+                Address = null;
+                PhoneNumber = null;
+                MarketingOptIn = false;
+                IsDeletionRequested = false;
+                AuditLogs.Clear();
+                ErrorMessage = string.Empty;
+                SuccessMessage = string.Empty;
+
+                // Reload profile with fresh data
+                await LoadProfileAsync();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Fout bij vernieuwen: {ex.Message}";
+            }
+        }
+
         // ─── Private helper method (not a relay command) ───────────────────────
 
         private async Task LoadAuditTrailInternalAsync()

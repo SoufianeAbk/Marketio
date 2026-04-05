@@ -170,7 +170,7 @@ namespace Marketio_App.Services
         // ─── Account Deletion (Right to be Forgotten) ──────────────────────────────
 
         /// <summary>
-        /// Request account deletion with password verification
+        /// Request account deletion with password verification (immediately deletes the account)
         /// </summary>
         public async Task<(bool Success, string? ErrorMessage)> RequestDeletionAsync(string password)
         {
@@ -190,7 +190,7 @@ namespace Marketio_App.Services
                     return (false, "Kon verwijderingsaanvraag niet verwerken.");
                 }
 
-                _logger.LogWarning("[AccountApiService] Account deletion requested");
+                _logger.LogWarning("[AccountApiService] Account deletion completed");
                 return (true, null);
             }
             catch (Exception ex)
