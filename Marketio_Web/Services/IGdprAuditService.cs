@@ -38,6 +38,11 @@
         Task MarkDeletionProcessedAsync(string userId, string? processedBy = null);
 
         /// <summary>
+        /// Permanently delete user account and all related data (Right to be Forgotten)
+        /// </summary>
+        Task<bool> DeleteUserAccountAsync(string userId, string? processedBy = null);
+
+        /// <summary>
         /// Get all audit logs for a user
         /// </summary>
         Task<List<GdprAuditLogDto>> GetUserAuditLogsAsync(string userId);

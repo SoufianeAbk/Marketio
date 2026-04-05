@@ -220,6 +220,101 @@ namespace Marketio_Web.Services
         }
 
         /// <summary>
+        /// Permanently deletes user account and all related data (Right to be Forgotten)
+        /// </summary>
+        public async Task<bool> DeleteUserAccountAsync(string userId, string? processedBy = null)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    _logger.LogWarning("User {UserId} not found for deletion", userId);
+                    return false;
+                }
+
+                // Step 1: Delete user orders and order items FIRST
+                var orders = await _context.Orders
+                    .Where(o => o.CustomerId == userId)
+                    .Include(o => o.OrderItems)
+                    .ToListAsync();
+
+                foreach (var order in orders)
+                {
+                    _context.OrderItems.RemoveRange(order.OrderItems);
+                    _context.Orders.Remove(order);
+                }
+
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Deleted {OrderCount} orders for user {UserId}", orders.Count, userId);
+
+                // Step 2: Clear ApplicationUserId foreign key references in GdprAuditLogs
+                // This breaks the FK constraint before deletion
+                var auditLogs = await _context.GdprAuditLogs
+                    .Where(x => x.ApplicationUserId == userId)
+                    .ToListAsync();
+
+                foreach (var log in auditLogs)
+                {
+                    log.ApplicationUserId = null; // Clear the FK reference
+                }
+
+                _context.GdprAuditLogs.UpdateRange(auditLogs);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Cleared ApplicationUserId from {LogCount} audit logs for user {UserId}",
+                    auditLogs.Count, userId);
+
+                // Step 3: Delete user account
+                var result = await _userManager.DeleteAsync(user);
+
+                if (result.Succeeded)
+                {
+                    // Step 4: Add final deletion record after user is deleted
+                    var deletionLog = new GdprAuditLog
+                    {
+                        UserId = userId,
+                        ApplicationUserId = null, // User no longer exists
+                        EventType = "DeletionCompleted",
+                        ConsentType = "All",
+                        Granted = false,
+                        Timestamp = DateTime.UtcNow,
+                        ProcessedDate = DateTime.UtcNow,
+                        ProcessedBy = processedBy ?? "System",
+                        Details = JsonSerializer.Serialize(new { DeletedAt = DateTime.UtcNow, Email = user.Email })
+                    };
+
+                    _context.GdprAuditLogs.Add(deletionLog);
+                    await _context.SaveChangesAsync();
+
+                    _logger.LogWarning(
+                        "GDPR Audit: ACCOUNT PERMANENTLY DELETED for user {UserId} | Email: {Email} | ProcessedBy: {ProcessedBy} | Timestamp: {Timestamp}",
+                        userId,
+                        user.Email,
+                        processedBy ?? "User",
+                        DateTime.UtcNow
+                    );
+
+                    return true;
+                }
+                else
+                {
+                    _logger.LogError(
+                        "GDPR Audit: ACCOUNT DELETION FAILED for user {UserId} | Errors: {Errors}",
+                        userId,
+                        string.Join(", ", result.Errors.Select(e => e.Description))
+                    );
+
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error permanently deleting user account {UserId}", userId);
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Retrieves all audit logs for a specific user
         /// </summary>
         public async Task<List<GdprAuditLogDto>> GetUserAuditLogsAsync(string userId)
