@@ -1,4 +1,6 @@
-﻿using Marketio_Shared.Interfaces;
+﻿using Marketio_Shared.Entities;
+using Marketio_Shared.Enums;
+using Marketio_Shared.Interfaces;
 using Marketio_Web;
 using Marketio_Web.Data;
 using Marketio_Web.Localization;
@@ -235,7 +237,11 @@ await using (var scope = app.Services.CreateAsyncScope())
 
         logger.LogInformation("Seeding roles and admin user...");
         await SeedRolesAndAdminAsync(services);
-        logger.LogInformation("Seeding completed successfully.");
+        logger.LogInformation("Roles and admin user seeded successfully.");
+
+        logger.LogInformation("Seeding products...");
+        await SeedProductsAsync(services);
+        logger.LogInformation("Products seeded successfully.");
     }
     catch (Exception ex)
     {
@@ -325,4 +331,39 @@ async Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
             await userManager.AddToRoleAsync(adminUser, "Admin");
         }
     }
+}
+
+async Task SeedProductsAsync(IServiceProvider serviceProvider)
+{
+    var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+    if (await context.Products.AnyAsync())
+        return; // Al geseed
+
+    var seedDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+    context.Products.AddRange(
+        new Product { Name = "Laptop Dell XPS 15", Description = "Krachtige laptop met 16GB RAM en 512GB SSD", Price = 1299.99m, Stock = 15, Category = ProductCategory.Electronics, ImageUrl = "/images/laptop.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "iPhone 15 Pro", Description = "Nieuwste iPhone met A17 Pro chip", Price = 1099.00m, Stock = 25, Category = ProductCategory.Electronics, ImageUrl = "/images/iphone.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "Samsung 4K TV 55\"", Description = "Crystal UHD 4K Smart TV", Price = 699.99m, Stock = 10, Category = ProductCategory.Electronics, ImageUrl = "/images/tv.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "Sony WH-1000XM5", Description = "Noise cancelling koptelefoon", Price = 349.99m, Stock = 30, Category = ProductCategory.Electronics, ImageUrl = "/images/headphones.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "Nike Air Max Sneakers", Description = "Comfortabele sportschoenen", Price = 129.99m, Stock = 50, Category = ProductCategory.Clothing, ImageUrl = "/images/sneakers.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "Levi's 501 Jeans", Description = "Klassieke straight fit jeans", Price = 89.99m, Stock = 40, Category = ProductCategory.Clothing, ImageUrl = "/images/jeans.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "Adidas Hoodie", Description = "Warme hoodie met logo", Price = 59.99m, Stock = 35, Category = ProductCategory.Clothing, ImageUrl = "/images/hoodie.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "Tommy Hilfiger Polo", Description = "Katoenen polo shirt", Price = 69.99m, Stock = 45, Category = ProductCategory.Clothing, ImageUrl = "/images/polo.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "Clean Code - Robert Martin", Description = "Handbook of Agile Software Craftsmanship", Price = 39.99m, Stock = 60, Category = ProductCategory.Books, ImageUrl = "/images/cleancode.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "The Pragmatic Programmer", Description = "From Journeyman to Master", Price = 44.99m, Stock = 55, Category = ProductCategory.Books, ImageUrl = "/images/pragmatic.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "Design Patterns", Description = "Elements of Reusable Object-Oriented Software", Price = 49.99m, Stock = 40, Category = ProductCategory.Books, ImageUrl = "/images/patterns.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "Harry Potter Box Set", Description = "Complete serie van 7 boeken", Price = 89.99m, Stock = 25, Category = ProductCategory.Books, ImageUrl = "/images/harrypotter.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "Dyson V15 Stofzuiger", Description = "Draadloze stofzuiger met laser", Price = 599.99m, Stock = 15, Category = ProductCategory.HomeAndGarden, ImageUrl = "/images/vacuum.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "Philips Airfryer XXL", Description = "Hetelucht friteuse 7.3L", Price = 249.99m, Stock = 20, Category = ProductCategory.HomeAndGarden, ImageUrl = "/images/airfryer.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "IKEA Bureau BEKANT", Description = "Verstelbaar bureau 160x80cm", Price = 349.00m, Stock = 12, Category = ProductCategory.HomeAndGarden, ImageUrl = "/images/desk.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "Nespresso Machine", Description = "Koffiemachine met melkopschuimer", Price = 199.99m, Stock = 30, Category = ProductCategory.HomeAndGarden, ImageUrl = "/images/nespresso.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "Yoga Mat Premium", Description = "Extra dikke yoga mat 6mm", Price = 39.99m, Stock = 50, Category = ProductCategory.Sports, ImageUrl = "/images/yogamat.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "Dumbbells Set 20kg", Description = "Verstelbare dumbbell set", Price = 149.99m, Stock = 25, Category = ProductCategory.Sports, ImageUrl = "/images/dumbbells.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "Garmin Forerunner 265", Description = "GPS hardloop smartwatch", Price = 449.99m, Stock = 18, Category = ProductCategory.Sports, ImageUrl = "/images/garmin.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+        new Product { Name = "Voetbal Nike Strike", Description = "Officiële wedstrijdbal", Price = 29.99m, Stock = 40, Category = ProductCategory.Sports, ImageUrl = "/images/football.jpg", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate }
+    );
+
+    await context.SaveChangesAsync();
 }
