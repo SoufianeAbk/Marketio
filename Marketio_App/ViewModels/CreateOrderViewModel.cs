@@ -83,6 +83,12 @@ namespace Marketio_App.ViewModels
                 CartItems = new ObservableCollection<CartItemDto>(items);
                 CartTotal = await _cartService.GetCartTotalAsync();
                 IsCartEmpty = !items.Any();
+
+                // Redirect to products if cart becomes empty
+                if (IsCartEmpty)
+                {
+                    await Shell.Current.GoToAsync("///producten");
+                }
             }
             catch (Exception ex)
             {
@@ -96,6 +102,7 @@ namespace Marketio_App.ViewModels
             if (!CartItems.Any())
             {
                 ErrorMessage = "Winkelwagen is leeg.";
+                await Shell.Current.GoToAsync("///producten");
                 return;
             }
 
@@ -151,7 +158,6 @@ namespace Marketio_App.ViewModels
             }
             catch (UnauthorizedAccessException ex)
             {
-                // Token expired or invalid - redirect to login
                 ErrorMessage = "Sessie verlopen. U wordt teruggeleid naar inloggen.";
                 await _authService.LogoutAsync();
                 await Shell.Current.GoToAsync("///login");

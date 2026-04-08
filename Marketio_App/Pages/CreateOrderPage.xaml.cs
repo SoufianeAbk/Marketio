@@ -17,6 +17,12 @@ namespace Marketio_App.Pages
             if (BindingContext is CreateOrderViewModel viewModel)
             {
                 await viewModel.LoadCartCommand.ExecuteAsync(null);
+
+                // Redirect to products page if cart is empty
+                if (viewModel.IsCartEmpty)
+                {
+                    await Shell.Current.GoToAsync("///producten");
+                }
             }
         }
     }

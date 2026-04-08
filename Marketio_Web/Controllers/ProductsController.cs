@@ -27,13 +27,13 @@ namespace Marketio_Web.Controllers
         {
             try
             {
-                // Haal alle producten op
-                var products = await _productService.GetAllProductsAsync();
+                // Haal alle producten op en materialize meteen
+                var products = (await _productService.GetAllProductsAsync()).ToList();
 
                 // Filter op categorie
                 if (category.HasValue)
                 {
-                    products = products.Where(p => p.Category == category.Value);
+                    products = products.Where(p => p.Category == category.Value).ToList();
                 }
 
                 // Zoeken op naam of beschrijving
@@ -41,28 +41,28 @@ namespace Marketio_Web.Controllers
                 {
                     products = products.Where(p =>
                         p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                        p.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+                        p.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
 
                 // Filter op prijsrange
                 if (minPrice.HasValue)
                 {
-                    products = products.Where(p => p.Price >= minPrice.Value);
+                    products = products.Where(p => p.Price >= minPrice.Value).ToList();
                 }
 
                 if (maxPrice.HasValue)
                 {
-                    products = products.Where(p => p.Price <= maxPrice.Value);
+                    products = products.Where(p => p.Price <= maxPrice.Value).ToList();
                 }
 
                 // Sorteer producten
                 products = sortBy?.ToLower() switch
                 {
-                    "price-asc" => products.OrderBy(p => p.Price),
-                    "price-desc" => products.OrderByDescending(p => p.Price),
-                    "name-desc" => products.OrderByDescending(p => p.Name),
-                    "newest" => products.OrderByDescending(p => p.Id), // Nieuwste eerst
-                    _ => products.OrderBy(p => p.Name) // Default: naam A-Z
+                    "price-asc" => products.OrderBy(p => p.Price).ToList(),
+                    "price-desc" => products.OrderByDescending(p => p.Price).ToList(),
+                    "name-desc" => products.OrderByDescending(p => p.Name).ToList(),
+                    "newest" => products.OrderByDescending(p => p.Id).ToList(), // Nieuwste eerst
+                    _ => products.OrderBy(p => p.Name).ToList() // Default: naam A-Z
                 };
 
                 // ViewBag data voor filters
