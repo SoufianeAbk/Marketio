@@ -56,9 +56,48 @@ namespace Marketio_Web.Data
             // Order configuration
             modelBuilder.Entity<Order>(entity =>
             {
-                entity.Property(o => o.TotalAmount).HasPrecision(18, 2);
-                entity.Property(o => o.OrderNumber).HasMaxLength(50);
+                entity.HasKey(o => o.Id);
+
+                entity.Property(o => o.OrderNumber)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(o => o.CustomerId)
+                    .IsRequired()
+                    .HasMaxLength(450);
+
+                entity.Property(o => o.OrderDate)
+                    .IsRequired();
+
+                entity.Property(o => o.Status)
+                    .IsRequired();
+
+                entity.Property(o => o.PaymentMethod)
+                    .IsRequired();
+
+                entity.Property(o => o.TotalAmount)
+                    .HasPrecision(18, 2)
+                    .IsRequired();
+
+                entity.Property(o => o.ShippingAddress)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(o => o.BillingAddress)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(o => o.ShippedDate);
+                entity.Property(o => o.DeliveredDate);
+
                 entity.HasIndex(o => o.OrderNumber).IsUnique();
+                entity.HasIndex(o => o.CustomerId);
+
+                // Foreign key to ApplicationUser (CustomerId maps to ApplicationUser.Id)
+                entity.HasOne<ApplicationUser>()
+                    .WithMany()
+                    .HasForeignKey(o => o.CustomerId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // OrderItem configuration
@@ -69,11 +108,13 @@ namespace Marketio_Web.Data
 
                 entity.HasOne(oi => oi.Order)
                     .WithMany(o => o.OrderItems)
-                    .HasForeignKey(oi => oi.OrderId);
+                    .HasForeignKey(oi => oi.OrderId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(oi => oi.Product)
                     .WithMany(p => p.OrderItems)
-                    .HasForeignKey(oi => oi.ProductId);
+                    .HasForeignKey(oi => oi.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Seed data: 5 categories met elk 4 producten
