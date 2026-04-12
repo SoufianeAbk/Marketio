@@ -29,33 +29,58 @@ namespace Marketio_App.ViewModels
         private bool hasOrders;
 
         [ObservableProperty]
-        private OrderStatus? selectedStatusFilter;
+        private bool isOffline;
 
         [ObservableProperty]
-        private bool isOffline;
+        private int pendingOrderCount;
+
+        [ObservableProperty]
+        private bool isSyncing;
+
+        [ObservableProperty]
+        private string syncMessage = string.Empty;
 
         public OrdersViewModel(OrderApiService orderService, ConnectivityService connectivity)
         {
             _orderService = orderService;
             _connectivity = connectivity;
 
-            // Initialize offline state based on current connectivity
             isOffline = !_connectivity.IsConnected;
 
-            // Subscribe to connectivity changes
             _connectivity.ConnectivityChanged += OnConnectivityChanged;
+
+            // Toon melding na automatische sync door OrderApiService
+            _orderService.PendingOrdersSynced += OnPendingOrdersSynced;
         }
+
+        // ─── Connectiviteit ───────────────────────────────────────────────────────
 
         private async void OnConnectivityChanged(object? sender, bool isConnected)
         {
             IsOffline = !isConnected;
 
-            // Automatically sync when connection is restored
-            if (isConnected && orders.Count > 0)
+            if (isConnected)
             {
+                // OrderApiService triggert zelf de sync; wij wachten en herladen daarna
+                await Task.Delay(500); // kleine vertraging zodat sync kan starten
                 await RefreshOrdersCommand.ExecuteAsync(null);
             }
         }
+
+        private async void OnPendingOrdersSynced(object? sender, int count)
+        {
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                SyncMessage = $"{count} offline bestelling(en) succesvol gesynchroniseerd.";
+                await RefreshOrdersCommand.ExecuteAsync(null);
+
+                // Verberg melding na 4 seconden
+                await Task.Delay(4000);
+                SyncMessage = string.Empty;
+            });
+        }
+
+        // ─── Laden / vernieuwen ───────────────────────────────────────────────────
 
         [RelayCommand]
         public async Task LoadOrdersAsync()
@@ -81,6 +106,8 @@ namespace Marketio_App.ViewModels
                     ErrorMessage = "Kan bestellingen niet ophalen.";
                     HasOrders = false;
                 }
+
+                PendingOrderCount = await _orderService.GetPendingOrderCountAsync();
             }
             catch (Exception ex)
             {
@@ -114,6 +141,8 @@ namespace Marketio_App.ViewModels
                     ErrorMessage = "Kan bestellingen niet ophalen.";
                     HasOrders = false;
                 }
+
+                PendingOrderCount = await _orderService.GetPendingOrderCountAsync();
             }
             catch (Exception ex)
             {
@@ -125,11 +154,65 @@ namespace Marketio_App.ViewModels
             }
         }
 
+        // ─── Handmatige sync ─────────────────────────────────────────────────────
+
+        [RelayCommand]
+        public async Task ManualSyncAsync()
+        {
+            if (!_connectivity.IsConnected)
+            {
+                ErrorMessage = "Geen internetverbinding beschikbaar.";
+                return;
+            }
+
+            try
+            {
+                IsSyncing = true;
+                ErrorMessage = string.Empty;
+
+                var synced = await _orderService.SyncPendingOrdersAsync();
+
+                if (synced > 0)
+                {
+                    SyncMessage = $"{synced} bestelling(en) gesynchroniseerd.";
+                    await RefreshOrdersAsync();
+                    await Task.Delay(4000);
+                    SyncMessage = string.Empty;
+                }
+                else
+                {
+                    SyncMessage = "Geen bestellingen in de wachtrij.";
+                    await Task.Delay(2000);
+                    SyncMessage = string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Sync mislukt: {ex.Message}";
+            }
+            finally
+            {
+                IsSyncing = false;
+            }
+        }
+
+        // ─── Navigatie / selectie ─────────────────────────────────────────────────
+
         [RelayCommand]
         public async Task SelectOrderAsync(OrderDto? order)
         {
             if (order == null)
                 return;
+
+            if (order.Id == 0)
+            {
+                // Pending order: navigatie naar detail heeft geen zin
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "In wachtrij",
+                    $"Bestelling {order.OrderNumber} staat in de offline wachtrij en wordt verstuurd zodra u verbinding heeft.",
+                    "OK");
+                return;
+            }
 
             await Shell.Current.GoToAsync($"order-detail?OrderId={order.Id}");
         }
@@ -140,11 +223,19 @@ namespace Marketio_App.ViewModels
             if (order == null)
                 return;
 
+            if (order.Id == 0)
+            {
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "Wachtrij-bestelling",
+                    "Offline wachtrij-bestellingen kunnen momenteel niet worden verwijderd.",
+                    "OK");
+                return;
+            }
+
             bool confirm = await Application.Current!.MainPage!.DisplayAlert(
                 "Bestelling verwijderen",
                 $"Weet u zeker dat u bestelling {order.OrderNumber} wilt verwijderen?",
-                "Ja",
-                "Nee");
+                "Ja", "Nee");
 
             if (!confirm)
                 return;
@@ -160,27 +251,18 @@ namespace Marketio_App.ViewModels
                 {
                     Orders.Remove(order);
                     HasOrders = Orders.Any();
-                    await Application.Current.MainPage!.DisplayAlert(
-                        "Succes",
-                        "Bestelling is verwijderd.",
-                        "OK");
+                    await Application.Current.MainPage!.DisplayAlert("Succes", "Bestelling is verwijderd.", "OK");
                 }
                 else
                 {
                     ErrorMessage = "Bestelling kon niet worden verwijderd.";
-                    await Application.Current.MainPage!.DisplayAlert(
-                        "Fout",
-                        ErrorMessage,
-                        "OK");
+                    await Application.Current.MainPage!.DisplayAlert("Fout", ErrorMessage, "OK");
                 }
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"Fout bij verwijderen: {ex.Message}";
-                await Application.Current.MainPage!.DisplayAlert(
-                    "Fout",
-                    ErrorMessage,
-                    "OK");
+                await Application.Current.MainPage!.DisplayAlert("Fout", ErrorMessage, "OK");
             }
             finally
             {
@@ -192,11 +274,6 @@ namespace Marketio_App.ViewModels
         public async Task CreateNewOrderAsync()
         {
             await Shell.Current.GoToAsync("create-order");
-        }
-
-        partial void OnSelectedStatusFilterChanged(OrderStatus? value)
-        {
-            // Filter orders by status if needed
         }
     }
 }
