@@ -5,18 +5,15 @@
              Title="Mijn bestellingen"
              BackgroundColor="#F5F5F5">
 
-    <Grid RowDefinitions="Auto,*" Padding="0">
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="0">
 
         <!-- Header -->
-        <VerticalStackLayout Padding="16" Spacing="12" BackgroundColor="#FFFFFF">
-
+        <VerticalStackLayout Grid.Row="0" Padding="16" Spacing="12" BackgroundColor="#FFFFFF">
             <Label 
                 Text="Mijn bestellingen"
                 FontSize="24"
                 FontAttributes="Bold"
                 TextColor="#000000" />
-
-            <!-- New Order Button -->
             <Button 
                 Text="Nieuwe bestelling"
                 Command="{Binding CreateNewOrderCommand}"
@@ -25,174 +22,207 @@
                 FontSize="14"
                 CornerRadius="8"
                 Padding="12" />
-
         </VerticalStackLayout>
 
-        <!-- Error Message -->
-        <Frame 
+        <!-- Offline wachtrij banner -->
+        <Frame
             Grid.Row="1"
-            BorderColor="Red"
-            CornerRadius="8"
+            Margin="12,8,12,0"
             Padding="12"
-            Margin="16"
-            IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}"
-            HasShadow="True">
-            <Label 
-                Text="{Binding ErrorMessage}"
-                TextColor="White"
-                BackgroundColor="#FF6B6B"
-                FontSize="12" />
+            CornerRadius="8"
+            BorderColor="#FF9500"
+            BackgroundColor="#FFF3E0"
+            IsVisible="{Binding PendingOrderCount, Converter={StaticResource IsNotNullOrEmptyConverter}}">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <Label
+                    Grid.Column="0"
+                    Text="{Binding PendingOrderCount, StringFormat='⏳ {0} bestelling(en) wachten op synchronisatie'}"
+                    FontSize="13"
+                    TextColor="#E65100"
+                    VerticalOptions="Center" />
+                <Button
+                    Grid.Column="1"
+                    Text="Sync"
+                    Command="{Binding ManualSyncCommand}"
+                    IsEnabled="{Binding IsSyncing, Converter={StaticResource InvertedBoolConverter}}"
+                    BackgroundColor="#FF9500"
+                    TextColor="White"
+                    FontSize="12"
+                    CornerRadius="6"
+                    Padding="10,6"
+                    WidthRequest="60" />
+            </Grid>
         </Frame>
 
-        <!-- Orders List or Empty State -->
-        <RefreshView 
-            Grid.Row="1"
-            Command="{Binding RefreshOrdersCommand}"
-            IsRefreshing="{Binding IsRefreshing}"
-            IsVisible="{Binding HasOrders}">
+        <!-- Sync bevestigingsbericht -->
+        <Frame
+            Grid.Row="2"
+            Margin="12,4,12,0"
+            Padding="10"
+            CornerRadius="8"
+            BorderColor="#34C759"
+            BackgroundColor="#E8F5E9"
+            IsVisible="{Binding SyncMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}">
+            <Label
+                Text="{Binding SyncMessage}"
+                FontSize="12"
+                TextColor="#1B5E20" />
+        </Frame>
 
-            <CollectionView 
-                ItemsSource="{Binding Orders}"
-                SelectionMode="Single"
-                SelectionChangedCommand="{Binding SelectOrderCommand}">
+        <!-- Rest van de content -->
+        <Grid Grid.Row="3" RowDefinitions="Auto,*">
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Frame 
-                            Padding="16"
-                            Margin="12,8"
-                            CornerRadius="12"
-                            BorderColor="#EEEEEE"
-                            HasShadow="True">
-
-                            <StackLayout Spacing="12">
-
-                                <!-- Order Header -->
-                                <StackLayout Orientation="Horizontal" Spacing="12" HorizontalOptions="FillAndExpand">
-                                    <StackLayout Spacing="4" HorizontalOptions="FillAndExpand">
-                                        <Label 
-                                            Text="{Binding Id, StringFormat='Bestelling #{0}'}"
-                                            FontSize="16"
-                                            FontAttributes="Bold"
-                                            TextColor="#000000" />
-                                        <Label 
-                                            Text="{Binding OrderDate, StringFormat='Datum: {0:dd MMM yyyy}'}"
-                                            FontSize="12"
-                                            TextColor="#666666" />
-                                    </StackLayout>
-
-                                    <Label 
-                                        Text="{Binding Status}"
-                                        FontSize="12"
-                                        FontAttributes="Bold"
-                                        TextColor="{Binding Status, Converter={StaticResource StatusToColorConverter}}"
-                                        VerticalOptions="Center" />
-                                </StackLayout>
-
-                                <!-- Order Details -->
-                                <StackLayout Spacing="6">
-                                    <StackLayout Orientation="Horizontal">
-                                        <Label 
-                                            Text="Totaal:"
-                                            FontSize="14"
-                                            FontAttributes="Bold"
-                                            TextColor="#000000" />
-                                        <Label 
-                                            Text="{Binding TotalAmount, StringFormat='€{0:F2}'}"
-                                            FontSize="14"
-                                            FontAttributes="Bold"
-                                            TextColor="#34C759" />
-                                    </StackLayout>
-
-                                    <StackLayout Orientation="Horizontal">
-                                        <Label 
-                                            Text="Items:"
-                                            FontSize="12"
-                                            TextColor="#666666" />
-                                        <Label 
-                                            Text="{Binding OrderItems.Count, StringFormat='{0} product(en)'}"
-                                            FontSize="12"
-                                            TextColor="#666666" />
-                                    </StackLayout>
-                                </StackLayout>
-
-                                <!-- Action Buttons -->
-                                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
-                                    <Button 
-                                        Grid.Column="0"
-                                        Text="Details bekijken"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type CollectionView}}, Path=BindingContext.SelectOrderCommand}"
-                                        CommandParameter="{Binding .}"
-                                        BackgroundColor="#007AFF"
-                                        TextColor="White"
-                                        FontSize="12"
-                                        CornerRadius="6"
-                                        Padding="12,8" />
-
-                                    <Button 
-                                        Grid.Column="1"
-                                        Text="🗑️"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type CollectionView}}, Path=BindingContext.DeleteOrderCommand}"
-                                        CommandParameter="{Binding .}"
-                                        BackgroundColor="#FF3B30"
-                                        TextColor="White"
-                                        FontSize="16"
-                                        CornerRadius="6"
-                                        Padding="8,8"
-                                        WidthRequest="44" />
-                                </Grid>
-
-                            </StackLayout>
-
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-
-            </CollectionView>
-
-        </RefreshView>
-
-        <!-- Empty State -->
-        <VerticalStackLayout 
-            Grid.Row="1"
-            Spacing="16" 
-            Padding="20" 
-            HorizontalOptions="Center" 
-            VerticalOptions="Center"
-            IsVisible="{Binding HasOrders, Converter={StaticResource IsNotTrueConverter}}">
-
-            <Label 
-                Text="Geen bestellingen"
-                FontSize="20"
-                FontAttributes="Bold"
-                TextColor="#000000"
-                HorizontalOptions="Center" />
-
-            <Label 
-                Text="U heeft nog geen bestellingen geplaatst"
-                FontSize="14"
-                TextColor="#666666"
-                HorizontalOptions="Center" />
-
-            <Button 
-                Text="Start nu met winkelen"
-                Command="{Binding CreateNewOrderCommand}"
-                BackgroundColor="#007AFF"
-                TextColor="White"
-                FontSize="14"
+            <!-- Error Message -->
+            <Frame 
+                Grid.Row="0"
+                BorderColor="Red"
                 CornerRadius="8"
-                Padding="16,12" />
+                Padding="12"
+                Margin="16,8,16,0"
+                IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}"
+                HasShadow="True">
+                <Label 
+                    Text="{Binding ErrorMessage}"
+                    TextColor="White"
+                    BackgroundColor="#FF6B6B"
+                    FontSize="12" />
+            </Frame>
 
-        </VerticalStackLayout>
+            <!-- Orders List -->
+            <RefreshView 
+                Grid.Row="1"
+                Command="{Binding RefreshOrdersCommand}"
+                IsRefreshing="{Binding IsRefreshing}"
+                IsVisible="{Binding HasOrders}">
 
-        <!-- Loading Indicator -->
-        <ActivityIndicator 
-            Grid.Row="1"
-            IsRunning="{Binding IsLoading}"
-            IsVisible="{Binding IsLoading}"
-            Color="#007AFF"
-            VerticalOptions="Center"
-            HorizontalOptions="Center" />
+                <CollectionView 
+                    ItemsSource="{Binding Orders}"
+                    SelectionMode="None">
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame 
+                                Padding="16"
+                                Margin="12,8"
+                                CornerRadius="12"
+                                BorderColor="#EEEEEE"
+                                HasShadow="True">
+
+                                <StackLayout Spacing="12">
+
+                                    <!-- Order Header -->
+                                    <StackLayout Orientation="Horizontal" Spacing="12" HorizontalOptions="FillAndExpand">
+                                        <StackLayout Spacing="4" HorizontalOptions="FillAndExpand">
+                                            <Label 
+                                                Text="{Binding OrderNumber, StringFormat='Bestelling {0}'}"
+                                                FontSize="16"
+                                                FontAttributes="Bold"
+                                                TextColor="#000000" />
+                                            <Label 
+                                                Text="{Binding OrderDate, StringFormat='Datum: {0:dd MMM yyyy}'}"
+                                                FontSize="12"
+                                                TextColor="#666666" />
+                                        </StackLayout>
+                                        <Label 
+                                            Text="{Binding StatusName}"
+                                            FontSize="12"
+                                            FontAttributes="Bold"
+                                            TextColor="{Binding Status, Converter={StaticResource StatusToColorConverter}}"
+                                            VerticalOptions="Center" />
+                                    </StackLayout>
+
+                                    <!-- Order Details -->
+                                    <StackLayout Spacing="6">
+                                        <StackLayout Orientation="Horizontal">
+                                            <Label Text="Totaal:" FontSize="14" FontAttributes="Bold" TextColor="#000000" />
+                                            <Label 
+                                                Text="{Binding TotalAmount, StringFormat='€{0:F2}'}"
+                                                FontSize="14"
+                                                FontAttributes="Bold"
+                                                TextColor="#34C759" />
+                                        </StackLayout>
+                                        <StackLayout Orientation="Horizontal">
+                                            <Label Text="Items:" FontSize="12" TextColor="#666666" />
+                                            <Label 
+                                                Text="{Binding OrderItems.Count, StringFormat='{0} product(en)'}"
+                                                FontSize="12"
+                                                TextColor="#666666" />
+                                        </StackLayout>
+                                    </StackLayout>
+
+                                    <!-- Action Buttons -->
+                                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                                        <Button 
+                                            Grid.Column="0"
+                                            Text="Details bekijken"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type CollectionView}}, Path=BindingContext.SelectOrderCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#007AFF"
+                                            TextColor="White"
+                                            FontSize="12"
+                                            CornerRadius="6"
+                                            Padding="12,8" />
+                                        <Button 
+                                            Grid.Column="1"
+                                            Text="🗑️"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type CollectionView}}, Path=BindingContext.DeleteOrderCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#FF3B30"
+                                            TextColor="White"
+                                            FontSize="16"
+                                            CornerRadius="6"
+                                            Padding="8,8"
+                                            WidthRequest="44" />
+                                    </Grid>
+
+                                </StackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+
+                </CollectionView>
+
+            </RefreshView>
+
+            <!-- Empty State -->
+            <VerticalStackLayout 
+                Grid.Row="1"
+                Spacing="16" 
+                Padding="20" 
+                HorizontalOptions="Center" 
+                VerticalOptions="Center"
+                IsVisible="{Binding HasOrders, Converter={StaticResource IsNotTrueConverter}}">
+                <Label 
+                    Text="Geen bestellingen"
+                    FontSize="20"
+                    FontAttributes="Bold"
+                    TextColor="#000000"
+                    HorizontalOptions="Center" />
+                <Label 
+                    Text="U heeft nog geen bestellingen geplaatst"
+                    FontSize="14"
+                    TextColor="#666666"
+                    HorizontalOptions="Center" />
+                <Button 
+                    Text="Start nu met winkelen"
+                    Command="{Binding CreateNewOrderCommand}"
+                    BackgroundColor="#007AFF"
+                    TextColor="White"
+                    FontSize="14"
+                    CornerRadius="8"
+                    Padding="16,12" />
+            </VerticalStackLayout>
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator 
+                Grid.Row="1"
+                IsRunning="{Binding IsLoading}"
+                IsVisible="{Binding IsLoading}"
+                Color="#007AFF"
+                VerticalOptions="Center"
+                HorizontalOptions="Center" />
+
+        </Grid>
 
     </Grid>
 
