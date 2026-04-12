@@ -1,11 +1,6 @@
 ﻿using Marketio_Shared.DTOs;
 using SQLite;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-
+using System.Text.Json;
 
 namespace Marketio_App.Services
 {
@@ -13,12 +8,12 @@ namespace Marketio_App.Services
     {
         private SQLiteAsyncConnection? _db;
 
+        // ─── Local entities ────────────────────────────────────────────────────────
+
         [Table("Products")]
         private class LocalProduct
         {
-            [PrimaryKey]
-            public int Id { get; set; }
-
+            [PrimaryKey] public int Id { get; set; }
             public string Name { get; set; } = string.Empty;
             public string Description { get; set; } = string.Empty;
             public decimal Price { get; set; }
@@ -32,9 +27,7 @@ namespace Marketio_App.Services
         [Table("Orders")]
         private class LocalOrder
         {
-            [PrimaryKey]
-            public int Id { get; set; }
-
+            [PrimaryKey] public int Id { get; set; }
             public string OrderNumber { get; set; } = string.Empty;
             public string CustomerId { get; set; } = string.Empty;
             public DateTime OrderDate { get; set; }
@@ -45,18 +38,32 @@ namespace Marketio_App.Services
             public string OrderItemsJson { get; set; } = string.Empty;
         }
 
+        [Table("PendingOrders")]
+        public class PendingOrder
+        {
+            [PrimaryKey, AutoIncrement]
+            public int LocalId { get; set; }
+            public string CreateOrderJson { get; set; } = string.Empty;
+            public DateTime CreatedAt { get; set; } = DateTime.Now;
+        }
+
+        // ─── Init ─────────────────────────────────────────────────────────────────
+
         public async Task InitializeAsync()
         {
             if (_db != null)
                 return;
 
-            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "marketio.db3");
+            var dbPath = System.IO.Path.Combine(FileSystem.AppDataDirectory, "marketio.db3");
             _db = new SQLiteAsyncConnection(dbPath);
             await _db.CreateTableAsync<LocalProduct>();
             await _db.CreateTableAsync<LocalOrder>();
+            await _db.CreateTableAsync<PendingOrder>();
         }
 
-        private static LocalProduct ToLocal(ProductDto p) => new LocalProduct
+        // ─── Products ─────────────────────────────────────────────────────────────
+
+        private static LocalProduct ToLocal(ProductDto p) => new()
         {
             Id = p.Id,
             Name = p.Name,
@@ -69,7 +76,7 @@ namespace Marketio_App.Services
             IsActive = p.IsActive
         };
 
-        private static ProductDto FromLocal(LocalProduct p) => new ProductDto
+        private static ProductDto FromLocal(LocalProduct p) => new()
         {
             Id = p.Id,
             Name = p.Name,
@@ -82,7 +89,39 @@ namespace Marketio_App.Services
             IsActive = p.IsActive
         };
 
-        private static LocalOrder ToLocal(OrderDto o) => new LocalOrder
+        public async Task SaveProductsAsync(IEnumerable<ProductDto> products)
+        {
+            if (_db == null) await InitializeAsync();
+            var locals = products.Select(ToLocal).ToList();
+            await _db!.RunInTransactionAsync(conn =>
+            {
+                foreach (var lp in locals) conn.InsertOrReplace(lp);
+            });
+        }
+
+        public async Task SaveProductAsync(ProductDto product)
+        {
+            if (_db == null) await InitializeAsync();
+            await _db!.InsertOrReplaceAsync(ToLocal(product));
+        }
+
+        public async Task<List<ProductDto>> GetProductsAsync()
+        {
+            if (_db == null) await InitializeAsync();
+            var list = await _db!.Table<LocalProduct>().ToListAsync();
+            return list.Select(FromLocal).ToList();
+        }
+
+        public async Task<ProductDto?> GetProductByIdAsync(int id)
+        {
+            if (_db == null) await InitializeAsync();
+            var p = await _db!.FindAsync<LocalProduct>(id);
+            return p == null ? null : FromLocal(p);
+        }
+
+        // ─── Orders ───────────────────────────────────────────────────────────────
+
+        private static LocalOrder ToLocal(OrderDto o) => new()
         {
             Id = o.Id,
             OrderNumber = o.OrderNumber,
@@ -92,10 +131,10 @@ namespace Marketio_App.Services
             PaymentMethod = (int)o.PaymentMethod,
             TotalAmount = o.TotalAmount,
             ShippingAddress = o.ShippingAddress,
-            OrderItemsJson = System.Text.Json.JsonSerializer.Serialize(o.OrderItems)
+            OrderItemsJson = JsonSerializer.Serialize(o.OrderItems)
         };
 
-        private static OrderDto FromLocal(LocalOrder o) => new OrderDto
+        private static OrderDto FromLocal(LocalOrder o) => new()
         {
             Id = o.Id,
             OrderNumber = o.OrderNumber,
@@ -109,128 +148,80 @@ namespace Marketio_App.Services
             ShippingAddress = o.ShippingAddress,
             OrderItems = string.IsNullOrEmpty(o.OrderItemsJson)
                 ? new List<OrderItemDto>()
-                : System.Text.Json.JsonSerializer.Deserialize<List<OrderItemDto>>(o.OrderItemsJson) ?? new List<OrderItemDto>()
+                : JsonSerializer.Deserialize<List<OrderItemDto>>(o.OrderItemsJson) ?? new List<OrderItemDto>()
         };
-
-        public async Task SaveProductsAsync(IEnumerable<ProductDto> products)
-        {
-            if (_db == null)
-                await InitializeAsync();
-
-            if (_db == null)
-                return;
-
-            var locals = products.Select(ToLocal).ToList();
-
-            await _db.RunInTransactionAsync(conn =>
-            {
-                foreach (var lp in locals)
-                {
-                    conn.InsertOrReplace(lp);
-                }
-            });
-        }
-
-        public async Task SaveProductAsync(ProductDto product)
-        {
-            if (_db == null)
-                await InitializeAsync();
-
-            if (_db == null)
-                return;
-
-            var lp = ToLocal(product);
-            await _db.InsertOrReplaceAsync(lp);
-        }
-
-        public async Task<List<ProductDto>> GetProductsAsync()
-        {
-            if (_db == null)
-                await InitializeAsync();
-
-            if (_db == null)
-                return new List<ProductDto>();
-
-            var list = await _db.Table<LocalProduct>().ToListAsync();
-            return list.Select(FromLocal).ToList();
-        }
-
-        public async Task<ProductDto?> GetProductByIdAsync(int id)
-        {
-            if (_db == null)
-                await InitializeAsync();
-
-            if (_db == null)
-                return null;
-
-            var p = await _db.FindAsync<LocalProduct>(id);
-            return p == null ? null : FromLocal(p);
-        }
 
         public async Task SaveOrdersAsync(IEnumerable<OrderDto> orders)
         {
-            if (_db == null)
-                await InitializeAsync();
-
-            if (_db == null)
-                return;
-
+            if (_db == null) await InitializeAsync();
             var locals = orders.Select(ToLocal).ToList();
-
-            await _db.RunInTransactionAsync(conn =>
+            await _db!.RunInTransactionAsync(conn =>
             {
-                foreach (var lo in locals)
-                {
-                    conn.InsertOrReplace(lo);
-                }
+                foreach (var lo in locals) conn.InsertOrReplace(lo);
             });
         }
 
         public async Task SaveOrderAsync(OrderDto order)
         {
-            if (_db == null)
-                await InitializeAsync();
-
-            if (_db == null)
-                return;
-
-            var lo = ToLocal(order);
-            await _db.InsertOrReplaceAsync(lo);
+            if (_db == null) await InitializeAsync();
+            await _db!.InsertOrReplaceAsync(ToLocal(order));
         }
 
         public async Task<List<OrderDto>> GetOrdersAsync()
         {
-            if (_db == null)
-                await InitializeAsync();
-
-            if (_db == null)
-                return new List<OrderDto>();
-
-            var list = await _db.Table<LocalOrder>().OrderByDescending(o => o.OrderDate).ToListAsync();
+            if (_db == null) await InitializeAsync();
+            var list = await _db!.Table<LocalOrder>().OrderByDescending(o => o.OrderDate).ToListAsync();
             return list.Select(FromLocal).ToList();
         }
 
         public async Task<OrderDto?> GetOrderByIdAsync(int id)
         {
-            if (_db == null)
-                await InitializeAsync();
-
-            if (_db == null)
-                return null;
-
-            var o = await _db.FindAsync<LocalOrder>(id);
+            if (_db == null) await InitializeAsync();
+            var o = await _db!.FindAsync<LocalOrder>(id);
             return o == null ? null : FromLocal(o);
         }
 
         public async Task DeleteOrderAsync(int orderId)
         {
-            if (_db == null)
-                await InitializeAsync();
+            if (_db == null) await InitializeAsync();
+            await _db!.DeleteAsync<LocalOrder>(orderId);
+        }
 
-            if (_db == null)
-                return;
+        // ─── Pending Orders (offline queue) ───────────────────────────────────────
 
-            await _db.DeleteAsync<LocalOrder>(orderId);
+        /// <summary>
+        /// Slaat een offline bestelling op in de wachtrij. Geeft het lokale ID terug.
+        /// </summary>
+        public async Task<int> SavePendingOrderAsync(CreateOrderDto createOrderDto)
+        {
+            if (_db == null) await InitializeAsync();
+
+            var pending = new PendingOrder
+            {
+                CreateOrderJson = JsonSerializer.Serialize(createOrderDto),
+                CreatedAt = DateTime.Now
+            };
+
+            await _db!.InsertAsync(pending);
+            return pending.LocalId;
+        }
+
+        public async Task<List<PendingOrder>> GetPendingOrdersAsync()
+        {
+            if (_db == null) await InitializeAsync();
+            return await _db!.Table<PendingOrder>().OrderBy(p => p.LocalId).ToListAsync();
+        }
+
+        public async Task DeletePendingOrderAsync(int localId)
+        {
+            if (_db == null) await InitializeAsync();
+            await _db!.DeleteAsync<PendingOrder>(localId);
+        }
+
+        public async Task<int> GetPendingOrderCountAsync()
+        {
+            if (_db == null) await InitializeAsync();
+            return await _db!.Table<PendingOrder>().CountAsync();
         }
     }
 }
