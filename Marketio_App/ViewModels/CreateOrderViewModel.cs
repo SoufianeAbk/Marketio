@@ -38,6 +38,9 @@ namespace Marketio_App.ViewModels
         [ObservableProperty]
         private bool isCartEmpty;
 
+        [ObservableProperty]
+        private bool isOffline;
+
         public CreateOrderViewModel(
             CartService cartService,
             OrderApiService orderService,
@@ -48,6 +51,9 @@ namespace Marketio_App.ViewModels
             _orderService = orderService;
             _connectivity = connectivity;
             _authService = authService;
+
+            isOffline = !_connectivity.IsConnected;
+            _connectivity.ConnectivityChanged += (_, connected) => isOffline = !connected;
         }
 
         [RelayCommand]
@@ -84,11 +90,8 @@ namespace Marketio_App.ViewModels
                 CartTotal = await _cartService.GetCartTotalAsync();
                 IsCartEmpty = !items.Any();
 
-                // Redirect to products if cart becomes empty
                 if (IsCartEmpty)
-                {
                     await Shell.Current.GoToAsync("///producten");
-                }
             }
             catch (Exception ex)
             {
@@ -118,12 +121,6 @@ namespace Marketio_App.ViewModels
                 return;
             }
 
-            if (!_connectivity.IsConnected)
-            {
-                ErrorMessage = "Geen internetverbinding beschikbaar.";
-                return;
-            }
-
             try
             {
                 IsLoading = true;
@@ -142,21 +139,35 @@ namespace Marketio_App.ViewModels
 
                 var order = await _orderService.CreateOrderAsync(createOrderDto);
 
-                if (order != null && order.Id > 0)
+                if (order != null)
                 {
                     await _cartService.ClearCartAsync();
-                    await Shell.Current.DisplayAlert(
-                        "Succes",
-                        $"Bestelling {order.OrderNumber} succesvol geplaatst!",
-                        "OK");
-                    await Shell.Current.GoToAsync($"order-detail?OrderId={order.Id}");
+
+                    if (order.Id > 0)
+                    {
+                        // Online: navigeer naar bestellingsdetail
+                        await Shell.Current.DisplayAlert(
+                            "Succes",
+                            $"Bestelling {order.OrderNumber} succesvol geplaatst!",
+                            "OK");
+                        await Shell.Current.GoToAsync($"order-detail?OrderId={order.Id}");
+                    }
+                    else
+                    {
+                        // Offline: bestelling staat in wachtrij
+                        await Shell.Current.DisplayAlert(
+                            "Opgeslagen",
+                            $"Geen internetverbinding. Bestelling {order.OrderNumber} is opgeslagen en wordt automatisch verstuurd zodra u verbinding heeft.",
+                            "OK");
+                        await Shell.Current.GoToAsync("///orders");
+                    }
                 }
                 else
                 {
                     ErrorMessage = "Kon bestelling niet plaatsen. Probeer later opnieuw.";
                 }
             }
-            catch (UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException)
             {
                 ErrorMessage = "Sessie verlopen. U wordt teruggeleid naar inloggen.";
                 await _authService.LogoutAsync();
@@ -180,18 +191,12 @@ namespace Marketio_App.ViewModels
 
         partial void OnSameAsShippingChanged(bool value)
         {
-            if (value)
-            {
-                BillingAddress = ShippingAddress;
-            }
+            if (value) BillingAddress = ShippingAddress;
         }
 
         partial void OnShippingAddressChanged(string value)
         {
-            if (SameAsShipping)
-            {
-                BillingAddress = value;
-            }
+            if (SameAsShipping) BillingAddress = value;
         }
     }
 }
