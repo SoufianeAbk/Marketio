@@ -60,11 +60,11 @@ namespace Marketio_App
             builder.Services.AddSingleton<LoginViewModel>();
             builder.Services.AddSingleton<RegisterViewModel>();
             builder.Services.AddSingleton<ProductsViewModel>();
-            builder.Services.AddSingleton<ProductDetailViewModel>();
+            builder.Services.AddTransient<ProductDetailViewModel>();
             builder.Services.AddSingleton<CartViewModel>();
             builder.Services.AddSingleton<OrdersViewModel>();
-            builder.Services.AddSingleton<OrderDetailViewModel>();
-            builder.Services.AddSingleton<CreateOrderViewModel>();
+            builder.Services.AddTransient<OrderDetailViewModel>();
+            builder.Services.AddTransient<CreateOrderViewModel>();
             builder.Services.AddSingleton<AccountSettingsViewModel>();
 
             // ─── Pages (AppShell vóór App registreren) ────────────────────────────────
@@ -72,11 +72,11 @@ namespace Marketio_App
             builder.Services.AddSingleton<LoginPage>();
             builder.Services.AddSingleton<RegisterPage>();
             builder.Services.AddSingleton<ProductsPage>();
-            builder.Services.AddSingleton<ProductDetailPage>();
+            builder.Services.AddTransient<ProductDetailPage>();
             builder.Services.AddSingleton<CartPage>();
             builder.Services.AddSingleton<OrdersPage>();
-            builder.Services.AddSingleton<OrderDetailPage>();
-            builder.Services.AddSingleton<CreateOrderPage>();
+            builder.Services.AddTransient<OrderDetailPage>();
+            builder.Services.AddTransient<CreateOrderPage>();
             builder.Services.AddSingleton<AccountSettingsPage>();
 
             var app = builder.Build();
