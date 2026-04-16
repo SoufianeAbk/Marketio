@@ -11,6 +11,8 @@ namespace Marketio_App.ViewModels
         private readonly AccountApiService _accountService;
         private readonly AuthService _authService;
         private readonly ConnectivityService _connectivity;
+        private readonly LocalDatabaseService _localDatabase;
+        private readonly SecureKeyManagementService _keyManagement;
 
         [ObservableProperty]
         private string email = string.Empty;
@@ -57,11 +59,15 @@ namespace Marketio_App.ViewModels
         public AccountSettingsViewModel(
             AccountApiService accountService,
             AuthService authService,
-            ConnectivityService connectivity)
+            ConnectivityService connectivity,
+            LocalDatabaseService localDatabase,
+            SecureKeyManagementService keyManagement)
         {
             _accountService = accountService ?? throw new ArgumentNullException(nameof(accountService));
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
             _connectivity = connectivity ?? throw new ArgumentNullException(nameof(connectivity));
+            _localDatabase = localDatabase ?? throw new ArgumentNullException(nameof(localDatabase));
+            _keyManagement = keyManagement ?? throw new ArgumentNullException(nameof(keyManagement));
 
             isOffline = !_connectivity.IsConnected;
             _connectivity.ConnectivityChanged += OnConnectivityChanged;
@@ -228,9 +234,11 @@ namespace Marketio_App.ViewModels
                     DeletionPassword = string.Empty;
                     IsDeletionRequested = true;
 
+                    // ─── GDPR Compliance: Clear all local data ──────────────────────
+                    await ClearAllLocalDataAsync();
+
                     // Log out after successful deletion request
                     await Task.Delay(2000);
-                    await _authService.LogoutAsync();
                     await Shell.Current.GoToAsync("///login");
                 }
                 else
@@ -289,6 +297,80 @@ namespace Marketio_App.ViewModels
             catch (Exception ex)
             {
                 ErrorMessage = $"Fout bij vernieuwen: {ex.Message}";
+            }
+        }
+
+        // ─── GDPR Compliance: Private helper methods ───────────────────────────────
+
+        /// <summary>
+        /// Clears all local data as per GDPR "Right to be Forgotten" requirement.
+        /// Includes database, encryption keys, and temporary files.
+        /// GDPR Article 17 - Right to erasure.
+        /// </summary>
+        private async Task ClearAllLocalDataAsync()
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] Starting GDPR data cleanup...");
+
+                // Step 1: Clear all local database content
+                await _localDatabase.ClearAllDataAsync();
+                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] ✓ Local database cleared.");
+
+                // Step 2: Clear encryption key from secure storage
+                await _keyManagement.ClearDatabaseKeyAsync();
+                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] ✓ Encryption key cleared.");
+
+                // Step 3: Clear auth token
+                await _authService.LogoutAsync();
+                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] ✓ Auth token cleared.");
+
+                // Step 4: Clear temporary cache files
+                await ClearCacheFilesAsync();
+                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] ✓ Cache files cleared.");
+
+                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] GDPR data cleanup completed successfully.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"[AccountSettingsViewModel] Warning: Error during GDPR cleanup: {ex.Message}");
+                // Log but don't throw - deletion request already succeeded on server
+            }
+        }
+
+        /// <summary>
+        /// Clears temporary cache files (exported data, temporary downloads, etc.).
+        /// Searches for files matching "marketio-*" pattern.
+        /// </summary>
+        private async Task ClearCacheFilesAsync()
+        {
+            try
+            {
+                var cacheDir = FileSystem.CacheDirectory;
+                if (Directory.Exists(cacheDir))
+                {
+                    var files = Directory.GetFiles(cacheDir, "marketio-*");
+                    foreach (var file in files)
+                    {
+                        try
+                        {
+                            File.Delete(file);
+                            System.Diagnostics.Debug.WriteLine($"[AccountSettingsViewModel] Deleted cache file: {file}");
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine(
+                                $"[AccountSettingsViewModel] Failed to delete cache file {file}: {ex.Message}");
+                        }
+                    }
+                }
+
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[AccountSettingsViewModel] Error clearing cache: {ex.Message}");
             }
         }
 

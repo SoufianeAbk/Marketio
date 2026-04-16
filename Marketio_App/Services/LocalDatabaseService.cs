@@ -7,6 +7,13 @@ namespace Marketio_App.Services
     public class LocalDatabaseService
     {
         private SQLiteAsyncConnection? _db;
+        private readonly SecureKeyManagementService _keyManagementService;
+        private string? _cachedDatabasePassword;
+
+        public LocalDatabaseService(SecureKeyManagementService keyManagementService)
+        {
+            _keyManagementService = keyManagementService ?? throw new ArgumentNullException(nameof(keyManagementService));
+        }
 
         // ─── Local entities ────────────────────────────────────────────────────────
 
@@ -54,11 +61,28 @@ namespace Marketio_App.Services
             if (_db != null)
                 return;
 
-            var dbPath = System.IO.Path.Combine(FileSystem.AppDataDirectory, "marketio.db3");
-            _db = new SQLiteAsyncConnection(dbPath);
-            await _db.CreateTableAsync<LocalProduct>();
-            await _db.CreateTableAsync<LocalOrder>();
-            await _db.CreateTableAsync<PendingOrder>();
+            try
+            {
+                var dbPath = System.IO.Path.Combine(FileSystem.AppDataDirectory, "marketio.db3");
+
+                // Get encryption key from secure storage
+                _cachedDatabasePassword = await _keyManagementService.GetOrCreateDatabaseKeyAsync();
+
+                // Create encrypted connection with password
+                var connectionString = new SQLiteConnectionString(dbPath, storeDateTimeAsTicks: false, key: _cachedDatabasePassword);
+                _db = new SQLiteAsyncConnection(connectionString);
+
+                await _db.CreateTableAsync<LocalProduct>();
+                await _db.CreateTableAsync<LocalOrder>();
+                await _db.CreateTableAsync<PendingOrder>();
+
+                System.Diagnostics.Debug.WriteLine("[LocalDatabase] Initialized with encryption successfully.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[LocalDatabase] Initialization failed: {ex.Message}");
+                throw;
+            }
         }
 
         // ─── Products ─────────────────────────────────────────────────────────────
@@ -222,6 +246,33 @@ namespace Marketio_App.Services
         {
             if (_db == null) await InitializeAsync();
             return await _db!.Table<PendingOrder>().CountAsync();
+        }
+
+        /// <summary>
+        /// Clears the local database and encryption key (GDPR Right to be Forgotten).
+        /// </summary>
+        public async Task ClearAllDataAsync()
+        {
+            try
+            {
+                if (_db != null)
+                {
+                    // Delete all tables
+                    await _db.DeleteAllAsync<LocalProduct>();
+                    await _db.DeleteAllAsync<LocalOrder>();
+                    await _db.DeleteAllAsync<PendingOrder>();
+
+                    System.Diagnostics.Debug.WriteLine("[LocalDatabase] All data cleared.");
+                }
+
+                // Clear encryption key
+                await _keyManagementService.ClearDatabaseKeyAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[LocalDatabase] Error clearing data: {ex.Message}");
+                throw;
+            }
         }
     }
 }

@@ -47,6 +47,9 @@ namespace Marketio_App
             ;
 #endif
 
+            // ─── Security services ────────────────────────────────────────────────────
+            builder.Services.AddSingleton<SecureKeyManagementService>();
+
             // ─── Core app services ────────────────────────────────────────────────────
             builder.Services.AddSingleton<ConnectivityService>();
             builder.Services.AddSingleton<LocalDatabaseService>();
