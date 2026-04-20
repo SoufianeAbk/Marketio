@@ -1,11 +1,9 @@
-﻿using System.Text.Json;
-using Marketio_Shared.DTOs;
+﻿using Marketio_Shared.DTOs;
 
 namespace Marketio_App.Services
 {
     public class CartService
     {
-        private const string CartPreferenceKey = "MarketioCart";
         private readonly LocalDatabaseService _database;
 
         public CartService(LocalDatabaseService database)
@@ -15,19 +13,7 @@ namespace Marketio_App.Services
 
         public async Task<List<CartItemDto>> GetCartItemsAsync()
         {
-            var cartJson = await SecureStorage.Default.GetAsync(CartPreferenceKey);
-
-            if (string.IsNullOrEmpty(cartJson))
-                return new List<CartItemDto>();
-
-            try
-            {
-                return JsonSerializer.Deserialize<List<CartItemDto>>(cartJson) ?? new List<CartItemDto>();
-            }
-            catch
-            {
-                return new List<CartItemDto>();
-            }
+            return await _database.GetCartItemsAsync();
         }
 
         public async Task AddToCartAsync(ProductDto product, int quantity = 1)
@@ -41,7 +27,7 @@ namespace Marketio_App.Services
             if (quantity > product.Stock)
                 throw new InvalidOperationException($"Quantity exceeds available stock ({product.Stock})");
 
-            var cartItems = await GetCartItemsAsync();
+            var cartItems = await _database.GetCartItemsAsync();
             var existingItem = cartItems.FirstOrDefault(x => x.ProductId == product.Id);
 
             if (existingItem != null)
@@ -51,10 +37,11 @@ namespace Marketio_App.Services
                     throw new InvalidOperationException($"Total quantity exceeds available stock ({product.Stock})");
 
                 existingItem.Quantity = newQuantity;
+                await _database.UpsertCartItemAsync(existingItem);
             }
             else
             {
-                cartItems.Add(new CartItemDto
+                await _database.UpsertCartItemAsync(new CartItemDto
                 {
                     ProductId = product.Id,
                     ProductName = product.Name,
@@ -64,8 +51,6 @@ namespace Marketio_App.Services
                     AvailableStock = product.Stock
                 });
             }
-
-            await SaveCartAsync(cartItems);
         }
 
         public async Task UpdateCartItemAsync(int productId, int quantity)
@@ -79,7 +64,7 @@ namespace Marketio_App.Services
                 return;
             }
 
-            var cartItems = await GetCartItemsAsync();
+            var cartItems = await _database.GetCartItemsAsync();
             var item = cartItems.FirstOrDefault(x => x.ProductId == productId);
 
             if (item != null)
@@ -88,47 +73,30 @@ namespace Marketio_App.Services
                     throw new InvalidOperationException($"Quantity exceeds available stock ({item.AvailableStock})");
 
                 item.Quantity = quantity;
-                await SaveCartAsync(cartItems);
+                await _database.UpsertCartItemAsync(item);
             }
         }
 
         public async Task RemoveFromCartAsync(int productId)
         {
-            var cartItems = await GetCartItemsAsync();
-            cartItems.RemoveAll(x => x.ProductId == productId);
-            await SaveCartAsync(cartItems);
+            await _database.DeleteCartItemAsync(productId);
         }
 
         public async Task ClearCartAsync()
         {
-            try
-            {
-                SecureStorage.Default.Remove(CartPreferenceKey);
-            }
-            catch
-            {
-                // Ignore errors if key doesn't exist
-            }
-
-            await Task.CompletedTask;
+            await _database.ClearCartAsync();
         }
 
         public async Task<decimal> GetCartTotalAsync()
         {
-            var cartItems = await GetCartItemsAsync();
+            var cartItems = await _database.GetCartItemsAsync();
             return cartItems.Sum(x => x.TotalPrice);
         }
 
         public async Task<int> GetCartItemCountAsync()
         {
-            var cartItems = await GetCartItemsAsync();
+            var cartItems = await _database.GetCartItemsAsync();
             return cartItems.Sum(x => x.Quantity);
-        }
-
-        private async Task SaveCartAsync(List<CartItemDto> cartItems)
-        {
-            var cartJson = JsonSerializer.Serialize(cartItems);
-            await SecureStorage.Default.SetAsync(CartPreferenceKey, cartJson);
         }
     }
 }
