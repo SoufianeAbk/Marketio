@@ -2,7 +2,6 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
 using Marketio_App.Services;
 using Marketio_App.ViewModels;
 using Marketio_App.Pages;
@@ -116,38 +115,22 @@ namespace Marketio_App
         }
 
         /// <summary>
-        /// Bepaalt de platform-specifieke API base URL
+        /// Centrale bron van de platform-specifieke API base URL.
+        /// Internal zodat andere services (bv. AccountApiService) deze kunnen hergebruiken
+        /// zonder de URL opnieuw te hardcoderen.
         /// </summary>
-        private static string GetPlatformApiBaseUrl()
-        {
-            var platformKey = GetPlatformKey();
-
-            // Hardcoded URLs per platform
-            return platformKey switch
-            {
-                "Android" => "https://10.0.2.2:7170/",
-                "iOS" => "https://localhost:7170/",
-                "MacCatalyst" => "https://localhost:7170/",
-                "Windows" => "https://localhost:7170/",
-                _ => "https://10.0.2.2:7170/"
-            };
-        }
-
-        /// <summary>
-        /// Bepaalt het platform-specifieke sleutelnaam voor de configuratie
-        /// </summary>
-        private static string GetPlatformKey()
+        internal static string GetPlatformApiBaseUrl()
         {
 #if ANDROID
-            return "Android";
+            return "https://10.0.2.2:7170/";
 #elif IOS
-            return "iOS";
+            return "https://localhost:7170/";
 #elif MACCATALYST
-            return "MacCatalyst";
+            return "https://localhost:7170/";
 #elif WINDOWS
-            return "Windows";
+            return "https://localhost:7170/";
 #else
-            return "Default";
+            return "https://10.0.2.2:7170/";
 #endif
         }
     }
