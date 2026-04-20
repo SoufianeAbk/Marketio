@@ -23,6 +23,13 @@ namespace Marketio_App.Services
         public Uri? BaseAddress => _client.BaseAddress;
 
         /// <summary>
+        /// Geeft toegang tot de geconfigureerde HttpClient (inclusief handler en BaseAddress).
+        /// Gebruik dit in plaats van een losse new HttpClient() aan te maken,
+        /// zodat de SSL-bypass handler en platform-URL consistent blijven.
+        /// </summary>
+        public HttpClient HttpClient => _client;
+
+        /// <summary>
         /// Raised when a 401 Unauthorized response is received (token expired or invalid)
         /// </summary>
         public event EventHandler? TokenExpired;
