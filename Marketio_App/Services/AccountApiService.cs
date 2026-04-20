@@ -125,7 +125,9 @@ namespace Marketio_App.Services
         // ─── Data Export (Right to Portability) ────────────────────────────────────
 
         /// <summary>
-        /// Export personal data as JSON file
+        /// Export personal data as JSON file.
+        /// Hergebruikt de BaseAddress van de geconfigureerde ApiService zodat de URL
+        /// op één centrale plek beheerd wordt (MauiProgram.GetPlatformApiBaseUrl).
         /// </summary>
         public async Task<(bool Success, byte[]? FileContent, string? FileName, string? ErrorMessage)> ExportDataAsync()
         {
@@ -133,9 +135,23 @@ namespace Marketio_App.Services
 
             try
             {
-                using var client = new HttpClient();
+                // Gebruik de BaseAddress van de geconfigureerde ApiService — geen losse URL meer
+                var baseUrl = _api.BaseAddress?.ToString()
+                    ?? throw new InvalidOperationException("ApiService heeft geen geconfigureerde BaseAddress.");
 
-                // Get JWT from ApiService
+                // Bouw een tijdelijke HttpClient met dezelfde SSL-instellingen als in productie
+#if DEBUG
+                var handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback =
+                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
+                using var client = new HttpClient(handler);
+#else
+                using var client = new HttpClient();
+#endif
+
+                // Haal JWT op en zet Authorization-header
                 var token = await Microsoft.Maui.Storage.SecureStorage.Default.GetAsync("jwt_token");
                 if (!string.IsNullOrEmpty(token))
                 {
@@ -143,7 +159,6 @@ namespace Marketio_App.Services
                         new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                 }
 
-                var baseUrl = GetBaseUrl();
                 var response = await client.GetAsync($"{baseUrl}api/account/export-data");
 
                 if (!response.IsSuccessStatusCode)
@@ -226,23 +241,6 @@ namespace Marketio_App.Services
                 _logger.LogError(ex, "[AccountApiService] Error retrieving audit trail");
                 return (false, null, $"Fout bij ophalen auditgegevens: {ex.Message}");
             }
-        }
-
-        // ─── Helpers ───────────────────────────────────────────────────────────────
-
-        private string GetBaseUrl()
-        {
-#if ANDROID
-            return "https://10.0.2.2:7170/";
-#elif IOS
-            return "https://localhost:7170/";
-#elif MACCATALYST
-            return "https://localhost:7170/";
-#elif WINDOWS
-            return "https://localhost:7170/";
-#else
-            return "https://10.0.2.2:7170/";
-#endif
         }
     }
 }
