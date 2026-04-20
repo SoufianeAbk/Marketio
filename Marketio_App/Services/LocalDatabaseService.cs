@@ -54,6 +54,18 @@ namespace Marketio_App.Services
             public DateTime CreatedAt { get; set; } = DateTime.Now;
         }
 
+        [Table("CartItems")]
+        public class LocalCartItem
+        {
+            [PrimaryKey]
+            public int ProductId { get; set; }
+            public string ProductName { get; set; } = string.Empty;
+            public string ImageUrl { get; set; } = string.Empty;
+            public decimal UnitPrice { get; set; }
+            public int Quantity { get; set; }
+            public int AvailableStock { get; set; }
+        }
+
         // ─── Init ─────────────────────────────────────────────────────────────────
 
         public async Task InitializeAsync()
@@ -75,6 +87,7 @@ namespace Marketio_App.Services
                 await _db.CreateTableAsync<LocalProduct>();
                 await _db.CreateTableAsync<LocalOrder>();
                 await _db.CreateTableAsync<PendingOrder>();
+                await _db.CreateTableAsync<LocalCartItem>();
 
                 System.Diagnostics.Debug.WriteLine("[LocalDatabase] Initialized with encryption successfully.");
             }
@@ -248,8 +261,57 @@ namespace Marketio_App.Services
             return await _db!.Table<PendingOrder>().CountAsync();
         }
 
+        // ─── Cart ─────────────────────────────────────────────────────────────────
+
+        private static LocalCartItem ToLocal(CartItemDto c) => new()
+        {
+            ProductId = c.ProductId,
+            ProductName = c.ProductName,
+            ImageUrl = c.ImageUrl,
+            UnitPrice = c.UnitPrice,
+            Quantity = c.Quantity,
+            AvailableStock = c.AvailableStock
+        };
+
+        private static CartItemDto FromLocal(LocalCartItem c) => new()
+        {
+            ProductId = c.ProductId,
+            ProductName = c.ProductName,
+            ImageUrl = c.ImageUrl,
+            UnitPrice = c.UnitPrice,
+            Quantity = c.Quantity,
+            AvailableStock = c.AvailableStock
+        };
+
+        public async Task<List<CartItemDto>> GetCartItemsAsync()
+        {
+            if (_db == null) await InitializeAsync();
+            var list = await _db!.Table<LocalCartItem>().ToListAsync();
+            return list.Select(FromLocal).ToList();
+        }
+
+        public async Task UpsertCartItemAsync(CartItemDto item)
+        {
+            if (_db == null) await InitializeAsync();
+            await _db!.InsertOrReplaceAsync(ToLocal(item));
+        }
+
+        public async Task DeleteCartItemAsync(int productId)
+        {
+            if (_db == null) await InitializeAsync();
+            await _db!.DeleteAsync<LocalCartItem>(productId);
+        }
+
+        public async Task ClearCartAsync()
+        {
+            if (_db == null) await InitializeAsync();
+            await _db!.DeleteAllAsync<LocalCartItem>();
+        }
+
+        // ─── GDPR: alles wissen ───────────────────────────────────────────────────
+
         /// <summary>
-        /// Clears the local database and encryption key (GDPR Right to be Forgotten).
+        /// Wist alle lokale data en de encryptie-sleutel (GDPR recht op vergetelheid).
         /// </summary>
         public async Task ClearAllDataAsync()
         {
@@ -257,10 +319,10 @@ namespace Marketio_App.Services
             {
                 if (_db != null)
                 {
-                    // Delete all tables
                     await _db.DeleteAllAsync<LocalProduct>();
                     await _db.DeleteAllAsync<LocalOrder>();
                     await _db.DeleteAllAsync<PendingOrder>();
+                    await _db.DeleteAllAsync<LocalCartItem>();
 
                     System.Diagnostics.Debug.WriteLine("[LocalDatabase] All data cleared.");
                 }
