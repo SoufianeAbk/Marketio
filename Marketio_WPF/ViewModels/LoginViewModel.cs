@@ -18,6 +18,16 @@ namespace Marketio_WPF.ViewModels
         private RelayCommand? _loginCommand;
         private RelayCommand? _registerCommand;
 
+        /// <summary>
+        /// Event raised when login is successful and navigation should occur.
+        /// </summary>
+        public event EventHandler? LoginSucceeded;
+
+        /// <summary>
+        /// Event raised when user requests to navigate to register page.
+        /// </summary>
+        public event EventHandler? RegisterRequested;
+
         public string Email
         {
             get => _email;
@@ -62,7 +72,8 @@ namespace Marketio_WPF.ViewModels
                 if (success)
                 {
                     SuccessMessage = "Login successful.";
-                    // Navigation logic would be handled by the view or main window
+                    // Raise event to notify the view to navigate to MainWindow
+                    OnLoginSucceeded();
                 }
                 else
                 {
@@ -90,7 +101,17 @@ namespace Marketio_WPF.ViewModels
 
         private void ExecuteRegister()
         {
-            // Navigation logic would be handled by the view or main window
+            OnRegisterRequested();
+        }
+
+        protected virtual void OnLoginSucceeded()
+        {
+            LoginSucceeded?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnRegisterRequested()
+        {
+            RegisterRequested?.Invoke(this, EventArgs.Empty);
         }
     }
 }

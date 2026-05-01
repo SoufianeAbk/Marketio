@@ -8,6 +8,7 @@ using Marketio_WPF.Models;
 using Marketio_WPF.Services;
 using Marketio_WPF.Services.Interfaces;
 using Marketio_WPF.ViewModels;
+using Marketio_WPF.Views;
 
 namespace Marketio_WPF
 {
@@ -35,9 +36,25 @@ namespace Marketio_WPF
                 // Run database migrations and seed data
                 await SeedDatabaseAsync();
 
-                // Show main window
-                MainWindow = new MainWindow();
-                MainWindow.Show();
+                // Show login window first
+                var loginViewModel = ServiceProvider.GetRequiredService<LoginViewModel>();
+                var loginView = new LoginView { DataContext = loginViewModel };
+
+                // Handle successful login
+                loginViewModel.LoginSucceeded += async (s, e) =>
+                {
+                    // Show main window after successful login
+                    MainWindow = new MainWindow();
+                    MainWindow.Show();
+                };
+
+                loginView.ShowDialog();
+
+                // If login was not successful, exit the application
+                if (MainWindow == null)
+                {
+                    Shutdown(0);
+                }
             }
             catch (Exception ex)
             {

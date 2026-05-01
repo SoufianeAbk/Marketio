@@ -3,10 +3,114 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Marketio_WPF.Views"
         mc:Ignorable="d"
-        Title="LoginView" Height="450" Width="800">
+        Title="Marketio Login"
+        Height="500"
+        Width="400"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F5F5"
+        Foreground="#333333">
+
     <Grid>
-        
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="320">
+            <!-- Logo / Title -->
+            <TextBlock Text="📊 Marketio"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="#2C3E50"
+                       TextAlignment="Center"
+                       Margin="0,0,0,10"/>
+
+            <TextBlock Text="Administration Portal"
+                       FontSize="14"
+                       Foreground="#7F8C8D"
+                       TextAlignment="Center"
+                       Margin="0,0,0,30"/>
+
+            <!-- Email Input -->
+            <TextBlock Text="Email"
+                       FontSize="12"
+                       FontWeight="SemiBold"
+                       Foreground="#2C3E50"
+                       Margin="0,0,0,5"/>
+
+            <TextBox x:Name="EmailTextBox"
+                     Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                     Padding="12"
+                     FontSize="12"
+                     Background="White"
+                     BorderThickness="1"
+                     BorderBrush="#BDC3C7"
+                     Margin="0,0,0,15"/>
+
+            <!-- Password Input -->
+            <TextBlock Text="Password"
+                       FontSize="12"
+                       FontWeight="SemiBold"
+                       Foreground="#2C3E50"
+                       Margin="0,0,0,5"/>
+
+            <PasswordBox x:Name="PasswordBox"
+                         Padding="12"
+                         FontSize="12"
+                         Background="White"
+                         BorderThickness="1"
+                         BorderBrush="#BDC3C7"
+                         Margin="0,0,0,15"/>
+
+            <!-- Remember Me Checkbox -->
+            <CheckBox Content="Remember me"
+                      IsChecked="{Binding RememberMe}"
+                      FontSize="12"
+                      Foreground="#7F8C8D"
+                      Margin="0,0,0,20"/>
+
+            <!-- Error Message -->
+            <TextBlock Text="{Binding ErrorMessage}"
+                       FontSize="12"
+                       Foreground="#E74C3C"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,10"
+                       Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
+
+            <!-- Success Message -->
+            <TextBlock Text="{Binding SuccessMessage}"
+                       FontSize="12"
+                       Foreground="#27AE60"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,10"
+                       Visibility="{Binding SuccessMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
+
+            <!-- Login Button -->
+            <Button Content="🔓 Login"
+                    Command="{Binding LoginCommand}"
+                    Background="#3498DB"
+                    Foreground="White"
+                    FontWeight="Bold"
+                    FontSize="14"
+                    Padding="12"
+                    Margin="0,0,0,10"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertBoolConverter}}"
+                    Cursor="Hand"/>
+
+            <!-- Register Button -->
+            <Button Content="➕ Create Account"
+                    Command="{Binding RegisterCommand}"
+                    Background="#95A5A6"
+                    Foreground="White"
+                    FontWeight="Bold"
+                    FontSize="14"
+                    Padding="12"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertBoolConverter}}"
+                    Cursor="Hand"/>
+
+            <!-- Loading Indicator -->
+            <ProgressBar IsIndeterminate="True"
+                         Height="4"
+                         Background="#ECF0F1"
+                         Foreground="#3498DB"
+                         Margin="0,20,0,0"
+                         Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"/>
+        </StackPanel>
     </Grid>
 </Window>
