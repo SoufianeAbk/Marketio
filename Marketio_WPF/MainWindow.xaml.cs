@@ -1,13 +1,5 @@
-﻿using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
+using Marketio_WPF.ViewModels;
 
 namespace Marketio_WPF
 {
@@ -19,6 +11,9 @@ namespace Marketio_WPF
         public MainWindow()
         {
             InitializeComponent();
+
+            // Set the DataContext to MainViewModel
+            this.DataContext = App.ServiceProvider.GetService(typeof(MainViewModel));
         }
     }
 }

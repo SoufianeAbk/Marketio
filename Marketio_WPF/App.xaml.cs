@@ -7,6 +7,7 @@ using Marketio_WPF.Data;
 using Marketio_WPF.Models;
 using Marketio_WPF.Services;
 using Marketio_WPF.Services.Interfaces;
+using Marketio_WPF.ViewModels;
 
 namespace Marketio_WPF
 {
@@ -96,6 +97,15 @@ namespace Marketio_WPF
             services.AddScoped<OrderService>();
             services.AddScoped<CustomerService>();
             services.AddScoped<ProductService>();
+
+            // ─── Register ViewModels ────────────────────────────────────────────────
+            services.AddScoped<MainViewModel>();
+            services.AddScoped<ProductsViewModel>();
+            services.AddScoped<OrdersViewModel>();
+            services.AddScoped<CustomersViewModel>();
+            services.AddScoped<AdminViewModel>();
+            services.AddScoped<LoginViewModel>();
+            services.AddScoped<RegisterViewModel>();
         }
 
         private string GetConnectionString()
