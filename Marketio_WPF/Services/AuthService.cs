@@ -13,6 +13,10 @@ namespace Marketio_WPF.Services
         private readonly UserManager<AppUser> _userManager;
         private AppUser? _currentUser;
 
+        public AppUser? CurrentUser => _currentUser;
+
+        public bool IsAuthenticated => _currentUser != null && _currentUser.IsActive;
+
         public AuthService(UserManager<AppUser> userManager)
         {
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
@@ -23,29 +27,29 @@ namespace Marketio_WPF.Services
             return Task.FromResult(_currentUser);
         }
 
-        public async Task<AppUser?> LoginAsync(string email, string password)
+        public async Task<bool> LoginAsync(string email, string password)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
-                return null;
+                return false;
             }
 
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                return null;
+                return false;
             }
 
             // Check if user is active
             if (!user.IsActive)
             {
-                return null;
+                return false;
             }
 
             // Check if user is locked out
             if (await _userManager.IsLockedOutAsync(user))
             {
-                return null;
+                return false;
             }
 
             // Verify password
@@ -54,7 +58,7 @@ namespace Marketio_WPF.Services
             {
                 // Increment failed login attempts
                 await _userManager.AccessFailedAsync(user);
-                return null;
+                return false;
             }
 
             // Reset failed login attempts on successful login
@@ -67,10 +71,10 @@ namespace Marketio_WPF.Services
             // Set current user
             _currentUser = user;
 
-            return user;
+            return true;
         }
 
-        public async Task<AppUser?> RegisterAsync(
+        public async Task<bool> RegisterAsync(
             string email,
             string firstName,
             string lastName,
@@ -83,14 +87,14 @@ namespace Marketio_WPF.Services
                 string.IsNullOrWhiteSpace(lastName) ||
                 string.IsNullOrWhiteSpace(password))
             {
-                return null;
+                return false;
             }
 
             // Check if user already exists
             var existingUser = await _userManager.FindByEmailAsync(email);
             if (existingUser != null)
             {
-                return null;
+                return false;
             }
 
             var newUser = new AppUser
@@ -109,13 +113,13 @@ namespace Marketio_WPF.Services
             var result = await _userManager.CreateAsync(newUser, password);
             if (!result.Succeeded)
             {
-                return null;
+                return false;
             }
 
             // Add user to "User" role
             await _userManager.AddToRoleAsync(newUser, "User");
 
-            return newUser;
+            return true;
         }
 
         public Task LogoutAsync()
@@ -144,11 +148,6 @@ namespace Marketio_WPF.Services
 
             var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
             return result.Succeeded;
-        }
-
-        public bool IsAuthenticated()
-        {
-            return _currentUser != null && _currentUser.IsActive;
         }
 
         public async Task<AppUser?> GetUserByIdAsync(string userId)

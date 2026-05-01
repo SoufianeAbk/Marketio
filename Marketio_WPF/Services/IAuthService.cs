@@ -13,12 +13,17 @@ namespace Marketio_WPF.Services.Interfaces
         Task<AppUser?> GetCurrentUserAsync();
 
         /// <summary>
+        /// Get the current user (synchronous property)
+        /// </summary>
+        AppUser? CurrentUser { get; }
+
+        /// <summary>
         /// Authenticate user with email and password
         /// </summary>
         /// <param name="email">User email</param>
         /// <param name="password">User password</param>
-        /// <returns>AppUser if successful, null if failed</returns>
-        Task<AppUser?> LoginAsync(string email, string password);
+        /// <returns>True if successful, false if failed</returns>
+        Task<bool> LoginAsync(string email, string password);
 
         /// <summary>
         /// Register a new user
@@ -29,8 +34,8 @@ namespace Marketio_WPF.Services.Interfaces
         /// <param name="password">User password</param>
         /// <param name="phoneNumber">User phone number (optional)</param>
         /// <param name="address">User address (optional)</param>
-        /// <returns>AppUser if successful, null if registration failed</returns>
-        Task<AppUser?> RegisterAsync(
+        /// <returns>True if successful, false if registration failed</returns>
+        Task<bool> RegisterAsync(
             string email,
             string firstName,
             string lastName,
@@ -56,7 +61,7 @@ namespace Marketio_WPF.Services.Interfaces
         /// Check if user is authenticated
         /// </summary>
         /// <returns>True if user is logged in, false otherwise</returns>
-        bool IsAuthenticated();
+        bool IsAuthenticated { get; }
 
         /// <summary>
         /// Get user by ID

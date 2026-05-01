@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System.Windows;
 using Marketio_WPF.Data;
 using Marketio_WPF.Models;
 using Marketio_WPF.Services;
 using Marketio_WPF.Services.Interfaces;
-using Marketio_WPF.Views;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Marketio_WPF
 {
@@ -55,6 +54,14 @@ namespace Marketio_WPF
             // Get connection string from app configuration
             var connectionString = GetConnectionString();
 
+            // Register Logging
+            services.AddLogging(config =>
+            {
+                config.ClearProviders();
+                config.AddConsole();
+                config.AddDebug();
+            });
+
             // Register DbContext
             services.AddDbContext<MarketioDbContext>(options =>
                 options.UseSqlServer(
@@ -85,14 +92,10 @@ namespace Marketio_WPF
             // Register application services
             services.AddScoped<DataSeeder>();
             services.AddScoped<IAuthService, AuthService>();
-
-            // Register repositories (if using repository pattern)
-            // services.AddScoped<IProductRepository, ProductRepository>();
-            // services.AddScoped<IOrderRepository, OrderRepository>();
-
-            // Register other services as needed
-            // services.AddScoped<IProductService, ProductService>();
-            // services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<UserManagementService>();
+            services.AddScoped<OrderService>();
+            services.AddScoped<CustomerService>();
+            services.AddScoped<ProductService>();
         }
 
         private string GetConnectionString()
