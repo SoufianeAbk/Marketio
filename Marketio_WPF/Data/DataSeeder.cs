@@ -26,9 +26,6 @@ namespace Marketio_WPF.Data
         {
             try
             {
-                // Apply pending migrations
-                await _context.Database.MigrateAsync();
-
                 // Seed roles
                 await SeedRolesAsync();
 
