@@ -1,35 +1,34 @@
-﻿using Marketio_Shared.DTOs;
+﻿using Marketio_Shared.Entities;
 using Marketio_Shared.Enums;
-using Marketio_WPF.Models;
+using Marketio_WPF.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Marketio_WPF.Services
 {
-    /// <summary>
-    /// Service for managing products in the WPF administration application.
-    /// Handles product retrieval, creation, update, and deletion operations.
-    /// </summary>
     internal class ProductService
     {
+        private readonly MarketioDbContext _context;
         private readonly ILogger<ProductService> _logger;
 
-        public ProductService(ILogger<ProductService> logger)
+        public ProductService(MarketioDbContext context, ILogger<ProductService> logger)
         {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        /// <summary>
-        /// Retrieves all products from the system.
-        /// </summary>
-        /// <returns>List of dynamic objects containing product information</returns>
         public async Task<List<dynamic>> GetAllProductsAsync()
         {
             try
             {
-                // In a real implementation, this would fetch from a database or API
-                // For now, returning an empty list
-                await Task.Delay(100); // Simulate async operation
-                return new List<dynamic>();
+                var products = await _context.Products
+                    .IgnoreQueryFilters()   // admin ziet ook inactieve producten
+                    .OrderBy(p => p.Category)
+                    .ThenBy(p => p.Name)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                return products.Cast<dynamic>().ToList();
             }
             catch (Exception ex)
             {
@@ -38,17 +37,17 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>
-        /// Retrieves products by category.
-        /// </summary>
-        /// <param name="category">The product category</param>
-        /// <returns>List of products in the category</returns>
         public async Task<List<dynamic>> GetProductsByCategoryAsync(ProductCategory category)
         {
             try
             {
-                await Task.Delay(100); // Simulate async operation
-                return new List<dynamic>();
+                var products = await _context.Products
+                    .Where(p => p.Category == category)
+                    .OrderBy(p => p.Name)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                return products.Cast<dynamic>().ToList();
             }
             catch (Exception ex)
             {
@@ -57,20 +56,16 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>
-        /// Retrieves a specific product by ID.
-        /// </summary>
-        /// <param name="productId">The product ID</param>
-        /// <returns>Dynamic object containing product information</returns>
         public async Task<dynamic?> GetProductByIdAsync(int productId)
         {
-            if (productId <= 0)
-                return null;
+            if (productId <= 0) return null;
 
             try
             {
-                await Task.Delay(100); // Simulate async operation
-                return null;
+                return await _context.Products
+                    .IgnoreQueryFilters()
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(p => p.Id == productId);
             }
             catch (Exception ex)
             {
@@ -79,20 +74,28 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>
-        /// Creates a new product.
-        /// </summary>
-        /// <param name="productData">Product data to create</param>
-        /// <returns>True if successful, false otherwise</returns>
         public async Task<bool> CreateProductAsync(dynamic productData)
         {
-            if (productData == null)
-                return false;
+            if (productData == null) return false;
 
             try
             {
-                _logger.LogInformation("Product created");
-                await Task.Delay(100); // Simulate async operation
+                var product = new Product
+                {
+                    Name = (string)productData.Name,
+                    Description = (string)productData.Description,
+                    Price = (decimal)productData.Price,
+                    Stock = (int)productData.Stock,
+                    Category = (ProductCategory)productData.Category,
+                    ImageUrl = (string)productData.ImageUrl,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Product '{Name}' created (Id={Id})", product.Name, product.Id);
                 return true;
             }
             catch (Exception ex)
@@ -102,21 +105,29 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>
-        /// Updates an existing product.
-        /// </summary>
-        /// <param name="productId">The product ID</param>
-        /// <param name="productData">Updated product data</param>
-        /// <returns>True if successful, false otherwise</returns>
         public async Task<bool> UpdateProductAsync(int productId, dynamic productData)
         {
-            if (productId <= 0 || productData == null)
-                return false;
+            if (productId <= 0 || productData == null) return false;
 
             try
             {
+                var product = await _context.Products
+                    .IgnoreQueryFilters()
+                    .FirstOrDefaultAsync(p => p.Id == productId);
+
+                if (product == null) return false;
+
+                product.Name = (string)productData.Name;
+                product.Description = (string)productData.Description;
+                product.Price = (decimal)productData.Price;
+                product.Stock = (int)productData.Stock;
+                product.Category = (ProductCategory)productData.Category;
+                product.ImageUrl = (string)productData.ImageUrl;
+                product.UpdatedAt = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+
                 _logger.LogInformation("Product {ProductId} updated", productId);
-                await Task.Delay(100); // Simulate async operation
                 return true;
             }
             catch (Exception ex)
@@ -126,20 +137,24 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>
-        /// Deletes a product from the system.
-        /// </summary>
-        /// <param name="productId">The product ID</param>
-        /// <returns>True if successful, false otherwise</returns>
         public async Task<bool> DeleteProductAsync(int productId)
         {
-            if (productId <= 0)
-                return false;
+            if (productId <= 0) return false;
 
             try
             {
-                _logger.LogWarning("Product {ProductId} deleted", productId);
-                await Task.Delay(100); // Simulate async operation
+                var product = await _context.Products
+                    .IgnoreQueryFilters()
+                    .FirstOrDefaultAsync(p => p.Id == productId);
+
+                if (product == null) return false;
+
+                // Soft-delete: IsActive = false
+                product.IsActive = false;
+                product.UpdatedAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+
+                _logger.LogWarning("Product {ProductId} soft-deleted", productId);
                 return true;
             }
             catch (Exception ex)
@@ -149,24 +164,27 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>
-        /// Searches products by name or description.
-        /// </summary>
-        /// <param name="searchTerm">Search term</param>
-        /// <returns>List of matching products</returns>
         public async Task<List<dynamic>> SearchProductsAsync(string searchTerm)
         {
-            if (string.IsNullOrWhiteSpace(searchTerm))
-                return new List<dynamic>();
+            if (string.IsNullOrWhiteSpace(searchTerm)) return new List<dynamic>();
 
             try
             {
-                await Task.Delay(100); // Simulate async operation
-                return new List<dynamic>();
+                var term = searchTerm.Trim().ToLower();
+
+                var products = await _context.Products
+                    .IgnoreQueryFilters()
+                    .Where(p => p.Name.ToLower().Contains(term) ||
+                                p.Description.ToLower().Contains(term))
+                    .OrderBy(p => p.Name)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                return products.Cast<dynamic>().ToList();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error searching products with term: {SearchTerm}", searchTerm);
+                _logger.LogError(ex, "Error searching products: {SearchTerm}", searchTerm);
                 throw new InvalidOperationException("Error searching products.", ex);
             }
         }
