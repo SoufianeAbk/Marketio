@@ -22,6 +22,7 @@ namespace Marketio_WPF.Services
             try
             {
                 var orders = await _context.Orders
+                    .IgnoreQueryFilters()
                     .Include(o => o.OrderItems)
                         .ThenInclude(oi => oi.Product)
                     .OrderByDescending(o => o.OrderDate)
@@ -44,6 +45,7 @@ namespace Marketio_WPF.Services
             try
             {
                 var orders = await _context.Orders
+                    .IgnoreQueryFilters()
                     .Where(o => o.CustomerId == customerId)
                     .Include(o => o.OrderItems)
                         .ThenInclude(oi => oi.Product)
@@ -66,12 +68,13 @@ namespace Marketio_WPF.Services
 
             try
             {
-                var order = await _context.Orders.FindAsync(orderId);
+                var order = await _context.Orders
+                    .IgnoreQueryFilters()
+                    .FirstOrDefaultAsync(o => o.Id == orderId);
                 if (order == null) return false;
 
                 order.Status = newStatus;
 
-                // Datumvelden bijhouden op basis van status
                 if (newStatus == OrderStatus.Shipped && order.ShippedDate == null)
                     order.ShippedDate = DateTime.UtcNow;
 
@@ -97,6 +100,7 @@ namespace Marketio_WPF.Services
             try
             {
                 return await _context.Orders
+                    .IgnoreQueryFilters()
                     .Include(o => o.OrderItems)
                         .ThenInclude(oi => oi.Product)
                     .AsNoTracking()
@@ -116,16 +120,16 @@ namespace Marketio_WPF.Services
             try
             {
                 var order = await _context.Orders
-                    .Include(o => o.OrderItems)
+                    .IgnoreQueryFilters()
                     .FirstOrDefaultAsync(o => o.Id == orderId);
 
                 if (order == null) return false;
 
-                // OrderItems worden via Cascade verwijderd (zie DbContext config)
-                _context.Orders.Remove(order);
+                // Soft-delete: IsActive = false
+                order.IsActive = false;
                 await _context.SaveChangesAsync();
 
-                _logger.LogWarning("Order {OrderId} deleted", orderId);
+                _logger.LogWarning("Order {OrderId} soft-deleted", orderId);
                 return true;
             }
             catch (Exception ex)

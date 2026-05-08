@@ -32,5 +32,8 @@ namespace Marketio_Shared.Entities
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Required]
+        public bool IsActive { get; set; } = true;
     }
 }

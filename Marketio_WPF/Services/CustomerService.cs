@@ -21,6 +21,7 @@ namespace Marketio_WPF.Services
             try
             {
                 var customers = await _context.Customers
+                    .IgnoreQueryFilters()
                     .OrderBy(c => c.LastName)
                     .ThenBy(c => c.FirstName)
                     .AsNoTracking()
@@ -42,6 +43,7 @@ namespace Marketio_WPF.Services
             try
             {
                 return await _context.Customers
+                    .IgnoreQueryFilters()
                     .AsNoTracking()
                     .FirstOrDefaultAsync(c => c.Id == customerId);
             }
@@ -58,7 +60,9 @@ namespace Marketio_WPF.Services
 
             try
             {
-                var customer = await _context.Customers.FindAsync(customerId);
+                var customer = await _context.Customers
+                    .IgnoreQueryFilters()
+                    .FirstOrDefaultAsync(c => c.Id == customerId);
                 if (customer == null) return false;
 
                 customer.FirstName = (string)customerData.FirstName;
@@ -85,13 +89,16 @@ namespace Marketio_WPF.Services
 
             try
             {
-                var customer = await _context.Customers.FindAsync(customerId);
+                var customer = await _context.Customers
+                    .IgnoreQueryFilters()
+                    .FirstOrDefaultAsync(c => c.Id == customerId);
                 if (customer == null) return false;
 
-                _context.Customers.Remove(customer);
+                // Soft-delete: IsActive = false
+                customer.IsActive = false;
                 await _context.SaveChangesAsync();
 
-                _logger.LogWarning("Customer {CustomerId} deleted", customerId);
+                _logger.LogWarning("Customer {CustomerId} soft-deleted", customerId);
                 return true;
             }
             catch (Exception ex)
@@ -110,6 +117,7 @@ namespace Marketio_WPF.Services
                 var term = searchTerm.Trim().ToLower();
 
                 var customers = await _context.Customers
+                    .IgnoreQueryFilters()
                     .Where(c => c.FirstName.ToLower().Contains(term) ||
                                 c.LastName.ToLower().Contains(term) ||
                                 c.Email.ToLower().Contains(term))

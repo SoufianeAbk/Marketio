@@ -40,6 +40,9 @@ namespace Marketio_Shared.Entities
 
         public DateTime? DeliveredDate { get; set; }
 
+        [Required]
+        public bool IsActive { get; set; } = true;
+
         // Navigation properties
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
