@@ -21,6 +21,8 @@ namespace Marketio_WPF.ViewModels
         private object? _currentView;
         private string _currentUserName = string.Empty;
         private bool _isAuthenticated;
+        private bool _isAdmin;
+        private bool _isEmployee;
 
         private RelayCommand? _logoutCommand;
         private RelayCommand? _navigateToOrdersCommand;
@@ -45,6 +47,20 @@ namespace Marketio_WPF.ViewModels
         {
             get => _isAuthenticated;
             set => SetProperty(ref _isAuthenticated, value);
+        }
+
+        /// <summary>Zichtbaarheid van Admin- en Gebruiker-registratie-knoppen</summary>
+        public bool IsAdmin
+        {
+            get => _isAdmin;
+            set => SetProperty(ref _isAdmin, value);
+        }
+
+        /// <summary>Zichtbaarheid van Klanten-knop (Medewerker of Admin)</summary>
+        public bool IsEmployee
+        {
+            get => _isEmployee;
+            set => SetProperty(ref _isEmployee, value);
         }
 
         public RelayCommand LogoutCommand => _logoutCommand ??= new RelayCommand(ExecuteLogout);
@@ -77,11 +93,31 @@ namespace Marketio_WPF.ViewModels
             {
                 IsAuthenticated = _authService.IsAuthenticated;
                 CurrentUserName = _authService.CurrentUser?.UserName ?? "Guest";
+
+                // Rollen asynchroon laden
+                if (_authService.CurrentUser != null)
+                {
+                    _ = LoadUserRolesAsync(_authService.CurrentUser.Id);
+                }
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"Error loading user information: {ex.Message}";
                 CurrentUserName = "Guest";
+            }
+        }
+
+        private async Task LoadUserRolesAsync(string userId)
+        {
+            try
+            {
+                var roles = await _authService.GetUserRolesAsync(userId);
+                IsAdmin = roles.Contains("Admin", StringComparer.OrdinalIgnoreCase);
+                IsEmployee = roles.Contains("Employee", StringComparer.OrdinalIgnoreCase) || IsAdmin;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error loading user roles: {ex.Message}";
             }
         }
 

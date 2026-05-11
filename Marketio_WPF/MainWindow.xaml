@@ -14,6 +14,7 @@
 
     <!-- Window Resources - MUST be defined FIRST before they are used -->
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <!-- Navigation Button Style -->
         <Style x:Key="NavigationButtonStyle" TargetType="{x:Type Button}">
             <Setter Property="Width" Value="180"/>
@@ -121,17 +122,20 @@
 
                 <Button Content="👥 Customers"
                         Command="{Binding NavigateToCustomersCommand}"
-                        Style="{StaticResource NavigationButtonStyle}"/>
+                        Style="{StaticResource NavigationButtonStyle}"
+                        Visibility="{Binding IsEmployee, Converter={StaticResource BoolToVis}}"/>
 
                 <Button Content="⚙️ Admin"
                         Command="{Binding NavigateToAdminCommand}"
-                        Style="{StaticResource NavigationButtonStyle}"/>
+                        Style="{StaticResource NavigationButtonStyle}"
+                        Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVis}}"/>
 
                 <Separator Background="#2C3E50" Margin="0,20,0,20"/>
 
                 <Button Content="➕ Register User"
                         Command="{Binding NavigateToRegisterCommand}"
-                        Style="{StaticResource NavigationButtonStyle}"/>
+                        Style="{StaticResource NavigationButtonStyle}"
+                        Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVis}}"/>
             </StackPanel>
 
             <!-- Right Content Area -->

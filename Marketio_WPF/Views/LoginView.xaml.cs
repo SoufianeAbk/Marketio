@@ -15,12 +15,17 @@ namespace Marketio_WPF.Views
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            // Bind the password box to the ViewModel
             if (DataContext is LoginViewModel viewModel)
             {
                 // Subscribe to navigation events
                 viewModel.LoginSucceeded += ViewModel_LoginSucceeded;
                 viewModel.RegisterRequested += ViewModel_RegisterRequested;
+
+                // Subscribe to password changes to update ViewModel
+                PasswordBox.PasswordChanged += (s, args) =>
+                {
+                    viewModel.Password = PasswordBox.Password;
+                };
             }
         }
 

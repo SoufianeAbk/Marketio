@@ -33,17 +33,25 @@ namespace Marketio_WPF
                 ConfigureServices(_services);
                 ServiceProvider = _services.BuildServiceProvider();
 
+                // Get logger to track startup
+                var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
+                var logger = loggerFactory.CreateLogger<App>();
+
                 // Run database migrations and seed data
+                logger.LogInformation("Starting database migration and seeding...");
                 await SeedDatabaseAsync();
+                logger.LogInformation("Database migration and seeding completed successfully");
 
                 // Show login window first
                 var loginViewModel = ServiceProvider.GetRequiredService<LoginViewModel>();
                 var loginView = new LoginView { DataContext = loginViewModel };
 
+                logger.LogInformation("Showing login window");
+
                 // Handle successful login
                 loginViewModel.LoginSucceeded += async (s, e) =>
                 {
-                    // Show main window after successful login
+                    logger.LogInformation("Login succeeded, showing main window");
                     MainWindow = new MainWindow();
                     MainWindow.Show();
                 };
@@ -53,13 +61,14 @@ namespace Marketio_WPF
                 // If login was not successful, exit the application
                 if (MainWindow == null)
                 {
+                    logger.LogInformation("Login was cancelled, shutting down application");
                     Shutdown(0);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Application startup error:\n{ex.Message}",
+                    $"Application startup error:\n{ex.Message}\n\nCheck the Output window for detailed logs.",
                     "Startup Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -78,6 +87,7 @@ namespace Marketio_WPF
                 config.ClearProviders();
                 config.AddConsole();
                 config.AddDebug();
+                config.SetMinimumLevel(LogLevel.Debug);
             });
 
             // Register DbContext
@@ -135,8 +145,20 @@ namespace Marketio_WPF
         private async Task SeedDatabaseAsync()
         {
             using var scope = ServiceProvider.CreateScope();
+            var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger<DataSeeder>();
             var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
-            await seeder.SeedAsync();
+
+            try
+            {
+                await seeder.SeedAsync();
+                logger.LogInformation("Database seeding completed successfully");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error during database seeding");
+                throw;
+            }
         }
 
         protected override void OnExit(ExitEventArgs e)
