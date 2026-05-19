@@ -3,10 +3,159 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Marketio_WPF.Views"
+        xmlns:local="clr-namespace:Marketio_WPF.Converters"
         mc:Ignorable="d"
-        Title="RegisterView" Height="450" Width="800">
+        Title="Marketio - Create Account"
+        Height="600"
+        Width="450"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="#F5F5F5"
+        Foreground="#333333">
+
+    <Window.Resources>
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <local:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+    </Window.Resources>
+
     <Grid>
-        
+        <Border Background="White"
+                CornerRadius="12"
+                Padding="25"
+                Margin="20">
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+
+                    <!-- Title -->
+                    <TextBlock Text="📝 Create Account"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Foreground="#2C3E50"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,25"/>
+
+                    <!-- Email -->
+                    <TextBlock Text="Email"
+                               FontSize="12"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,5"/>
+
+                    <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                             Height="40"
+                             Padding="10"
+                             FontSize="12"
+                             BorderBrush="#BDC3C7"
+                             BorderThickness="1"
+                             Margin="0,0,0,15"/>
+
+                    <!-- First Name -->
+                    <TextBlock Text="First Name"
+                               FontSize="12"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,5"/>
+
+                    <TextBox Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}"
+                             Height="40"
+                             Padding="10"
+                             FontSize="12"
+                             BorderBrush="#BDC3C7"
+                             BorderThickness="1"
+                             Margin="0,0,0,15"/>
+
+                    <!-- Last Name -->
+                    <TextBlock Text="Last Name"
+                               FontSize="12"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,5"/>
+
+                    <TextBox Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}"
+                             Height="40"
+                             Padding="10"
+                             FontSize="12"
+                             BorderBrush="#BDC3C7"
+                             BorderThickness="1"
+                             Margin="0,0,0,15"/>
+
+                    <!-- Password -->
+                    <TextBlock Text="Password"
+                               FontSize="12"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,5"/>
+
+                    <PasswordBox x:Name="PasswordBox"
+                                 Height="40"
+                                 Padding="10"
+                                 FontSize="12"
+                                 BorderBrush="#BDC3C7"
+                                 BorderThickness="1"
+                                 Margin="0,0,0,15"/>
+
+                    <!-- Confirm Password -->
+                    <TextBlock Text="Confirm Password"
+                               FontSize="12"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,5"/>
+
+                    <PasswordBox x:Name="ConfirmPasswordBox"
+                                 Height="40"
+                                 Padding="10"
+                                 FontSize="12"
+                                 BorderBrush="#BDC3C7"
+                                 BorderThickness="1"
+                                 Margin="0,0,0,20"/>
+
+                    <!-- Terms -->
+                    <CheckBox Content="I accept the Terms of Service"
+                              IsChecked="{Binding AcceptTerms}"
+                              FontSize="11"
+                              Margin="0,0,0,10"/>
+
+                    <!-- Privacy -->
+                    <CheckBox Content="I accept the Privacy Policy"
+                              IsChecked="{Binding AcceptPrivacyPolicy}"
+                              FontSize="11"
+                              Margin="0,0,0,20"/>
+
+                    <!-- Error Message -->
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="#E74C3C"
+                               FontSize="12"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,15"
+                               Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
+
+                    <!-- Register Button -->
+                    <Button Content="✓ Create Account"
+                            Command="{Binding RegisterCommand}"
+                            Height="45"
+                            Background="#27AE60"
+                            Foreground="White"
+                            FontWeight="Bold"
+                            FontSize="14"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Margin="0,0,0,10"/>
+
+                    <!-- Back Button -->
+                    <Button Content="← Back to Login"
+                            Height="40"
+                            Background="#95A5A6"
+                            Foreground="White"
+                            FontWeight="Bold"
+                            FontSize="12"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Click="BackToLogin_Click"/>
+
+                    <!-- Loading -->
+                    <ProgressBar IsIndeterminate="True"
+                                 Height="5"
+                                 Margin="0,20,0,0"
+                                 Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
     </Grid>
 </Window>

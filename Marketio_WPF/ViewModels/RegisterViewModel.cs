@@ -19,7 +19,7 @@ namespace Marketio_WPF.ViewModels
         private string _confirmPassword = string.Empty;
         private bool _acceptTerms;
         private bool _acceptPrivacyPolicy;
-        private RelayCommand? _registerCommand;
+        private AsyncRelayCommand? _registerCommand;
         private RelayCommand? _backToLoginCommand;
 
         public string Email
@@ -64,7 +64,7 @@ namespace Marketio_WPF.ViewModels
             set => SetProperty(ref _acceptPrivacyPolicy, value);
         }
 
-        public RelayCommand RegisterCommand => _registerCommand ??= new RelayCommand(ExecuteRegister, CanExecuteRegister);
+        public AsyncRelayCommand RegisterCommand => _registerCommand ??= new AsyncRelayCommand(ExecuteRegisterAsync, CanExecuteRegister);
         public RelayCommand BackToLoginCommand => _backToLoginCommand ??= new RelayCommand(ExecuteBackToLogin);
 
         public RegisterViewModel(IAuthService authService)
@@ -72,7 +72,7 @@ namespace Marketio_WPF.ViewModels
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         }
 
-        private async void ExecuteRegister()
+        private async Task ExecuteRegisterAsync()
         {
             if (!ValidateForm())
             {
@@ -117,7 +117,7 @@ namespace Marketio_WPF.ViewModels
 
         private void ExecuteBackToLogin()
         {
-            // Navigation would be handled by view or main window
+            // Navigation handled by view
         }
 
         private bool ValidateForm()

@@ -1,6 +1,6 @@
 ﻿<Window x:Class="Marketio_WPF.Views.LoginView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:x="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
@@ -81,7 +81,7 @@
                        Margin="0,0,0,10"
                        Visibility="{Binding SuccessMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
 
-            <!-- Login Button -->
+            <!-- Login Button - Command handles enabled state automatically -->
             <Button Content="🔓 Login"
                     Command="{Binding LoginCommand}"
                     Background="#3498DB"
@@ -90,7 +90,6 @@
                     FontSize="14"
                     Padding="12"
                     Margin="0,0,0,10"
-                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertBoolConverter}}"
                     Cursor="Hand"/>
 
             <!-- Register Button -->
@@ -101,7 +100,6 @@
                     FontWeight="Bold"
                     FontSize="14"
                     Padding="12"
-                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertBoolConverter}}"
                     Cursor="Hand"/>
 
             <!-- Loading Indicator -->

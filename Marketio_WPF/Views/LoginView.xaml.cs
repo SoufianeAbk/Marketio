@@ -1,5 +1,7 @@
-﻿using System.Windows;
-using Marketio_WPF.ViewModels;
+﻿using Marketio_WPF.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace Marketio_WPF.Views
 {
@@ -11,48 +13,48 @@ namespace Marketio_WPF.Views
         public LoginView()
         {
             InitializeComponent();
-        }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (DataContext is LoginViewModel viewModel)
+            // Wire up after InitializeComponent so named elements exist
+            Loaded += (s, e) =>
             {
-                // Subscribe to navigation events
-                viewModel.LoginSucceeded += ViewModel_LoginSucceeded;
-                viewModel.RegisterRequested += ViewModel_RegisterRequested;
+                if (DataContext is not LoginViewModel viewModel)
+                    return;
 
                 // Subscribe to password changes to update ViewModel
-                PasswordBox.PasswordChanged += (s, args) =>
+                PasswordBox.PasswordChanged += (_, _) =>
                 {
                     viewModel.Password = PasswordBox.Password;
                 };
-            }
-        }
 
-        private void ViewModel_LoginSucceeded(object? sender, EventArgs e)
-        {
-            // Close the login window
-            DialogResult = true;
-            Close();
-        }
+                // Subscribe to navigation events
+                viewModel.LoginSucceeded += (_, _) =>
+                {
+                    DialogResult = true;
+                    Close();
+                };
 
-        private void ViewModel_RegisterRequested(object? sender, EventArgs e)
-        {
-            // Navigate to register view
-            var registerView = new RegisterView();
-            registerView.Show();
-            // Close login window
-            Close();
-        }
+                viewModel.RegisterRequested += (_, _) =>
+                {
+                    try
+                    {
+                        var registerViewModel = App.ServiceProvider.GetRequiredService<RegisterViewModel>();
+                        var registerView = new RegisterView { DataContext = registerViewModel };
+                        registerView.Owner = this;
+                        registerView.ShowDialog();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(
+                            $"Error opening registration window: {ex.Message}",
+                            "Registration Error",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                    }
 
-        private void Window_Unloaded(object sender, RoutedEventArgs e)
-        {
-            // Unsubscribe to prevent memory leaks
-            if (DataContext is LoginViewModel viewModel)
-            {
-                viewModel.LoginSucceeded -= ViewModel_LoginSucceeded;
-                viewModel.RegisterRequested -= ViewModel_RegisterRequested;
-            }
+                    // Close login view after showing register
+                    Close();
+                };
+            };
         }
     }
 }

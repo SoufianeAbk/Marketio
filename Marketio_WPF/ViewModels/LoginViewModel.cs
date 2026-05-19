@@ -17,7 +17,7 @@ namespace Marketio_WPF.ViewModels
         private string _email = string.Empty;
         private string _password = string.Empty;
         private bool _rememberMe;
-        private RelayCommand? _loginCommand;
+        private AsyncRelayCommand? _loginCommand;
         private RelayCommand? _registerCommand;
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Marketio_WPF.ViewModels
             set => SetProperty(ref _rememberMe, value);
         }
 
-        public RelayCommand LoginCommand => _loginCommand ??= new RelayCommand(ExecuteLoginAsync, CanExecuteLogin);
+        public AsyncRelayCommand LoginCommand => _loginCommand ??= new AsyncRelayCommand(ExecuteLoginAsync, CanExecuteLogin);
         public RelayCommand RegisterCommand => _registerCommand ??= new RelayCommand(ExecuteRegister);
 
         public LoginViewModel(IAuthService authService, ILogger<LoginViewModel>? logger = null)
@@ -69,7 +69,7 @@ namespace Marketio_WPF.ViewModels
             _logger = logger;
         }
 
-        private async void ExecuteLoginAsync()
+        private async Task ExecuteLoginAsync()
         {
             if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
             {
