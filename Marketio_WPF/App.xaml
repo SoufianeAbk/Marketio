@@ -4,8 +4,10 @@
              xmlns:local="clr-namespace:Marketio_WPF"
              xmlns:converters="clr-namespace:Marketio_WPF.Converters">
     <Application.Resources>
-        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
-        <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <ResourceDictionary>
+            <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+            <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
