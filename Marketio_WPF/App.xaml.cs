@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Windows;
@@ -28,27 +29,22 @@ namespace Marketio_WPF
 
             try
             {
-                // Setup Dependency Injection
                 _services = new ServiceCollection();
                 ConfigureServices(_services);
                 ServiceProvider = _services.BuildServiceProvider();
 
-                // Get logger to track startup
                 var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
                 var logger = loggerFactory.CreateLogger<App>();
 
-                // Run database migrations and seed data
                 logger.LogInformation("Starting database migration and seeding...");
                 await SeedDatabaseAsync();
                 logger.LogInformation("Database migration and seeding completed successfully");
 
-                // Show login window first
                 var loginViewModel = ServiceProvider.GetRequiredService<LoginViewModel>();
                 var loginView = new LoginView { DataContext = loginViewModel };
 
                 logger.LogInformation("Showing login window");
 
-                // Handle successful login
                 loginViewModel.LoginSucceeded += async (s, e) =>
                 {
                     logger.LogInformation("Login succeeded, showing main window");
@@ -58,7 +54,6 @@ namespace Marketio_WPF
 
                 loginView.ShowDialog();
 
-                // If login was not successful, exit the application
                 if (MainWindow == null)
                 {
                     logger.LogInformation("Login was cancelled, shutting down application");
@@ -78,10 +73,13 @@ namespace Marketio_WPF
 
         private void ConfigureServices(ServiceCollection services)
         {
-            // Get connection string from app configuration
-            var connectionString = GetConnectionString();
+            var configuration = new ConfigurationBuilder()
+                .AddUserSecrets<App>()
+                .Build();
 
-            // Register Logging
+            var connectionString = configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found in User Secrets.");
+
             services.AddLogging(config =>
             {
                 config.ClearProviders();
@@ -90,34 +88,27 @@ namespace Marketio_WPF
                 config.SetMinimumLevel(LogLevel.Debug);
             });
 
-            // Register DbContext
             services.AddDbContext<MarketioDbContext>(options =>
-                options.UseSqlServer(
+                options.UseNpgsql(
                     connectionString,
                     b => b.MigrationsAssembly("Marketio_WPF"))
             );
 
-            // Register Identity Core (no HTTP/SignIn manager for desktop WPF)
             services.AddIdentityCore<AppUser>(options =>
             {
-                // Password requirements
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 8;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireLowercase = true;
-
-                // User requirements
                 options.User.RequireUniqueEmail = true;
             })
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<MarketioDbContext>();
 
-            // Add UserManager, RoleManager for DI
             services.AddScoped<UserManager<AppUser>>();
             services.AddScoped<RoleManager<IdentityRole>>();
 
-            // Register application services
             services.AddScoped<DataSeeder>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<UserManagementService>();
@@ -125,7 +116,6 @@ namespace Marketio_WPF
             services.AddScoped<CustomerService>();
             services.AddScoped<ProductService>();
 
-            // ─── Register ViewModels ────────────────────────────────────────────────
             services.AddScoped<MainViewModel>();
             services.AddScoped<ProductsViewModel>();
             services.AddScoped<OrdersViewModel>();
@@ -133,13 +123,6 @@ namespace Marketio_WPF
             services.AddScoped<AdminViewModel>();
             services.AddScoped<LoginViewModel>();
             services.AddScoped<RegisterViewModel>();
-        }
-
-        private string GetConnectionString()
-        {
-            // In a real application, read from appsettings.json or environment variables
-            // For now, using a local SQL Server connection
-            return "Server=(localdb)\\mssqllocaldb;Database=MarketioDb;Integrated Security=true;";
         }
 
         private async Task SeedDatabaseAsync()

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 namespace Marketio_WPF.Data
 {
@@ -7,12 +8,15 @@ namespace Marketio_WPF.Data
     {
         public MarketioDbContext CreateDbContext(string[] args)
         {
+            var configuration = new ConfigurationBuilder()
+                .AddUserSecrets<App>()
+                .Build();
+
+            var connectionString = configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found in User Secrets.");
+
             var optionsBuilder = new DbContextOptionsBuilder<MarketioDbContext>();
-
-            // Use the same connection string as in App.xaml.cs
-            var connectionString = "Server=(localdb)\\mssqllocaldb;Database=MarketioDb;Integrated Security=true;";
-
-            optionsBuilder.UseSqlServer(
+            optionsBuilder.UseNpgsql(
                 connectionString,
                 b => b.MigrationsAssembly("Marketio_WPF"));
 
