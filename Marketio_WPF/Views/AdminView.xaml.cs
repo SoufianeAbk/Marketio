@@ -1,28 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows.Controls;
+using Marketio_WPF.ViewModels;
 
 namespace Marketio_WPF.Views
 {
     /// <summary>
-    /// Interaction logic for AdminView.xaml
+    /// Interaction logic voor AdminView.xaml
     /// </summary>
     public partial class AdminView : UserControl
     {
         public AdminView()
         {
             InitializeComponent();
+        }
+
+        private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (DataContext is AdminViewModel vm)
+            {
+                vm.LoadUsersCommand.Execute(null);
+                vm.LoadRolesCommand.Execute(null);
+            }
         }
     }
 }

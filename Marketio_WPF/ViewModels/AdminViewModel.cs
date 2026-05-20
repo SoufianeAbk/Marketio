@@ -11,16 +11,10 @@ namespace Marketio_WPF.ViewModels
     internal class AdminViewModel : BaseViewModel
     {
         private readonly UserManagementService _userManagementService;
+
+        // ── Users ────────────────────────────────────────────────────────────
         private ObservableCollection<dynamic> _users = new();
         private dynamic? _selectedUser;
-        private string _selectedRole = string.Empty;
-        private RelayCommand? _loadUsersCommand;
-        private RelayCommand? _assignRoleCommand;
-        private RelayCommand? _removeRoleCommand;
-        private RelayCommand? _resetPasswordCommand;
-        private RelayCommand? _lockUserCommand;
-        private RelayCommand? _deleteUserCommand;
-        private RelayCommand? _refreshCommand;
 
         public ObservableCollection<dynamic> Users
         {
@@ -31,28 +25,67 @@ namespace Marketio_WPF.ViewModels
         public dynamic? SelectedUser
         {
             get => _selectedUser;
-            set => SetProperty(ref _selectedUser, value);
+            set
+            {
+                SetProperty(ref _selectedUser, value);
+
+                // Re-evaluate all user-specific commands when selection changes.
+                AssignRoleCommand.NotifyCanExecuteChanged();
+                RemoveRoleCommand.NotifyCanExecuteChanged();
+                ResetPasswordCommand.NotifyCanExecuteChanged();
+                LockUserCommand.NotifyCanExecuteChanged();
+                DeleteUserCommand.NotifyCanExecuteChanged();
+            }
+        }
+
+        // ── Roles ────────────────────────────────────────────────────────────
+        private ObservableCollection<string> _availableRoles = new();
+        private string _selectedRole = string.Empty;
+
+        public ObservableCollection<string> AvailableRoles
+        {
+            get => _availableRoles;
+            set => SetProperty(ref _availableRoles, value);
         }
 
         public string SelectedRole
         {
             get => _selectedRole;
-            set => SetProperty(ref _selectedRole, value);
+            set
+            {
+                SetProperty(ref _selectedRole, value);
+                AssignRoleCommand.NotifyCanExecuteChanged();
+                RemoveRoleCommand.NotifyCanExecuteChanged();
+            }
         }
 
-        public RelayCommand LoadUsersCommand => _loadUsersCommand ??= new RelayCommand(ExecuteLoadUsers);
-        public RelayCommand AssignRoleCommand => _assignRoleCommand ??= new RelayCommand(ExecuteAssignRole, CanExecuteAssignRole);
-        public RelayCommand RemoveRoleCommand => _removeRoleCommand ??= new RelayCommand(ExecuteRemoveRole, CanExecuteRemoveRole);
-        public RelayCommand ResetPasswordCommand => _resetPasswordCommand ??= new RelayCommand(ExecuteResetPassword, CanExecuteResetPassword);
-        public RelayCommand LockUserCommand => _lockUserCommand ??= new RelayCommand(ExecuteLockUser, CanExecuteLockUser);
-        public RelayCommand DeleteUserCommand => _deleteUserCommand ??= new RelayCommand(ExecuteDeleteUser, CanExecuteDeleteUser);
-        public RelayCommand RefreshCommand => _refreshCommand ??= new RelayCommand(ExecuteLoadUsers);
+        // ── Commands ─────────────────────────────────────────────────────────
+        public RelayCommand LoadUsersCommand { get; }
+        public RelayCommand LoadRolesCommand { get; }
+        public RelayCommand AssignRoleCommand { get; }
+        public RelayCommand RemoveRoleCommand { get; }
+        public RelayCommand ResetPasswordCommand { get; }
+        public RelayCommand LockUserCommand { get; }
+        public RelayCommand DeleteUserCommand { get; }
+        public RelayCommand RefreshCommand { get; }
 
+        // ── Constructor ───────────────────────────────────────────────────────
         public AdminViewModel(UserManagementService userManagementService)
         {
-            _userManagementService = userManagementService ?? throw new ArgumentNullException(nameof(userManagementService));
+            _userManagementService = userManagementService
+                ?? throw new ArgumentNullException(nameof(userManagementService));
+
+            LoadUsersCommand = new RelayCommand(ExecuteLoadUsers);
+            LoadRolesCommand = new RelayCommand(ExecuteLoadRoles);
+            AssignRoleCommand = new RelayCommand(ExecuteAssignRole, CanExecuteAssignRole);
+            RemoveRoleCommand = new RelayCommand(ExecuteRemoveRole, CanExecuteRemoveRole);
+            ResetPasswordCommand = new RelayCommand(ExecuteResetPassword, CanExecuteResetPassword);
+            LockUserCommand = new RelayCommand(ExecuteLockUser, CanExecuteLockUser);
+            DeleteUserCommand = new RelayCommand(ExecuteDeleteUser, CanExecuteDeleteUser);
+            RefreshCommand = new RelayCommand(ExecuteRefresh);
         }
 
+        // ── 1. Load users ─────────────────────────────────────────────────────
         private async void ExecuteLoadUsers()
         {
             try
@@ -64,13 +97,11 @@ namespace Marketio_WPF.ViewModels
                 Users = new ObservableCollection<dynamic>(users ?? new List<dynamic>());
 
                 if (!Users.Any())
-                {
-                    ErrorMessage = "No users found.";
-                }
+                    ErrorMessage = "Geen gebruikers gevonden.";
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error loading users: {ex.Message}";
+                ErrorMessage = $"Fout bij laden van gebruikers: {ex.Message}";
             }
             finally
             {
@@ -78,34 +109,46 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
+        // ── 2. Load available roles ───────────────────────────────────────────
+        private async void ExecuteLoadRoles()
+        {
+            try
+            {
+                var roles = await _userManagementService.GetAllRolesAsync();
+                AvailableRoles = new ObservableCollection<string>(
+                    roles.Where(r => !string.IsNullOrWhiteSpace(r)));
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Fout bij laden van rollen: {ex.Message}";
+            }
+        }
+
+        // ── 3. Assign role ────────────────────────────────────────────────────
         private async void ExecuteAssignRole()
         {
-            if (SelectedUser == null || string.IsNullOrWhiteSpace(SelectedRole))
-            {
-                ErrorMessage = "Please select a user and role.";
-                return;
-            }
-
             try
             {
                 IsBusy = true;
                 ClearMessages();
 
-                var userId = (string)SelectedUser.Id;
+                var userId = (string)SelectedUser!.Id;
                 var success = await _userManagementService.AssignRoleAsync(userId, SelectedRole);
 
                 if (success)
                 {
-                    SuccessMessage = $"Role '{SelectedRole}' assigned successfully.";
+                    SuccessMessage = $"Rol '{SelectedRole}' succesvol toegewezen.";
+                    ExecuteLoadUsers(); // refresh list to reflect new roles
                 }
                 else
                 {
-                    ErrorMessage = "Failed to assign role.";
+                    ErrorMessage = "Rol toewijzen mislukt. " +
+                                   "De rol bestaat mogelijk niet of de gebruiker heeft de rol al.";
                 }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error assigning role: {ex.Message}";
+                ErrorMessage = $"Fout bij toewijzen van rol: {ex.Message}";
             }
             finally
             {
@@ -113,39 +156,34 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        private bool CanExecuteAssignRole()
-        {
-            return SelectedUser != null && !string.IsNullOrWhiteSpace(SelectedRole) && !IsBusy;
-        }
+        private bool CanExecuteAssignRole() =>
+            SelectedUser != null && !string.IsNullOrWhiteSpace(SelectedRole) && !IsBusy;
 
+        // ── 4. Remove role ────────────────────────────────────────────────────
         private async void ExecuteRemoveRole()
         {
-            if (SelectedUser == null || string.IsNullOrWhiteSpace(SelectedRole))
-            {
-                ErrorMessage = "Please select a user and role.";
-                return;
-            }
-
             try
             {
                 IsBusy = true;
                 ClearMessages();
 
-                var userId = (string)SelectedUser.Id;
+                var userId = (string)SelectedUser!.Id;
                 var success = await _userManagementService.RemoveRoleAsync(userId, SelectedRole);
 
                 if (success)
                 {
-                    SuccessMessage = $"Role '{SelectedRole}' removed successfully.";
+                    SuccessMessage = $"Rol '{SelectedRole}' succesvol verwijderd.";
+                    ExecuteLoadUsers();
                 }
                 else
                 {
-                    ErrorMessage = "Failed to remove role.";
+                    ErrorMessage = "Rol verwijderen mislukt. " +
+                                   "Mogelijk heeft de gebruiker deze rol niet.";
                 }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error removing role: {ex.Message}";
+                ErrorMessage = $"Fout bij verwijderen van rol: {ex.Message}";
             }
             finally
             {
@@ -153,39 +191,31 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        private bool CanExecuteRemoveRole()
-        {
-            return SelectedUser != null && !string.IsNullOrWhiteSpace(SelectedRole) && !IsBusy;
-        }
+        private bool CanExecuteRemoveRole() =>
+            SelectedUser != null && !string.IsNullOrWhiteSpace(SelectedRole) && !IsBusy;
 
+        // ── 5. Reset password ─────────────────────────────────────────────────
         private async void ExecuteResetPassword()
         {
-            if (SelectedUser == null)
-            {
-                ErrorMessage = "Please select a user.";
-                return;
-            }
-
             try
             {
                 IsBusy = true;
                 ClearMessages();
 
-                var userId = (string)SelectedUser.Id;
+                var userId = (string)SelectedUser!.Id;
                 var success = await _userManagementService.ResetPasswordAsync(userId);
 
-                if (success)
-                {
-                    SuccessMessage = "Password reset email sent to user.";
-                }
-                else
-                {
-                    ErrorMessage = "Failed to reset password.";
-                }
+                SuccessMessage = success
+                    ? "Wachtwoord-reset token aangemaakt. " +
+                      "Stuur de reset-link naar de gebruiker."
+                    : "Wachtwoord resetten mislukt.";
+
+                if (!success)
+                    ErrorMessage = "Wachtwoord resetten mislukt.";
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error resetting password: {ex.Message}";
+                ErrorMessage = $"Fout bij wachtwoord resetten: {ex.Message}";
             }
             finally
             {
@@ -193,39 +223,33 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        private bool CanExecuteResetPassword()
-        {
-            return SelectedUser != null && !IsBusy;
-        }
+        private bool CanExecuteResetPassword() =>
+            SelectedUser != null && !IsBusy;
 
+        // ── 6. Lock user ──────────────────────────────────────────────────────
         private async void ExecuteLockUser()
         {
-            if (SelectedUser == null)
-            {
-                ErrorMessage = "Please select a user.";
-                return;
-            }
-
             try
             {
                 IsBusy = true;
                 ClearMessages();
 
-                var userId = (string)SelectedUser.Id;
+                var userId = (string)SelectedUser!.Id;
                 var success = await _userManagementService.LockUserAsync(userId);
 
                 if (success)
                 {
-                    SuccessMessage = "User account locked.";
+                    SuccessMessage = "Account geblokkeerd.";
+                    ExecuteLoadUsers();
                 }
                 else
                 {
-                    ErrorMessage = "Failed to lock user account.";
+                    ErrorMessage = "Account blokkeren mislukt.";
                 }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error locking user: {ex.Message}";
+                ErrorMessage = $"Fout bij blokkeren van account: {ex.Message}";
             }
             finally
             {
@@ -233,41 +257,34 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        private bool CanExecuteLockUser()
-        {
-            return SelectedUser != null && !IsBusy;
-        }
+        private bool CanExecuteLockUser() =>
+            SelectedUser != null && !IsBusy;
 
+        // ── 7. Delete user (GDPR Right to be Forgotten) ───────────────────────
         private async void ExecuteDeleteUser()
         {
-            if (SelectedUser == null)
-            {
-                ErrorMessage = "Please select a user.";
-                return;
-            }
-
             try
             {
                 IsBusy = true;
                 ClearMessages();
 
-                var userId = (string)SelectedUser.Id;
+                var userId = (string)SelectedUser!.Id;
                 var success = await _userManagementService.DeleteUserAsync(userId);
 
                 if (success)
                 {
                     Users.Remove(SelectedUser);
-                    SuccessMessage = "User deleted successfully.";
+                    SuccessMessage = "Gebruiker permanent verwijderd (AVG-recht op vergetelheid).";
                     SelectedUser = null;
                 }
                 else
                 {
-                    ErrorMessage = "Failed to delete user.";
+                    ErrorMessage = "Gebruiker verwijderen mislukt.";
                 }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error deleting user: {ex.Message}";
+                ErrorMessage = $"Fout bij verwijderen van gebruiker: {ex.Message}";
             }
             finally
             {
@@ -275,9 +292,15 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        private bool CanExecuteDeleteUser()
+        private bool CanExecuteDeleteUser() =>
+            SelectedUser != null && !IsBusy;
+
+        // ── 8. Refresh ────────────────────────────────────────────────────────
+        private void ExecuteRefresh()
         {
-            return SelectedUser != null && !IsBusy;
+            ClearMessages();
+            ExecuteLoadUsers();
+            ExecuteLoadRoles();
         }
     }
 }
