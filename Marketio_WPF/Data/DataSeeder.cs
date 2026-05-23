@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Marketio_Shared.Entities;
 using Marketio_Shared.Enums;
-using Marketio_WPF.Models;
+using Marketio_Shared.Models;
 
 namespace Marketio_WPF.Data
 {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Marketio_WPF.Models;
+using Marketio_Shared.Models;
 using Marketio_WPF.Services.Interfaces;
 
 namespace Marketio_WPF.Services

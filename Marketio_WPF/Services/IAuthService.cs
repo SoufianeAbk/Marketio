@@ -1,4 +1,4 @@
-﻿using Marketio_WPF.Models;
+﻿using Marketio_Shared.Models;
 
 namespace Marketio_WPF.Services.Interfaces
 {

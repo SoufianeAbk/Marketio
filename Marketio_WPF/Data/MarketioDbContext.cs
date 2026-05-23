@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Marketio_Shared.Entities;
 using Marketio_Shared.Enums;
-using Marketio_WPF.Models;
+using Marketio_Shared.Models;
 
 namespace Marketio_WPF.Data
 {
@@ -31,7 +31,7 @@ namespace Marketio_WPF.Data
                 entity.Property(e => e.Stock).IsRequired();
                 entity.Property(e => e.Category).IsRequired();
                 entity.Property(e => e.ImageUrl).IsRequired().HasMaxLength(500);
-                entity.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("GETUTCDATE()");
+                entity.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("NOW()");
                 entity.Property(e => e.IsActive).IsRequired().HasDefaultValue(true);
 
                 entity.HasMany(e => e.OrderItems)
@@ -46,7 +46,7 @@ namespace Marketio_WPF.Data
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.OrderNumber).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.CustomerId).IsRequired().HasMaxLength(450);
-                entity.Property(e => e.OrderDate).IsRequired().HasDefaultValueSql("GETUTCDATE()");
+                entity.Property(e => e.OrderDate).IsRequired().HasDefaultValueSql("NOW()");
                 entity.Property(e => e.Status).IsRequired().HasDefaultValue(OrderStatus.Pending);
                 entity.Property(e => e.PaymentMethod).IsRequired();
                 entity.Property(e => e.TotalAmount).HasPrecision(18, 2).IsRequired();
@@ -90,7 +90,7 @@ namespace Marketio_WPF.Data
                 entity.Property(e => e.LastName).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.PhoneNumber).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.Address).IsRequired().HasMaxLength(500);
-                entity.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("GETUTCDATE()");
+                entity.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("NOW()");
                 entity.Property(e => e.IsActive).IsRequired().HasDefaultValue(true);
 
                 entity.HasIndex(e => e.Email).IsUnique();
