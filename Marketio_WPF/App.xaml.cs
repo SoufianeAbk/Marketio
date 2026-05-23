@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Windows;
 using Marketio_WPF.Data;
-using Marketio_WPF.Models;
+using Marketio_Shared.Models;
 using Marketio_WPF.Services;
 using Marketio_WPF.Services.Interfaces;
 using Marketio_WPF.ViewModels;
