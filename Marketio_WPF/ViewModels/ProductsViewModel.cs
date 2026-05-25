@@ -106,7 +106,6 @@ namespace Marketio_WPF.ViewModels
 
         /// <summary>
         /// Called by ProductsView after the Create dialog is confirmed.
-        /// Assumes ProductService.CreateProductAsync(ProductDto) exists.
         /// </summary>
         public async Task SubmitCreateProductAsync(ProductDto dto)
         {
@@ -124,7 +123,8 @@ namespace Marketio_WPF.ViewModels
 
         /// <summary>
         /// Called by ProductsView after the Edit dialog is confirmed.
-        /// Assumes ProductService.UpdateProductAsync(ProductDto) exists.
+        /// FIX CS7036: dto.Id meegeven als eerste argument want ProductService.UpdateProductAsync
+        /// verwacht (int productId, dynamic productData).
         /// </summary>
         public async Task SubmitUpdateProductAsync(ProductDto dto)
         {
@@ -132,7 +132,8 @@ namespace Marketio_WPF.ViewModels
             {
                 IsBusy = true;
                 ClearMessages();
-                await _productService.UpdateProductAsync(dto);
+                // FIX: dto.Id als eerste argument + dto als productData
+                await _productService.UpdateProductAsync(dto.Id, dto);
                 SuccessMessage = "Product bijgewerkt.";
                 ExecuteLoadProducts();
             }

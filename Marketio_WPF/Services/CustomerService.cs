@@ -54,9 +54,51 @@ namespace Marketio_WPF.Services
             }
         }
 
-        public async Task<bool> UpdateCustomerAsync(string customerId, dynamic customerData)
+        // FIX CS1061: nieuwe methode toegevoegd die door CustomersViewModel.SubmitCreateCustomerAsync wordt aangeroepen
+        public async Task<bool> CreateCustomerAsync(
+            string firstName, string lastName,
+            string email, string phone,
+            string address, bool isActive)
         {
-            if (string.IsNullOrWhiteSpace(customerId) || customerData == null) return false;
+            if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(email))
+                return false;
+
+            try
+            {
+                var customer = new Customer
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    FirstName = firstName.Trim(),
+                    LastName = lastName.Trim(),
+                    Email = email.Trim(),
+                    PhoneNumber = phone.Trim(),
+                    Address = address.Trim(),
+                    IsActive = isActive,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.Customers.Add(customer);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Customer '{Email}' created (Id={Id})", customer.Email, customer.Id);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating customer");
+                throw new InvalidOperationException("Error creating customer.", ex);
+            }
+        }
+
+        // FIX CS1501: signatuur uitgebreid van (string, dynamic) naar 7 individuele parameters
+        // zodat CustomersViewModel.SubmitUpdateCustomerAsync correct compileert
+        public async Task<bool> UpdateCustomerAsync(
+            string customerId,
+            string firstName, string lastName,
+            string email, string phone,
+            string address, bool isActive)
+        {
+            if (string.IsNullOrWhiteSpace(customerId)) return false;
 
             try
             {
@@ -65,11 +107,12 @@ namespace Marketio_WPF.Services
                     .FirstOrDefaultAsync(c => c.Id == customerId);
                 if (customer == null) return false;
 
-                customer.FirstName = (string)customerData.FirstName;
-                customer.LastName = (string)customerData.LastName;
-                customer.Email = (string)customerData.Email;
-                customer.PhoneNumber = (string)customerData.PhoneNumber;
-                customer.Address = (string)customerData.Address;
+                customer.FirstName = firstName.Trim();
+                customer.LastName = lastName.Trim();
+                customer.Email = email.Trim();
+                customer.PhoneNumber = phone.Trim();
+                customer.Address = address.Trim();
+                customer.IsActive = isActive;
 
                 await _context.SaveChangesAsync();
 

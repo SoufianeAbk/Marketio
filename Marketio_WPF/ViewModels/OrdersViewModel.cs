@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Marketio_Shared.Enums;
 using Marketio_WPF.Services;
 using System.Collections.ObjectModel;
 
@@ -117,15 +118,23 @@ namespace Marketio_WPF.ViewModels
 
         /// <summary>
         /// Called by OrdersView after the status dialog is confirmed.
-        /// Assumes OrderService.UpdateOrderStatusAsync(int orderId, string statusName) exists.
+        /// FIX CS1503: statusName string wordt geparsed naar het OrderStatus enum
+        /// voordat het doorgegeven wordt aan OrderService.UpdateOrderStatusAsync.
         /// </summary>
         public async Task SubmitStatusUpdateAsync(int orderId, string statusName)
         {
+            // FIX: converteer string naar OrderStatus enum
+            if (!Enum.TryParse<OrderStatus>(statusName, ignoreCase: true, out var status))
+            {
+                ErrorMessage = $"Onbekende status: '{statusName}'.";
+                return;
+            }
+
             try
             {
                 IsBusy = true;
                 ClearMessages();
-                var success = await _orderService.UpdateOrderStatusAsync(orderId, statusName);
+                var success = await _orderService.UpdateOrderStatusAsync(orderId, status);
                 if (success)
                 {
                     SuccessMessage = "Orderstatus bijgewerkt.";
