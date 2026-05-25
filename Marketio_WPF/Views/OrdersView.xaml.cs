@@ -1,28 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Marketio_WPF.ViewModels;
+using Marketio_WPF.Views.Dialogs;
+using Marketio_Shared.Enums;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Marketio_WPF.Views
 {
-    /// <summary>
-    /// Interaction logic for OrdersView.xaml
-    /// </summary>
     public partial class OrdersView : UserControl
     {
         public OrdersView()
         {
             InitializeComponent();
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not OrdersViewModel vm)
+                return;
+
+            vm.LoadOrdersCommand.Execute(null);
+
+            vm.UpdateOrderRequested += async (_, order) =>
+            {
+                var dialog = new OrderStatusDialog(order)
+                {
+                    Owner = Window.GetWindow(this)
+                };
+
+                if (dialog.ShowDialog() == true)
+                {
+                    await vm.SubmitStatusUpdateAsync(
+                        (int)order.Id,
+                        dialog.SelectedStatus
+                    );
+                }
+            };
         }
     }
 }

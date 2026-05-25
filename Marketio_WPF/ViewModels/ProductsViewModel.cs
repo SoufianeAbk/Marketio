@@ -1,13 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Marketio_Shared.DTOs;
 using Marketio_WPF.Services;
 using System.Collections.ObjectModel;
 
 namespace Marketio_WPF.ViewModels
 {
-    /// <summary>
-    /// ViewModel for managing products.
-    /// Handles product listing, filtering, and CRUD operations.
-    /// </summary>
     internal class ProductsViewModel : BaseViewModel
     {
         private readonly ProductService _productService;
@@ -19,6 +16,10 @@ namespace Marketio_WPF.ViewModels
         private RelayCommand? _editProductCommand;
         private RelayCommand? _deleteProductCommand;
         private RelayCommand? _refreshCommand;
+
+        // ── Dialog events ────────────────────────────────────────────────────
+        public event EventHandler? CreateProductRequested;
+        public event EventHandler<dynamic>? EditProductRequested;
 
         public ObservableCollection<dynamic> Products
         {
@@ -49,93 +50,94 @@ namespace Marketio_WPF.ViewModels
             _productService = productService ?? throw new ArgumentNullException(nameof(productService));
         }
 
+        // ── Load ──────────────────────────────────────────────────────────────
         private async void ExecuteLoadProducts()
         {
             try
             {
                 IsBusy = true;
                 ClearMessages();
-
                 var products = await _productService.GetAllProductsAsync();
                 Products = new ObservableCollection<dynamic>(products ?? new List<dynamic>());
-
                 if (!Products.Any())
-                {
                     ErrorMessage = "No products found.";
-                }
             }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Error loading products: {ex.Message}";
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            catch (Exception ex) { ErrorMessage = $"Error loading products: {ex.Message}"; }
+            finally { IsBusy = false; }
         }
 
-        private void ExecuteCreateProduct()
-        {
-            // Navigation and dialog would be handled by view
-        }
+        // ── Create / Edit (raise events; view opens dialog) ───────────────────
+        private void ExecuteCreateProduct() =>
+            CreateProductRequested?.Invoke(this, EventArgs.Empty);
 
         private void ExecuteEditProduct()
         {
-            if (SelectedProduct == null)
-            {
-                ErrorMessage = "No product selected.";
-                return;
-            }
-
-            // Navigation and dialog would be handled by view
+            if (SelectedProduct == null) { ErrorMessage = "No product selected."; return; }
+            EditProductRequested?.Invoke(this, SelectedProduct);
         }
 
-        private bool CanExecuteEditProduct()
-        {
-            return SelectedProduct != null && !IsBusy;
-        }
+        private bool CanExecuteEditProduct() => SelectedProduct != null && !IsBusy;
 
+        // ── Delete ────────────────────────────────────────────────────────────
         private async void ExecuteDeleteProduct()
         {
-            if (SelectedProduct == null)
-            {
-                ErrorMessage = "No product selected.";
-                return;
-            }
-
+            if (SelectedProduct == null) { ErrorMessage = "No product selected."; return; }
             try
             {
                 IsBusy = true;
                 ClearMessages();
-
-                // Assuming the product has an Id property
                 var productId = (int)SelectedProduct.Id;
                 var success = await _productService.DeleteProductAsync(productId);
-
                 if (success)
                 {
                     Products.Remove(SelectedProduct);
                     SuccessMessage = "Product deleted successfully.";
                     SelectedProduct = null;
                 }
-                else
-                {
-                    ErrorMessage = "Failed to delete product.";
-                }
+                else { ErrorMessage = "Failed to delete product."; }
             }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Error deleting product: {ex.Message}";
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            catch (Exception ex) { ErrorMessage = $"Error deleting product: {ex.Message}"; }
+            finally { IsBusy = false; }
         }
 
-        private bool CanExecuteDeleteProduct()
+        private bool CanExecuteDeleteProduct() => SelectedProduct != null && !IsBusy;
+
+        // ── Submit handlers (called by view after dialog OK) ──────────────────
+
+        /// <summary>
+        /// Called by ProductsView after the Create dialog is confirmed.
+        /// Assumes ProductService.CreateProductAsync(ProductDto) exists.
+        /// </summary>
+        public async Task SubmitCreateProductAsync(ProductDto dto)
         {
-            return SelectedProduct != null && !IsBusy;
+            try
+            {
+                IsBusy = true;
+                ClearMessages();
+                await _productService.CreateProductAsync(dto);
+                SuccessMessage = "Product aangemaakt.";
+                ExecuteLoadProducts();
+            }
+            catch (Exception ex) { ErrorMessage = $"Fout bij aanmaken: {ex.Message}"; }
+            finally { IsBusy = false; }
+        }
+
+        /// <summary>
+        /// Called by ProductsView after the Edit dialog is confirmed.
+        /// Assumes ProductService.UpdateProductAsync(ProductDto) exists.
+        /// </summary>
+        public async Task SubmitUpdateProductAsync(ProductDto dto)
+        {
+            try
+            {
+                IsBusy = true;
+                ClearMessages();
+                await _productService.UpdateProductAsync(dto);
+                SuccessMessage = "Product bijgewerkt.";
+                ExecuteLoadProducts();
+            }
+            catch (Exception ex) { ErrorMessage = $"Fout bij bijwerken: {ex.Message}"; }
+            finally { IsBusy = false; }
         }
     }
 }

@@ -1,28 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Marketio_WPF.ViewModels;
+using Marketio_WPF.Views.Dialogs;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Marketio_WPF.Views
 {
-    /// <summary>
-    /// Interaction logic for CustomersView.xaml
-    /// </summary>
     public partial class CustomersView : UserControl
     {
         public CustomersView()
         {
             InitializeComponent();
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not CustomersViewModel vm) return;
+
+            vm.LoadCustomersCommand.Execute(null);
+
+            vm.CreateCustomerRequested += (_, _) =>
+            {
+                var dialog = new CustomerDialog { Owner = Window.GetWindow(this) };
+                if (dialog.ShowDialog() == true)
+                    _ = vm.SubmitCreateCustomerAsync(
+                        dialog.FirstName, dialog.LastName,
+                        dialog.Email, dialog.PhoneNumber,
+                        dialog.Address, dialog.IsActive);
+            };
+
+            vm.EditCustomerRequested += (_, customer) =>
+            {
+                var dialog = new CustomerDialog(customer) { Owner = Window.GetWindow(this) };
+                if (dialog.ShowDialog() == true)
+                    _ = vm.SubmitUpdateCustomerAsync(
+                        (string)customer.Id,
+                        dialog.FirstName, dialog.LastName,
+                        dialog.Email, dialog.PhoneNumber,
+                        dialog.Address, dialog.IsActive);
+            };
         }
     }
 }

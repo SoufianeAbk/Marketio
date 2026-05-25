@@ -1,17 +1,14 @@
-﻿using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using Marketio_WPF.Services;
+using System.Collections.ObjectModel;
 
 namespace Marketio_WPF.ViewModels
 {
-    /// <summary>
-    /// ViewModel for managing orders.
-    /// Handles order listing, filtering, status updates, and deletion.
-    /// </summary>
     internal class OrdersViewModel : BaseViewModel
     {
         private readonly OrderService _orderService;
         private ObservableCollection<dynamic> _orders = new();
+        private ObservableCollection<dynamic> _allOrders = new();   // cache voor client-side filter
         private dynamic? _selectedOrder;
         private string _statusFilter = "All";
         private RelayCommand? _loadOrdersCommand;
@@ -19,6 +16,9 @@ namespace Marketio_WPF.ViewModels
         private RelayCommand? _deleteOrderCommand;
         private RelayCommand? _filterByStatusCommand;
         private RelayCommand? _refreshCommand;
+
+        // ── Dialog event ─────────────────────────────────────────────────────
+        public event EventHandler<dynamic>? UpdateOrderRequested;
 
         public ObservableCollection<dynamic> Orders
         {
@@ -49,108 +49,92 @@ namespace Marketio_WPF.ViewModels
             _orderService = orderService ?? throw new ArgumentNullException(nameof(orderService));
         }
 
+        // ── Load ──────────────────────────────────────────────────────────────
         private async void ExecuteLoadOrders()
         {
             try
             {
                 IsBusy = true;
                 ClearMessages();
-
                 var orders = await _orderService.GetAllOrdersAsync();
-                Orders = new ObservableCollection<dynamic>(orders ?? new List<dynamic>());
-
+                _allOrders = new ObservableCollection<dynamic>(orders ?? new List<dynamic>());
+                Orders = new ObservableCollection<dynamic>(_allOrders);
                 if (!Orders.Any())
-                {
                     ErrorMessage = "No orders found.";
-                }
             }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Error loading orders: {ex.Message}";
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            catch (Exception ex) { ErrorMessage = $"Error loading orders: {ex.Message}"; }
+            finally { IsBusy = false; }
         }
 
-        private async void ExecuteUpdateOrder()
+        // ── Update status (raises event; view opens dialog) ───────────────────
+        private void ExecuteUpdateOrder()
         {
-            if (SelectedOrder == null)
-            {
-                ErrorMessage = "No order selected.";
-                return;
-            }
-
-            try
-            {
-                IsBusy = true;
-                ClearMessages();
-
-                // Dialog or form interaction would be handled by view
-                SuccessMessage = "Order updated successfully.";
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Error updating order: {ex.Message}";
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            if (SelectedOrder == null) { ErrorMessage = "No order selected."; return; }
+            UpdateOrderRequested?.Invoke(this, SelectedOrder);
         }
 
-        private bool CanExecuteUpdateOrder()
-        {
-            return SelectedOrder != null && !IsBusy;
-        }
+        private bool CanExecuteUpdateOrder() => SelectedOrder != null && !IsBusy;
 
+        // ── Delete ────────────────────────────────────────────────────────────
         private async void ExecuteDeleteOrder()
         {
-            if (SelectedOrder == null)
-            {
-                ErrorMessage = "No order selected.";
-                return;
-            }
-
+            if (SelectedOrder == null) { ErrorMessage = "No order selected."; return; }
             try
             {
                 IsBusy = true;
                 ClearMessages();
-
                 var orderId = (int)SelectedOrder.Id;
                 var success = await _orderService.DeleteOrderAsync(orderId);
-
                 if (success)
                 {
                     Orders.Remove(SelectedOrder);
                     SuccessMessage = "Order deleted successfully.";
                     SelectedOrder = null;
                 }
-                else
-                {
-                    ErrorMessage = "Failed to delete order.";
-                }
+                else { ErrorMessage = "Failed to delete order."; }
             }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Error deleting order: {ex.Message}";
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            catch (Exception ex) { ErrorMessage = $"Error deleting order: {ex.Message}"; }
+            finally { IsBusy = false; }
         }
 
-        private bool CanExecuteDeleteOrder()
-        {
-            return SelectedOrder != null && !IsBusy;
-        }
+        private bool CanExecuteDeleteOrder() => SelectedOrder != null && !IsBusy;
 
+        // ── Filter (client-side) ──────────────────────────────────────────────
         private void ExecuteFilterByStatus()
         {
-            // Filtering logic would be implemented here
-            // Could call a filtered API endpoint or filter locally
+            if (string.IsNullOrEmpty(StatusFilter) || StatusFilter == "All")
+            {
+                Orders = new ObservableCollection<dynamic>(_allOrders);
+                return;
+            }
+            var filtered = _allOrders
+                .Where(o => o.StatusName?.ToString() == StatusFilter)
+                .ToList();
+            Orders = new ObservableCollection<dynamic>(filtered);
+        }
+
+        // ── Submit handler (called by view after dialog OK) ───────────────────
+
+        /// <summary>
+        /// Called by OrdersView after the status dialog is confirmed.
+        /// Assumes OrderService.UpdateOrderStatusAsync(int orderId, string statusName) exists.
+        /// </summary>
+        public async Task SubmitStatusUpdateAsync(int orderId, string statusName)
+        {
+            try
+            {
+                IsBusy = true;
+                ClearMessages();
+                var success = await _orderService.UpdateOrderStatusAsync(orderId, statusName);
+                if (success)
+                {
+                    SuccessMessage = "Orderstatus bijgewerkt.";
+                    ExecuteLoadOrders();
+                }
+                else { ErrorMessage = "Status bijwerken mislukt."; }
+            }
+            catch (Exception ex) { ErrorMessage = $"Fout bij bijwerken: {ex.Message}"; }
+            finally { IsBusy = false; }
         }
     }
 }
