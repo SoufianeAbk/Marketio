@@ -1,6 +1,6 @@
 ﻿using Marketio_Shared.Entities;
 using Marketio_Shared.Enums;
-using Marketio_WPF.Data;
+using Marketio_Shared.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
