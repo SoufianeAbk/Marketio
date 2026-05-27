@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using System.Reflection;
 
 namespace Marketio_Shared.Data
 {
@@ -17,9 +16,9 @@ namespace Marketio_Shared.Data
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found in User Secrets.");
 
             var optionsBuilder = new DbContextOptionsBuilder<MarketioDbContext>();
-            optionsBuilder.UseNpgsql(
+            optionsBuilder.UseSqlServer(
                 connectionString,
-                b => b.MigrationsAssembly("Marketio_WPF"));
+                b => b.MigrationsAssembly("Marketio_Shared"));
 
             return new MarketioDbContext(optionsBuilder.Options);
         }

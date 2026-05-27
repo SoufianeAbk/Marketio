@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Windows;
@@ -73,13 +72,6 @@ namespace Marketio_WPF
 
         private void ConfigureServices(ServiceCollection services)
         {
-            var configuration = new ConfigurationBuilder()
-                .AddUserSecrets<App>()
-                .Build();
-
-            var connectionString = configuration.GetConnectionString("DefaultConnection")
-                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found in User Secrets.");
-
             services.AddLogging(config =>
             {
                 config.ClearProviders();
@@ -88,10 +80,13 @@ namespace Marketio_WPF
                 config.SetMinimumLevel(LogLevel.Debug);
             });
 
+            string connectionString =
+                "Server=(localdb)\\MSSQLLocalDB;Database=MarketioDb;Trusted_Connection=True;MultipleActiveResultSets=true";
+
             services.AddDbContext<MarketioDbContext>(options =>
-                options.UseNpgsql(
+                options.UseSqlServer(
                     connectionString,
-                    b => b.MigrationsAssembly("Marketio_WPF"))
+                    b => b.MigrationsAssembly("Marketio_Shared"))
             );
 
             services.AddIdentityCore<AppUser>(options =>
