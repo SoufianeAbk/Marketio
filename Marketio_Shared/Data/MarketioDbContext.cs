@@ -1,10 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Marketio_Shared.Entities;
+﻿using Marketio_Shared.Entities;
 using Marketio_Shared.Enums;
+using Marketio_Shared.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace Marketio_Shared.Data
 {
-    public class MarketioDbContext : DbContext
+    public class MarketioDbContext : IdentityDbContext<AppUser, IdentityRole, string>
     {
         public MarketioDbContext(DbContextOptions<MarketioDbContext> options)
             : base(options)
