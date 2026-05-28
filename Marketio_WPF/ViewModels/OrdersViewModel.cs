@@ -108,9 +108,10 @@ namespace Marketio_WPF.ViewModels
                 Orders = new ObservableCollection<dynamic>(_allOrders);
                 return;
             }
-            var filtered = _allOrders
-                .Where(o => o.StatusName?.ToString() == StatusFilter)
-                .ToList();
+            // LINQ query-syntax: client-side filter op status
+            var filtered = (from o in _allOrders
+                            where o.StatusName?.ToString() == StatusFilter
+                            select o).ToList();
             Orders = new ObservableCollection<dynamic>(filtered);
         }
 

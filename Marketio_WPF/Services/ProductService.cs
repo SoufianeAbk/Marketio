@@ -41,12 +41,13 @@ namespace Marketio_WPF.Services
         {
             try
             {
-                var products = await _context.Products
-                    .Where(p => p.Category == category)
-                    .OrderBy(p => p.Name)
-                    .AsNoTracking()
-                    .ToListAsync();
+                // LINQ query-syntax: expliciet filteren en sorteren op categorie
+                var query = (from p in _context.Products
+                             where p.Category == category
+                             orderby p.Name
+                             select p).AsNoTracking();
 
+                var products = await query.ToListAsync();
                 return products.Cast<dynamic>().ToList();
             }
             catch (Exception ex)

@@ -114,11 +114,12 @@ namespace Marketio_WPF.ViewModels
                 return;
             }
             var q = SearchQuery.Trim().ToLowerInvariant();
-            var results = _allCustomers.Where(c =>
-                (c.FirstName?.ToString() ?? "").ToLower().Contains(q) ||
-                (c.LastName?.ToString() ?? "").ToLower().Contains(q) ||
-                (c.Email?.ToString() ?? "").ToLower().Contains(q))
-                .ToList();
+            // LINQ query-syntax: client-side zoeken op naam en e-mail
+            var results = (from c in _allCustomers
+                           where (c.FirstName?.ToString() ?? "").ToLower().Contains(q) ||
+                                 (c.LastName?.ToString() ?? "").ToLower().Contains(q) ||
+                                 (c.Email?.ToString() ?? "").ToLower().Contains(q)
+                           select c).ToList();
             Customers = new ObservableCollection<dynamic>(results);
         }
 
