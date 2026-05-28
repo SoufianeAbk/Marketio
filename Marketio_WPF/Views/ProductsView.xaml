@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:converters="clr-namespace:Marketio_WPF.Converters"
+             xmlns:controls="clr-namespace:Marketio_WPF.Controls"
              mc:Ignorable="d"
              d:DesignHeight="600"
              d:DesignWidth="1100"
@@ -101,9 +102,16 @@
                                     Binding="{Binding Price, StringFormat=€{0:N2}}"
                                     Width="80"/>
 
-                <DataGridTextColumn Header="Voorraad"
-                                    Binding="{Binding Stock}"
-                                    Width="75"/>
+                <DataGridTemplateColumn Header="Voorraad" Width="110" SortMemberPath="Stock">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <controls:StockIndicator Stock="{Binding Stock}"
+                                                     LowThreshold="5"
+                                                     MediumThreshold="20"
+                                                     Margin="2,1"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
                 <DataGridTextColumn Header="Categorie"
                                     Binding="{Binding CategoryName}"

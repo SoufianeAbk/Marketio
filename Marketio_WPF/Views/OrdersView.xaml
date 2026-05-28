@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:converters="clr-namespace:Marketio_WPF.Converters"
+             xmlns:controls="clr-namespace:Marketio_WPF.Controls"
              mc:Ignorable="d"
              d:DesignHeight="600"
              d:DesignWidth="1100"
@@ -11,9 +12,6 @@
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-
-        <converters:StringNullOrEmptyToVisibilityConverter
-            x:Key="StringNullOrEmptyToVisibilityConverter"/>
     </UserControl.Resources>
 
     <Grid Margin="10">
@@ -138,9 +136,14 @@
                                                       StringFormat={}{0:dd/MM/yyyy}}"
                                     Width="90"/>
 
-                <DataGridTextColumn Header="Status"
-                                    Binding="{Binding StatusName}"
-                                    Width="95"/>
+                <DataGridTemplateColumn Header="Status" Width="115" SortMemberPath="StatusName">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <controls:StatusBadge Status="{Binding StatusName}"
+                                                  Margin="2,1"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
                 <DataGridTextColumn Header="Betaling"
                                     Binding="{Binding PaymentMethodName}"

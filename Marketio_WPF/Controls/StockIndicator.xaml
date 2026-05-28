@@ -1,0 +1,28 @@
+﻿<UserControl x:Class="Marketio_WPF.Controls.StockIndicator"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="28"
+             d:DesignWidth="90">
+
+    <StackPanel Orientation="Horizontal"
+                VerticalAlignment="Center">
+
+        <!-- Gekleurde dot -->
+        <Ellipse x:Name="StatusDot"
+                 Width="8"
+                 Height="8"
+                 VerticalAlignment="Center"
+                 Margin="0,0,5,0"/>
+
+        <!-- Voorraad-tekst -->
+        <TextBlock x:Name="StockText"
+                   FontSize="12"
+                   FontWeight="SemiBold"
+                   VerticalAlignment="Center"/>
+
+    </StackPanel>
+
+</UserControl>
