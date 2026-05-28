@@ -24,6 +24,9 @@ namespace Marketio_Shared.Entities
         [Range(0.01, 999999.99, ErrorMessage = "Total price must be between 0.01 and 999999.99")]
         public decimal TotalPrice { get; set; }
 
+        [Required]
+        public bool IsActive { get; set; } = true;
+
         // Navigatie properties
         public Order Order { get; set; } = null!;
         public Product Product { get; set; } = null!;

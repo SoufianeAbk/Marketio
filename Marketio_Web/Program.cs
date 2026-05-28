@@ -108,7 +108,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     .AddDefaultTokenProviders()
     .AddErrorDescriber<LocalizedIdentityErrorDescriber>();
 
-// ✅ JWT Authentication Configuration
+// JWT Authentication Configuration
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = builder.Configuration["JwtSettings:SecretKey"]
     ?? throw new InvalidOperationException("JWT SecretKey not found in configuration.");
@@ -170,7 +170,7 @@ builder.Services.AddControllersWithViews()
             factory.Create(typeof(SharedResources));
     });
 
-// ✅ Swagger/OpenAPI Configuration
+// Swagger/OpenAPI Configuration
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
