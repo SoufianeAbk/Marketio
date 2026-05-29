@@ -62,6 +62,68 @@ namespace Marketio_WPF.Services
             }
         }
 
+        /// <summary>
+        /// Maakt een nieuwe order aan met de opgegeven artikelen.
+        /// Genereert automatisch een OrderNumber en berekent TotalAmount.
+        /// </summary>
+        public async Task<bool> CreateOrderAsync(
+            string customerId,
+            string shippingAddress,
+            string billingAddress,
+            PaymentMethod paymentMethod,
+            List<(int ProductId, int Quantity, decimal UnitPrice)> items)
+        {
+            if (string.IsNullOrWhiteSpace(customerId))
+                return false;
+            if (items == null || items.Count == 0)
+                return false;
+
+            try
+            {
+                // Genereer uniek ordernummer: ORD-YYYYMMDD-XXXX
+                var orderNumber = $"ORD-{DateTime.UtcNow:yyyyMMdd}-{Random.Shared.Next(1000, 9999)}";
+
+                var order = new Order
+                {
+                    OrderNumber = orderNumber,
+                    CustomerId = customerId,
+                    OrderDate = DateTime.UtcNow,
+                    Status = OrderStatus.Pending,
+                    PaymentMethod = paymentMethod,
+                    ShippingAddress = shippingAddress.Trim(),
+                    BillingAddress = billingAddress.Trim(),
+                    TotalAmount = items.Sum(i => i.UnitPrice * i.Quantity),
+                    IsActive = true,
+                };
+
+                foreach (var (productId, quantity, unitPrice) in items)
+                {
+                    order.OrderItems.Add(new OrderItem
+                    {
+                        ProductId = productId,
+                        Quantity = quantity,
+                        UnitPrice = unitPrice,
+                        TotalPrice = unitPrice * quantity,
+                        IsActive = true,
+                    });
+                }
+
+                _context.Orders.Add(order);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation(
+                    "Order '{OrderNumber}' aangemaakt voor klant {CustomerId} — {ItemCount} artikel(en), totaal €{Total:N2}",
+                    orderNumber, customerId, items.Count, order.TotalAmount);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating order for customer {CustomerId}", customerId);
+                throw new InvalidOperationException("Fout bij aanmaken van order.", ex);
+            }
+        }
+
         public async Task<bool> UpdateOrderStatusAsync(int orderId, OrderStatus newStatus)
         {
             if (orderId <= 0) return false;

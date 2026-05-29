@@ -145,7 +145,7 @@ namespace Marketio_WPF.ViewModels
             try
             {
                 ClearMessages();
-                var viewModel = new OrdersViewModel(_orderService);
+                var viewModel = new OrdersViewModel(_orderService, _customerService, _productService);
                 CurrentView = new OrdersView { DataContext = viewModel };
             }
             catch (Exception ex)

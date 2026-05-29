@@ -20,6 +20,27 @@ namespace Marketio_WPF.Views
 
             vm.LoadOrdersCommand.Execute(null);
 
+            // ── ★ Nieuwe order aanmaken ────────────────────────────────────────
+            vm.CreateOrderRequested += async (_, payload) =>
+            {
+                var dialog = new CreateOrderDialog(payload.Customers, payload.Products)
+                {
+                    Owner = Window.GetWindow(this)
+                };
+
+                if (dialog.ShowDialog() == true)
+                {
+                    await vm.SubmitCreateOrderAsync(
+                        dialog.SelectedCustomerId,
+                        dialog.ShippingAddress,
+                        dialog.BillingAddress,
+                        dialog.SelectedPaymentMethod,
+                        dialog.OrderItems
+                    );
+                }
+            };
+
+            // ── Orderstatus bijwerken ──────────────────────────────────────────
             vm.UpdateOrderRequested += async (_, order) =>
             {
                 var dialog = new OrderStatusDialog(order)
