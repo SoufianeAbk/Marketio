@@ -101,9 +101,6 @@ namespace Marketio_WPF
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<MarketioDbContext>();
 
-            services.AddScoped<UserManager<AppUser>>();
-            services.AddScoped<RoleManager<IdentityRole>>();
-
             services.AddScoped<DataSeeder>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<UserManagementService>();
