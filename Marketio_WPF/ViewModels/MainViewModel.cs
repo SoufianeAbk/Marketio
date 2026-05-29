@@ -113,7 +113,7 @@ namespace Marketio_WPF.ViewModels
             {
                 var roles = await _authService.GetUserRolesAsync(userId);
                 IsAdmin = roles.Contains("Admin", StringComparer.OrdinalIgnoreCase);
-                IsEmployee = roles.Contains("Employee", StringComparer.OrdinalIgnoreCase) || IsAdmin;
+                IsEmployee = roles.Contains("Manager", StringComparer.OrdinalIgnoreCase) || IsAdmin;
             }
             catch (Exception ex)
             {
