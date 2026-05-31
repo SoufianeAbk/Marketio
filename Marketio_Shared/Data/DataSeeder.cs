@@ -52,7 +52,7 @@ namespace Marketio_Shared.Data
 
         private async Task SeedRolesAsync()
         {
-            var roles = new[] { "Admin", "Manager", "User" };
+            var roles = new[] { "Admin", "Manager", "Customer" };
 
             foreach (var roleName in roles)
             {
@@ -105,7 +105,7 @@ namespace Marketio_Shared.Data
                 var result = await _userManager.CreateAsync(testUser, "User@12345");
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(testUser, "User");
+                    await _userManager.AddToRoleAsync(testUser, "Customer");
                 }
             }
 
