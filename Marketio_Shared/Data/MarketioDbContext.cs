@@ -50,10 +50,10 @@ namespace Marketio_Shared.Data
                     .IsRequired()
                     .HasMaxLength(500);
 
-                // SQL Server syntax
+                // ANSI SQL: werkt op zowel SQL Server als PostgreSQL
                 entity.Property(e => e.CreatedAt)
                     .IsRequired()
-                    .HasDefaultValueSql("GETDATE()");
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.Property(e => e.IsActive)
                     .IsRequired()
@@ -78,10 +78,10 @@ namespace Marketio_Shared.Data
                     .IsRequired()
                     .HasMaxLength(450);
 
-                // SQL Server syntax
+                // ANSI SQL: werkt op zowel SQL Server als PostgreSQL
                 entity.Property(e => e.OrderDate)
                     .IsRequired()
-                    .HasDefaultValueSql("GETDATE()");
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.Property(e => e.Status)
                     .IsRequired()
@@ -178,10 +178,10 @@ namespace Marketio_Shared.Data
                     .IsRequired()
                     .HasMaxLength(500);
 
-                // SQL Server syntax
+                // ANSI SQL: werkt op zowel SQL Server als PostgreSQL
                 entity.Property(e => e.CreatedAt)
                     .IsRequired()
-                    .HasDefaultValueSql("GETDATE()");
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.Property(e => e.IsActive)
                     .IsRequired()
