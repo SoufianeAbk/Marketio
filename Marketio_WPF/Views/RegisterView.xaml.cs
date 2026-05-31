@@ -1,11 +1,18 @@
 ﻿using Marketio_WPF.ViewModels;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace Marketio_WPF.Views
 {
-    public partial class RegisterView : Window
+    public partial class RegisterView : UserControl
     {
+        /// <summary>
+        /// Wordt gefired wanneer de gebruiker op "Back to Login" klikt.
+        /// De host (MainViewModel of LoginView) beslist wat er dan gebeurt.
+        /// </summary>
+        public event EventHandler? BackRequested;
+
         public RegisterView()
         {
             InitializeComponent();
@@ -36,7 +43,7 @@ namespace Marketio_WPF.Views
 
         private void BackToLogin_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            BackRequested?.Invoke(this, EventArgs.Empty);
         }
     }
 }

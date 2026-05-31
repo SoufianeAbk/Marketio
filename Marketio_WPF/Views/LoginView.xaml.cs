@@ -39,8 +39,25 @@ namespace Marketio_WPF.Views
                     {
                         var registerViewModel = App.ServiceProvider.GetRequiredService<RegisterViewModel>();
                         var registerView = new RegisterView { DataContext = registerViewModel };
-                        registerView.Owner = this;
-                        registerView.ShowDialog();
+
+                        // RegisterView is nu een UserControl — wikkel het in een anoniem
+                        // Window zodat ShowDialog() nog steeds werkt vanuit LoginView.
+                        var registerWindow = new Window
+                        {
+                            Title = "Marketio - Create Account",
+                            Content = registerView,
+                            Width = 450,
+                            Height = 600,
+                            WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                            ResizeMode = ResizeMode.NoResize,
+                            Background = System.Windows.Media.Brushes.WhiteSmoke,
+                            Owner = this
+                        };
+
+                        // "Back to Login"-knop in de UserControl sluit het wrapper-window.
+                        registerView.BackRequested += (_, _) => registerWindow.Close();
+
+                        registerWindow.ShowDialog();
                     }
                     catch (Exception ex)
                     {
@@ -51,7 +68,7 @@ namespace Marketio_WPF.Views
                             MessageBoxImage.Error);
                     }
 
-                    // Close login view after showing register
+                    // Sluit login view nadat registratie getoond is
                     Close();
                 };
             };

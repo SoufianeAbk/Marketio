@@ -188,7 +188,13 @@ namespace Marketio_WPF.ViewModels
             {
                 ClearMessages();
                 var viewModel = new RegisterViewModel(_authService);
-                CurrentView = new RegisterView { DataContext = viewModel };
+                var view = new RegisterView { DataContext = viewModel };
+
+                // Wanneer de gebruiker op "Back to Login" klikt in de embedded view,
+                // navigeer terug naar de standaard view (Products).
+                view.BackRequested += (_, _) => LoadDefaultView();
+
+                CurrentView = view;
             }
             catch (Exception ex)
             {
