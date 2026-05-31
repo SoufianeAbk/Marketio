@@ -88,6 +88,13 @@
                                     <i class="bi bi-cart"></i> @Localizer["OrdersManagement"]
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "UserManagement" ? "active" : "")"
+                                   asp-controller="UserManagement"
+                                   asp-action="Index">
+                                    <i class="bi bi-people"></i> @Localizer["UserManagement"]
+                                </a>
+                            </li>
                         }
 
                         <li class="nav-item">
