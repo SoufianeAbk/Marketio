@@ -17,7 +17,17 @@ namespace Marketio_App.Services
         }
 
         public record LoginRequest(string Email, string Password);
-        public record RegisterRequest(string Email, string FirstName, string LastName, string? Address, string Password);
+
+        // GDPR-consent meegestuurd bij registratie
+        public record RegisterRequest(
+            string Email,
+            string FirstName,
+            string LastName,
+            string? Address,
+            string Password,
+            bool PrivacyConsentGiven,
+            bool TermsConsentGiven,
+            bool MarketingOptIn);
 
         private class LoginResponse
         {
@@ -65,9 +75,29 @@ namespace Marketio_App.Services
             }
         }
 
-        public async Task<(bool Success, string? ErrorMessage)> RegisterAsync(string email, string firstName, string lastName, string? address, string password)
+        /// <param name="privacyConsentGiven">Gebruiker heeft privacybeleid geaccepteerd.</param>
+        /// <param name="termsConsentGiven">Gebruiker heeft algemene voorwaarden geaccepteerd.</param>
+        /// <param name="marketingOptIn">Gebruiker heeft toestemming gegeven voor marketing.</param>
+        public async Task<(bool Success, string? ErrorMessage)> RegisterAsync(
+            string email,
+            string firstName,
+            string lastName,
+            string? address,
+            string password,
+            bool privacyConsentGiven,
+            bool termsConsentGiven,
+            bool marketingOptIn)
         {
-            var req = new RegisterRequest(email, firstName, lastName, address, password);
+            var req = new RegisterRequest(
+                email,
+                firstName,
+                lastName,
+                address,
+                password,
+                privacyConsentGiven,
+                termsConsentGiven,
+                marketingOptIn);
+
             try
             {
                 // Use the tolerant overload

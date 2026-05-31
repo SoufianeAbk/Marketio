@@ -74,7 +74,10 @@ namespace Marketio_App.ViewModels
                     FirstName,
                     LastName,
                     string.IsNullOrWhiteSpace(Address) ? null : Address,
-                    Password);
+                    Password,
+                    privacyConsentGiven: AcceptPrivacyPolicy,
+                    termsConsentGiven: AcceptTerms,
+                    marketingOptIn: AcceptMarketing);
 
                 if (success)
                 {
@@ -110,7 +113,10 @@ namespace Marketio_App.ViewModels
         {
             try
             {
-                await Launcher.Default.OpenAsync("https://yourapp.nl/privacy");
+                // Gebruik de geconfigureerde API-basis-URL zodat dev/prod automatisch correct is.
+                // MauiProgram.GetPlatformApiBaseUrl() is internal static en beschikbaar in dit project.
+                var url = $"{MauiProgram.GetPlatformApiBaseUrl()}Home/Privacy";
+                await Launcher.Default.OpenAsync(url);
             }
             catch (Exception ex)
             {
@@ -123,7 +129,8 @@ namespace Marketio_App.ViewModels
         {
             try
             {
-                await Launcher.Default.OpenAsync("https://yourapp.nl/terms");
+                var url = $"{MauiProgram.GetPlatformApiBaseUrl()}Home/Terms";
+                await Launcher.Default.OpenAsync(url);
             }
             catch (Exception ex)
             {

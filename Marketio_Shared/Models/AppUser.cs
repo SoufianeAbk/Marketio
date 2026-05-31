@@ -24,6 +24,20 @@ namespace Marketio_Shared.Models
         [Required]
         public bool IsActive { get; set; } = true;
 
+        // ─── GDPR-velden (vereist door CONTRIBUTING.md) ───────────────────────────
+
+        /// <summary>Gebruiker heeft het privacybeleid expliciet geaccepteerd.</summary>
+        public bool PrivacyConsentGiven { get; set; }
+
+        /// <summary>Gebruiker heeft de algemene voorwaarden expliciet geaccepteerd.</summary>
+        public bool TermsConsentGiven { get; set; }
+
+        /// <summary>Gebruiker heeft toestemming gegeven voor marketingcommunicatie.</summary>
+        public bool MarketingOptIn { get; set; }
+
+        /// <summary>Tijdstip waarop de gebruiker toestemming heeft gegeven (UTC).</summary>
+        public DateTime? ConsentGivenDate { get; set; }
+
         public string FullName => $"{FirstName} {LastName}".Trim();
     }
 }
