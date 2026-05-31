@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Marketio_Shared.Models;
-using System.Collections.ObjectModel;
+using Marketio_WPF.Models;
 
 namespace Marketio_WPF.Services
 {
@@ -22,29 +22,30 @@ namespace Marketio_WPF.Services
         }
 
         /// <summary>
-        /// Retrieves all users from the system.
+        /// Retrieves all users from the system as typed DTOs.
+        /// Typed return type avoids read-only anonymous-type properties
+        /// that cause TwoWay binding crashes in WPF DataGridCheckBoxColumns.
         /// </summary>
-        /// <returns>List of dynamic objects containing user information</returns>
-        public async Task<List<dynamic>> GetAllUsersAsync()
+        public async Task<List<UserAdminDto>> GetAllUsersAsync()
         {
             try
             {
                 var users = _userManager.Users.ToList();
-                var usersList = new List<dynamic>();
+                var result = new List<UserAdminDto>();
 
                 foreach (var user in users)
                 {
                     var roles = await _userManager.GetRolesAsync(user);
                     var isLocked = await _userManager.IsLockedOutAsync(user);
 
-                    usersList.Add(new
+                    result.Add(new UserAdminDto
                     {
                         Id = user.Id,
-                        Email = user.Email,
-                        FirstName = user.FirstName,
-                        LastName = user.LastName,
-                        FullName = user.FullName,
-                        UserName = user.UserName,
+                        Email = user.Email ?? string.Empty,
+                        FirstName = user.FirstName ?? string.Empty,
+                        LastName = user.LastName ?? string.Empty,
+                        FullName = user.FullName ?? string.Empty,
+                        UserName = user.UserName ?? string.Empty,
                         PhoneNumber = user.PhoneNumber,
                         Address = user.DefaultAddress,
                         CreatedAt = user.CreatedAt,
@@ -56,7 +57,7 @@ namespace Marketio_WPF.Services
                     });
                 }
 
-                return usersList;
+                return result;
             }
             catch (Exception ex)
             {
@@ -64,27 +65,16 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>
-        /// Assigns a role to a user.
-        /// </summary>
-        /// <param name="userId">The user ID</param>
-        /// <param name="roleName">The role name to assign</param>
-        /// <returns>True if successful, false otherwise</returns>
+        /// <summary>Assigns a role to a user.</summary>
         public async Task<bool> AssignRoleAsync(string userId, string roleName)
         {
             try
             {
                 var user = await _userManager.FindByIdAsync(userId);
-                if (user == null)
-                    return false;
+                if (user == null) return false;
 
-                // Check if role exists
-                if (!await _roleManager.RoleExistsAsync(roleName))
-                    return false;
-
-                // Check if user already has role
-                if (await _userManager.IsInRoleAsync(user, roleName))
-                    return false;
+                if (!await _roleManager.RoleExistsAsync(roleName)) return false;
+                if (await _userManager.IsInRoleAsync(user, roleName)) return false;
 
                 var result = await _userManager.AddToRoleAsync(user, roleName);
                 return result.Succeeded;
@@ -95,23 +85,15 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>
-        /// Removes a role from a user.
-        /// </summary>
-        /// <param name="userId">The user ID</param>
-        /// <param name="roleName">The role name to remove</param>
-        /// <returns>True if successful, false otherwise</returns>
+        /// <summary>Removes a role from a user.</summary>
         public async Task<bool> RemoveRoleAsync(string userId, string roleName)
         {
             try
             {
                 var user = await _userManager.FindByIdAsync(userId);
-                if (user == null)
-                    return false;
+                if (user == null) return false;
 
-                // Check if user has role
-                if (!await _userManager.IsInRoleAsync(user, roleName))
-                    return false;
+                if (!await _userManager.IsInRoleAsync(user, roleName)) return false;
 
                 var result = await _userManager.RemoveFromRoleAsync(user, roleName);
                 return result.Succeeded;
@@ -122,24 +104,15 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>
-        /// Sends a password reset email to the user.
-        /// </summary>
-        /// <param name="userId">The user ID</param>
-        /// <returns>True if successful, false otherwise</returns>
+        /// <summary>Generates a password reset token for a user.</summary>
         public async Task<bool> ResetPasswordAsync(string userId)
         {
             try
             {
                 var user = await _userManager.FindByIdAsync(userId);
-                if (user == null)
-                    return false;
+                if (user == null) return false;
 
-                // Generate password reset token
                 var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-                // In a real application, you would send this token via email
-                // For now, we'll just verify the token was generated successfully
                 return !string.IsNullOrEmpty(resetToken);
             }
             catch (Exception ex)
@@ -148,26 +121,19 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>
-        /// Locks a user account to prevent login.
-        /// </summary>
-        /// <param name="userId">The user ID</param>
-        /// <returns>True if successful, false otherwise</returns>
+        /// <summary>Locks a user account for 10 years (effectively permanent).</summary>
         public async Task<bool> LockUserAsync(string userId)
         {
             try
             {
                 var user = await _userManager.FindByIdAsync(userId);
-                if (user == null)
-                    return false;
+                if (user == null) return false;
 
-                var lockoutEndDate = DateTimeOffset.UtcNow.AddYears(10);
-                var result = await _userManager.SetLockoutEndDateAsync(user, lockoutEndDate);
+                var result = await _userManager.SetLockoutEndDateAsync(
+                    user, DateTimeOffset.UtcNow.AddYears(10));
 
                 if (result.Succeeded)
-                {
                     await _userManager.SetLockoutEnabledAsync(user, true);
-                }
 
                 return result.Succeeded;
             }
@@ -177,18 +143,13 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>
-        /// Deletes a user from the system.
-        /// </summary>
-        /// <param name="userId">The user ID</param>
-        /// <returns>True if successful, false otherwise</returns>
+        /// <summary>Permanently deletes a user (GDPR right to be forgotten).</summary>
         public async Task<bool> DeleteUserAsync(string userId)
         {
             try
             {
                 var user = await _userManager.FindByIdAsync(userId);
-                if (user == null)
-                    return false;
+                if (user == null) return false;
 
                 var result = await _userManager.DeleteAsync(user);
                 return result.Succeeded;
@@ -199,15 +160,15 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>
-        /// Gets all available roles in the system.
-        /// </summary>
-        /// <returns>List of role names</returns>
+        /// <summary>Gets all available role names in the system.</summary>
         public async Task<List<string>> GetAllRolesAsync()
         {
             try
             {
-                return await Task.FromResult(_roleManager.Roles.Select(r => r.Name ?? string.Empty).ToList());
+                return await Task.FromResult(
+                    _roleManager.Roles
+                                .Select(r => r.Name ?? string.Empty)
+                                .ToList());
             }
             catch (Exception ex)
             {

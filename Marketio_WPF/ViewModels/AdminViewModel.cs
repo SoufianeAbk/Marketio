@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Marketio_WPF.Models;
 using Marketio_WPF.Services;
 using System.Collections.ObjectModel;
 
@@ -13,16 +14,16 @@ namespace Marketio_WPF.ViewModels
         private readonly UserManagementService _userManagementService;
 
         // ── Users ────────────────────────────────────────────────────────────
-        private ObservableCollection<dynamic> _users = new();
-        private dynamic? _selectedUser;
+        private ObservableCollection<UserAdminDto> _users = new();
+        private UserAdminDto? _selectedUser;
 
-        public ObservableCollection<dynamic> Users
+        public ObservableCollection<UserAdminDto> Users
         {
             get => _users;
             set => SetProperty(ref _users, value);
         }
 
-        public dynamic? SelectedUser
+        public UserAdminDto? SelectedUser
         {
             get => _selectedUser;
             set
@@ -94,7 +95,7 @@ namespace Marketio_WPF.ViewModels
                 ClearMessages();
 
                 var users = await _userManagementService.GetAllUsersAsync();
-                Users = new ObservableCollection<dynamic>(users ?? new List<dynamic>());
+                Users = new ObservableCollection<UserAdminDto>(users);
 
                 if (!Users.Any())
                     ErrorMessage = "Geen gebruikers gevonden.";
@@ -132,13 +133,13 @@ namespace Marketio_WPF.ViewModels
                 IsBusy = true;
                 ClearMessages();
 
-                var userId = (string)SelectedUser!.Id;
-                var success = await _userManagementService.AssignRoleAsync(userId, SelectedRole);
+                var success = await _userManagementService.AssignRoleAsync(
+                    SelectedUser!.Id, SelectedRole);
 
                 if (success)
                 {
                     SuccessMessage = $"Rol '{SelectedRole}' succesvol toegewezen.";
-                    ExecuteLoadUsers(); // refresh list to reflect new roles
+                    ExecuteLoadUsers();
                 }
                 else
                 {
@@ -167,8 +168,8 @@ namespace Marketio_WPF.ViewModels
                 IsBusy = true;
                 ClearMessages();
 
-                var userId = (string)SelectedUser!.Id;
-                var success = await _userManagementService.RemoveRoleAsync(userId, SelectedRole);
+                var success = await _userManagementService.RemoveRoleAsync(
+                    SelectedUser!.Id, SelectedRole);
 
                 if (success)
                 {
@@ -202,15 +203,12 @@ namespace Marketio_WPF.ViewModels
                 IsBusy = true;
                 ClearMessages();
 
-                var userId = (string)SelectedUser!.Id;
-                var success = await _userManagementService.ResetPasswordAsync(userId);
+                var success = await _userManagementService.ResetPasswordAsync(SelectedUser!.Id);
 
-                SuccessMessage = success
-                    ? "Wachtwoord-reset token aangemaakt. " +
-                      "Stuur de reset-link naar de gebruiker."
-                    : "Wachtwoord resetten mislukt.";
-
-                if (!success)
+                if (success)
+                    SuccessMessage = "Wachtwoord-reset token aangemaakt. " +
+                                     "Stuur de reset-link naar de gebruiker.";
+                else
                     ErrorMessage = "Wachtwoord resetten mislukt.";
             }
             catch (Exception ex)
@@ -223,8 +221,7 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        private bool CanExecuteResetPassword() =>
-            SelectedUser != null && !IsBusy;
+        private bool CanExecuteResetPassword() => SelectedUser != null && !IsBusy;
 
         // ── 6. Lock user ──────────────────────────────────────────────────────
         private async void ExecuteLockUser()
@@ -234,8 +231,7 @@ namespace Marketio_WPF.ViewModels
                 IsBusy = true;
                 ClearMessages();
 
-                var userId = (string)SelectedUser!.Id;
-                var success = await _userManagementService.LockUserAsync(userId);
+                var success = await _userManagementService.LockUserAsync(SelectedUser!.Id);
 
                 if (success)
                 {
@@ -257,8 +253,7 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        private bool CanExecuteLockUser() =>
-            SelectedUser != null && !IsBusy;
+        private bool CanExecuteLockUser() => SelectedUser != null && !IsBusy;
 
         // ── 7. Delete user (GDPR Right to be Forgotten) ───────────────────────
         private async void ExecuteDeleteUser()
@@ -268,8 +263,7 @@ namespace Marketio_WPF.ViewModels
                 IsBusy = true;
                 ClearMessages();
 
-                var userId = (string)SelectedUser!.Id;
-                var success = await _userManagementService.DeleteUserAsync(userId);
+                var success = await _userManagementService.DeleteUserAsync(SelectedUser!.Id);
 
                 if (success)
                 {
@@ -292,8 +286,7 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        private bool CanExecuteDeleteUser() =>
-            SelectedUser != null && !IsBusy;
+        private bool CanExecuteDeleteUser() => SelectedUser != null && !IsBusy;
 
         // ── 8. Refresh ────────────────────────────────────────────────────────
         private void ExecuteRefresh()
