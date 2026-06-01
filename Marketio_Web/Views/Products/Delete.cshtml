@@ -26,7 +26,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Name"
-                                 onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'" />
+                                 onerror="this.onerror=null; this.src='/images/no-image.svg';" />
                         </div>
                         <div class="col-md-8">
                             <dl class="row">

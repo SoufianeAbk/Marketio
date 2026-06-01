@@ -138,7 +138,7 @@ namespace Marketio_Shared.Data
                     Price = 199.99m,
                     Stock = 50,
                     Category = ProductCategory.Electronics,
-                    ImageUrl = "https://via.placeholder.com/300?text=Wireless+Headphones",
+                    ImageUrl = "/images/headphones.jpg",
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 },
@@ -149,7 +149,7 @@ namespace Marketio_Shared.Data
                     Price = 49.99m,
                     Stock = 100,
                     Category = ProductCategory.Electronics,
-                    ImageUrl = "https://via.placeholder.com/300?text=USB-C+Hub",
+                    ImageUrl = "/images/laptop.jpg",
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 },
@@ -162,7 +162,7 @@ namespace Marketio_Shared.Data
                     Price = 24.99m,
                     Stock = 200,
                     Category = ProductCategory.Clothing,
-                    ImageUrl = "https://via.placeholder.com/300?text=Cotton+T-Shirt",
+                    ImageUrl = "/images/polo.jpg",
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 },
@@ -173,7 +173,7 @@ namespace Marketio_Shared.Data
                     Price = 79.99m,
                     Stock = 75,
                     Category = ProductCategory.Clothing,
-                    ImageUrl = "https://via.placeholder.com/300?text=Denim+Jeans",
+                    ImageUrl = "/images/jeans.jpg",
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 },
@@ -186,7 +186,7 @@ namespace Marketio_Shared.Data
                     Price = 59.99m,
                     Stock = 30,
                     Category = ProductCategory.Books,
-                    ImageUrl = "https://via.placeholder.com/300?text=CSharp+Guide",
+                    ImageUrl = "/images/cleancode.jpg",
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 },
@@ -197,7 +197,7 @@ namespace Marketio_Shared.Data
                     Price = 44.99m,
                     Stock = 40,
                     Category = ProductCategory.Books,
-                    ImageUrl = "https://via.placeholder.com/300?text=Web+Dev+Basics",
+                    ImageUrl = "/images/pragmatic.jpg",
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 },
@@ -210,7 +210,7 @@ namespace Marketio_Shared.Data
                     Price = 34.99m,
                     Stock = 60,
                     Category = ProductCategory.HomeAndGarden,
-                    ImageUrl = "https://via.placeholder.com/300?text=Plant+Pots",
+                    ImageUrl = "/images/desk.jpg",
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 },
@@ -221,7 +221,7 @@ namespace Marketio_Shared.Data
                     Price = 89.99m,
                     Stock = 25,
                     Category = ProductCategory.HomeAndGarden,
-                    ImageUrl = "https://via.placeholder.com/300?text=Garden+Tools",
+                    ImageUrl = "/images/vacuum.jpg",
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 },
@@ -234,7 +234,7 @@ namespace Marketio_Shared.Data
                     Price = 129.99m,
                     Stock = 45,
                     Category = ProductCategory.Sports,
-                    ImageUrl = "https://via.placeholder.com/300?text=Running+Shoes",
+                    ImageUrl = "/images/sneakers.jpg",
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 },
@@ -245,7 +245,7 @@ namespace Marketio_Shared.Data
                     Price = 39.99m,
                     Stock = 80,
                     Category = ProductCategory.Sports,
-                    ImageUrl = "https://via.placeholder.com/300?text=Yoga+Mat",
+                    ImageUrl = "/images/yogamat.jpg",
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 }
