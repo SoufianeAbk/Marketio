@@ -103,7 +103,7 @@
                 <h1 class="mb-0">
                     <i class="bi bi-box-seam"></i> @Localizer["Products"]
                 </h1>
-                @if (User.IsInRole("Admin"))
+                @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
                 {
                     <a asp-action="Create" class="btn btn-success">
                         <i class="bi bi-plus-circle"></i> @Localizer["AddProduct"]
@@ -166,7 +166,7 @@
                                         @if (product.Description.Length > 80)
                                         {
                                             @product.Description.Substring(0, 80)
-                                
+
                                             <text>...</text>
                                         }
                                         else
@@ -206,11 +206,14 @@
                                                    class="btn btn-sm btn-outline-primary">
                                                     <i class="bi bi-eye"></i> @Localizer["Details"]
                                                 </a>
-                                                @if (User.IsInRole("Admin"))
+                                                @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
                                                 {
                                                     <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-outline-warning">
                                                         <i class="bi bi-pencil"></i>
                                                     </a>
+                                                }
+                                                @if (User.IsInRole("Admin"))
+                                                {
                                                     <a asp-action="Delete" asp-route-id="@product.Id" class="btn btn-sm btn-outline-danger">
                                                         <i class="bi bi-trash"></i>
                                                     </a>
