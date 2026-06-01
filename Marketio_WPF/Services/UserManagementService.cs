@@ -4,10 +4,6 @@ using Marketio_WPF.Models;
 
 namespace Marketio_WPF.Services
 {
-    /// <summary>
-    /// Service for managing user administration operations.
-    /// Handles user listing, role assignment, and user account operations.
-    /// </summary>
     internal class UserManagementService
     {
         private readonly UserManager<AppUser> _userManager;
@@ -21,11 +17,6 @@ namespace Marketio_WPF.Services
             _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         }
 
-        /// <summary>
-        /// Retrieves all users from the system as typed DTOs.
-        /// Typed return type avoids read-only anonymous-type properties
-        /// that cause TwoWay binding crashes in WPF DataGridCheckBoxColumns.
-        /// </summary>
         public async Task<List<UserAdminDto>> GetAllUsersAsync()
         {
             try
@@ -47,7 +38,7 @@ namespace Marketio_WPF.Services
                         FullName = user.FullName ?? string.Empty,
                         UserName = user.UserName ?? string.Empty,
                         PhoneNumber = user.PhoneNumber,
-                        Address = user.DefaultAddress,
+                        Address = user.Address,
                         CreatedAt = user.CreatedAt,
                         LastLoginAt = user.LastLoginAt,
                         IsActive = user.IsActive,
@@ -65,7 +56,6 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>Assigns a role to a user.</summary>
         public async Task<bool> AssignRoleAsync(string userId, string roleName)
         {
             try
@@ -85,7 +75,6 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>Removes a role from a user.</summary>
         public async Task<bool> RemoveRoleAsync(string userId, string roleName)
         {
             try
@@ -104,7 +93,6 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>Generates a password reset token for a user.</summary>
         public async Task<bool> ResetPasswordAsync(string userId)
         {
             try
@@ -121,7 +109,6 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>Locks a user account for 10 years (effectively permanent).</summary>
         public async Task<bool> LockUserAsync(string userId)
         {
             try
@@ -143,7 +130,6 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>Permanently deletes a user (GDPR right to be forgotten).</summary>
         public async Task<bool> DeleteUserAsync(string userId)
         {
             try
@@ -160,7 +146,6 @@ namespace Marketio_WPF.Services
             }
         }
 
-        /// <summary>Gets all available role names in the system.</summary>
         public async Task<List<string>> GetAllRolesAsync()
         {
             try

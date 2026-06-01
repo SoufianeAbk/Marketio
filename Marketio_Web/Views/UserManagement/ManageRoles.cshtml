@@ -1,6 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Beheer Rollen";
-    var user = ViewBag.User as Marketio_Web.Models.ApplicationUser;
+    var user = ViewBag.User as Marketio_Shared.Models.AppUser;
     var userRoles = ViewBag.UserRoles as IList<string>;
     var allRoles = ViewBag.AllRoles as List<string>;
 }
@@ -43,7 +43,7 @@
     }
 
     <div class="row">
-        <!-- Huidige Roll -->
+        <!-- Huidige Rollen -->
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
@@ -95,7 +95,7 @@
             </div>
         </div>
 
-        <!-- Assign Nieuwe Roll -->
+        <!-- Rol Toewijzen -->
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-success text-white">
@@ -145,7 +145,7 @@
         </div>
     </div>
 
-    <!-- User Information Cart -->
+    <!-- Gebruikersinformatie -->
     <div class="row mt-4">
         <div class="col-12">
             <div class="card shadow-sm">
@@ -195,9 +195,6 @@
 
 @section Scripts {
     <script>
-        // Auto-dismiss alerts na 5 seconden
-        setTimeout(function() {
-            $('.alert').fadeOut('slow');
-        }, 5000);
+        setTimeout(function() { $('.alert').fadeOut('slow'); }, 5000);
     </script>
 }

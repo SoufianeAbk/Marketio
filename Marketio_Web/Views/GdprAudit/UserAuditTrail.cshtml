@@ -1,12 +1,12 @@
 ﻿@model IEnumerable<GdprAuditLogDto>
-@using Marketio_Web.Models
+@using Marketio_Shared.Models
 @using Marketio_Web.Services
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SharedResources> Localizer
 
 @{
-    ViewData["Title"] = $"Audit Trail - {((ApplicationUser)ViewBag.User)?.FullName}";
-    var user = (ApplicationUser)ViewBag.User;
+    ViewData["Title"] = $"Audit Trail - {((AppUser)ViewBag.User)?.FullName}";
+    var user = (AppUser)ViewBag.User;
 }
 
 <div class="container-fluid mt-4">
@@ -45,7 +45,7 @@
                         <dd class="col-sm-8"><code class="text-muted">@user?.Id</code></dd>
 
                         <dt class="col-sm-4">Registriert:</dt>
-                        <dd class="col-sm-8">@user?.LockoutEnd?.DateTime.ToString("dd-MM-yyyy")</dd>
+                        <dd class="col-sm-8">@user?.CreatedAt.ToString("dd-MM-yyyy")</dd>
                     </dl>
                 </div>
                 <div class="col-md-6">
@@ -122,7 +122,6 @@
     else
     {
         <div class="row">
-            <!-- Timeline -->
             <div class="col-md-12">
                 <div class="card shadow-sm">
                     <div class="card-header bg-info text-white">
@@ -169,9 +168,7 @@
                                         <div class="card-body">
                                             <dl class="row mb-2">
                                                 <dt class="col-sm-3">Typ:</dt>
-                                                <dd class="col-sm-9">
-                                                    <span class="badge bg-light text-dark">@log.ConsentType</span>
-                                                </dd>
+                                                <dd class="col-sm-9"><span class="badge bg-light text-dark">@log.ConsentType</span></dd>
 
                                                 <dt class="col-sm-3">Status:</dt>
                                                 <dd class="col-sm-9">
@@ -186,16 +183,12 @@
                                                 </dd>
 
                                                 <dt class="col-sm-3">IP-Adresse:</dt>
-                                                <dd class="col-sm-9">
-                                                    <code>@(log.IpAddress ?? "Nicht verfügbar")</code>
-                                                </dd>
+                                                <dd class="col-sm-9"><code>@(log.IpAddress ?? "Nicht verfügbar")</code></dd>
 
                                                 @if (!string.IsNullOrEmpty(log.UserAgent))
                                                 {
                                                     <dt class="col-sm-3">User-Agent:</dt>
-                                                    <dd class="col-sm-9">
-                                                        <small class="text-muted">@log.UserAgent</small>
-                                                    </dd>
+                                                    <dd class="col-sm-9"><small class="text-muted">@log.UserAgent</small></dd>
                                                 }
 
                                                 @if (log.ProcessedDate.HasValue)
@@ -243,7 +236,6 @@
 
     .timeline-item {
         position: relative;
-        padding-left: 0;
     }
 
     .timeline-marker {
@@ -252,17 +244,13 @@
         top: 0;
     }
 
-    .timeline-marker .badge {
-        display: inline-flex;
-        width: 40px;
-        height: 40px;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        color: white !important;
-    }
-
-    .timeline-content {
-        margin-left: 0;
-    }
+        .timeline-marker .badge {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white !important;
+        }
 </style>

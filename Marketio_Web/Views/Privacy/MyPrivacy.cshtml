@@ -1,4 +1,4 @@
-﻿@model Marketio_Web.Models.ApplicationUser
+﻿@model Marketio_Shared.Models.AppUser
 @using Marketio_Web.Services
 @using Marketio_Web
 @using Microsoft.Extensions.Localization
@@ -45,9 +45,7 @@
 
     <div class="row g-4">
 
-        <!-- ==========================================
-             KAART 1: Toestemmingen
-        =========================================== -->
+        <!-- KAART 1: Toestemmingen -->
         <div class="col-lg-6">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-primary text-white">
@@ -57,7 +55,6 @@
                 </div>
                 <div class="card-body">
 
-                    <!-- Verplichte toestemmingen (readonly) -->
                     <h6 class="text-muted mb-3">Verplichte toestemmingen</h6>
 
                     <div class="d-flex align-items-center justify-content-between mb-3 p-3 bg-light rounded">
@@ -100,7 +97,6 @@
 
                     <hr />
 
-                    <!-- Marketing toestemming (wijzigbaar) -->
                     <h6 class="text-muted mb-3">Optionele toestemmingen</h6>
 
                     <form asp-controller="Privacy" asp-action="UpdateConsent" method="post">
@@ -119,7 +115,7 @@
                                 </label>
                             </div>
                             <p class="small text-muted mt-1 mb-0">
-                                Ontvang aanbiedingen, nieuws en productUpdates van Marketio.
+                                Ontvang aanbiedingen, nieuws en productupdates van Marketio.
                                 U kunt zich op elk moment uitschrijven.
                             </p>
                         </div>
@@ -129,23 +125,20 @@
                         </button>
                     </form>
 
-                    @if (Model.ConsentGivenDate != default)
+                    @if (Model.ConsentGivenDate.HasValue)
                     {
                         <p class="small text-muted mt-3 mb-0">
                             <i class="bi bi-clock"></i>
-                            Toestemming gegeven op @Model.ConsentGivenDate.ToString("dd-MM-yyyy 'om' HH:mm") UTC
+                            Toestemming gegeven op @Model.ConsentGivenDate.Value.ToString("dd-MM-yyyy 'om' HH:mm") UTC
                         </p>
                     }
                 </div>
             </div>
         </div>
 
-        <!-- ==========================================
-             KAART 2: Gegevens & Account
-        =========================================== -->
+        <!-- KAART 2: Gegevens & Account -->
         <div class="col-lg-6">
 
-            <!-- Gegevens exporteren -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-info text-white">
                     <h5 class="mb-0">
@@ -171,7 +164,6 @@
                 </div>
             </div>
 
-            <!-- Account verwijderen -->
             <div class="card shadow-sm border-danger">
                 <div class="card-header bg-danger text-white">
                     <h5 class="mb-0">
@@ -194,8 +186,7 @@
                     {
                         <p class="text-muted small">
                             U heeft het recht om uw account en alle bijbehorende persoonsgegevens te laten verwijderen
-                            (AVG art. 17 — Recht op vergetelheid). Uw bestelgeschiedenis wordt geanonimiseerd
-                            voor boekhoudkundige doeleinden.
+                            (AVG art. 17 — Recht op vergetelheid).
                         </p>
                         <div class="alert alert-warning small mb-3">
                             <i class="bi bi-exclamation-triangle-fill"></i>
@@ -209,9 +200,7 @@
             </div>
         </div>
 
-        <!-- ==========================================
-             KAART 3: Toestemmingsgeschiedenis
-        =========================================== -->
+        <!-- KAART 3: Toestemmingsgeschiedenis -->
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
@@ -243,44 +232,28 @@
                                     @foreach (var log in auditLogs.Take(10))
                                     {
                                         <tr>
-                                            <td>
-                                                <small class="text-muted">
-                                                    @log.Timestamp.ToString("dd-MM-yyyy HH:mm")
-                                                </small>
-                                            </td>
+                                            <td><small class="text-muted">@log.Timestamp.ToString("dd-MM-yyyy HH:mm")</small></td>
                                             <td>
                                                 @switch (log.EventType)
                                                 {
                                                     case "ConsentGiven":
-                                                        <span class="badge bg-success">
-                                                            <i class="bi bi-check-circle"></i> Toestemming gegeven
-                                                        </span>
+                                                        <span class="badge bg-success"><i class="bi bi-check-circle"></i> Toestemming gegeven</span>
                                                         break;
                                                     case "ConsentWithdrawn":
-                                                        <span class="badge bg-warning text-dark">
-                                                            <i class="bi bi-dash-circle"></i> Toestemming ingetrokken
-                                                        </span>
+                                                        <span class="badge bg-warning text-dark"><i class="bi bi-dash-circle"></i> Toestemming ingetrokken</span>
                                                         break;
                                                     case "DeletionRequested":
-                                                        <span class="badge bg-danger">
-                                                            <i class="bi bi-trash"></i> Verwijdering aangevraagd
-                                                        </span>
+                                                        <span class="badge bg-danger"><i class="bi bi-trash"></i> Verwijdering aangevraagd</span>
                                                         break;
                                                     case "DataExported":
-                                                        <span class="badge bg-info">
-                                                            <i class="bi bi-download"></i> Gegevens geëxporteerd
-                                                        </span>
+                                                        <span class="badge bg-info"><i class="bi bi-download"></i> Gegevens geëxporteerd</span>
                                                         break;
                                                     default:
                                                         <span class="badge bg-secondary">@log.EventType</span>
                                                         break;
                                                 }
                                             </td>
-                                            <td>
-                                                <span class="badge bg-light text-dark border">
-                                                    @log.ConsentType
-                                                </span>
-                                            </td>
+                                            <td><span class="badge bg-light text-dark border">@log.ConsentType</span></td>
                                             <td>
                                                 @if (log.Granted)
                                                 {
@@ -313,7 +286,6 @@
 
 @section Scripts {
     <script>
-        // Auto-dismiss alerts na 5 seconden
         setTimeout(() => {
             document.querySelectorAll('.alert-dismissible').forEach(el => el.remove());
         }, 5000);

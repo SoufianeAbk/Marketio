@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Marketio_Web.Models.ApplicationUser>
+﻿@model IEnumerable<Marketio_Shared.Models.AppUser>
 
 @{
     ViewData["Title"] = "Gebruikersbeheer";
@@ -158,23 +158,13 @@
 
 @section Scripts {
     <script>
-        // Auto-dismiss alerts na 5 seconden
-        setTimeout(function() {
-            $('.alert').fadeOut('slow');
-        }, 5000);
+        setTimeout(function() { $('.alert').fadeOut('slow'); }, 5000);
 
-        // Set user data in lock modal
         var lockModal = document.getElementById('lockModal');
         lockModal.addEventListener('show.bs.modal', function (event) {
             var button = event.relatedTarget;
-            var userId = button.getAttribute('data-user-id');
-            var userEmail = button.getAttribute('data-user-email');
-
-            var modalUserId = lockModal.querySelector('#modalUserId');
-            var modalUserEmail = lockModal.querySelector('#modalUserEmail');
-
-            modalUserId.value = userId;
-            modalUserEmail.textContent = userEmail;
+            lockModal.querySelector('#modalUserId').value = button.getAttribute('data-user-id');
+            lockModal.querySelector('#modalUserEmail').textContent = button.getAttribute('data-user-email');
         });
     </script>
 }

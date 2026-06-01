@@ -26,19 +26,10 @@ namespace Marketio_Shared.Data
         {
             try
             {
-                // Seed roles
                 await SeedRolesAsync();
-
-                // Seed users
                 await SeedUsersAsync();
-
-                // Seed products
                 await SeedProductsAsync();
-
-                // Seed customers
                 await SeedCustomersAsync();
-
-                // Seed orders and order items
                 await SeedOrdersAsync();
 
                 await _context.SaveChangesAsync();
@@ -73,7 +64,7 @@ namespace Marketio_Shared.Data
                 EmailConfirmed = true,
                 FirstName = "Admin",
                 LastName = "Marketio",
-                DefaultAddress = "Rue de la Paix 1, 1000 Brussels, Belgium",
+                Address = "Rue de la Paix 1, 1000 Brussels, Belgium",
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true
             };
@@ -95,7 +86,7 @@ namespace Marketio_Shared.Data
                 EmailConfirmed = true,
                 FirstName = "John",
                 LastName = "Doe",
-                DefaultAddress = "Rue de la Loi 50, 1040 Brussels, Belgium",
+                Address = "Rue de la Loi 50, 1040 Brussels, Belgium",
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true
             };
@@ -117,7 +108,7 @@ namespace Marketio_Shared.Data
                 EmailConfirmed = true,
                 FirstName = "Jane",
                 LastName = "Smith",
-                DefaultAddress = "Avenue Louise 500, 1050 Brussels, Belgium",
+                Address = "Avenue Louise 500, 1050 Brussels, Belgium",
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true
             };

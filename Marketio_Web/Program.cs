@@ -1,11 +1,9 @@
-﻿using Marketio_Shared.Entities;
-using Marketio_Shared.Enums;
+﻿using Marketio_Shared.Data;
 using Marketio_Shared.Interfaces;
+using Marketio_Shared.Models;
 using Marketio_Web;
-using Marketio_Web.Data;
 using Marketio_Web.Localization;
 using Marketio_Web.Middleware;
-using Marketio_Web.Models;
 using Marketio_Web.Repositories;
 using Marketio_Web.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -22,17 +20,19 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Voeg services toe aan de container.
+// ─── Database ─────────────────────────────────────────────────────────────────
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<MarketioDbContext>(options =>
     options.UseNpgsql(connectionString)
     .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-//  Session support voor shopping cart
+// ─── Session ──────────────────────────────────────────────────────────────────
+
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -40,28 +40,22 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-
-//  HttpContextAccessor voor cart service
 builder.Services.AddHttpContextAccessor();
 
-//  Repositories
+// ─── Repositories & Services ──────────────────────────────────────────────────
+
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-
-//  Services
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ICartService, CartService>();
-// JWT Token Service
 builder.Services.AddScoped<JwtTokenService>();
-
-// GDPR Compliance Service
 builder.Services.AddScoped<IGdprAuditService, GdprAuditService>();
-
-// Email Service (implementeer IEmailSender)
 builder.Services.AddTransient<IEmailSender, EmailSenderService>();
+builder.Services.AddScoped<DataSeeder>();
 
-// Localization Services
+// ─── Localization ─────────────────────────────────────────────────────────────
+
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
@@ -81,41 +75,38 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.RequestCultureProviders.Insert(1, new CookieRequestCultureProvider());
 });
 
-//  Identity mit ApplicationUser en Rollen
-builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+// ─── Identity (AppUser uit Shared, MarketioDbContext) ─────────────────────────
+
+builder.Services.AddDefaultIdentity<AppUser>(options =>
 {
-    // Email Verification
     options.SignIn.RequireConfirmedAccount = true;
     options.SignIn.RequireConfirmedEmail = true;
 
-    // Password requirements
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 6;
 
-    // Account Lockout Configuration
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.Lockout.AllowedForNewUsers = true;
 
-    // User settings
     options.User.RequireUniqueEmail = true;
 })
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddEntityFrameworkStores<MarketioDbContext>()
     .AddDefaultTokenProviders()
     .AddErrorDescriber<LocalizedIdentityErrorDescriber>();
 
-// JWT Authentication Configuration
+// ─── JWT ──────────────────────────────────────────────────────────────────────
+
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = builder.Configuration["JwtSettings:SecretKey"]
     ?? throw new InvalidOperationException("JWT SecretKey not found in configuration.");
 
 builder.Services.AddAuthentication(options =>
 {
-    // Default schema blijft Cookies voor Razor Pages
     options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
     options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
 })
@@ -136,7 +127,6 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero
     };
 
-    // Event handlers voor debugging
     options.Events = new JwtBearerEvents
     {
         OnAuthenticationFailed = context =>
@@ -162,6 +152,8 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// ─── MVC + Localization ───────────────────────────────────────────────────────
+
 builder.Services.AddControllersWithViews()
     .AddViewLocalization()
     .AddDataAnnotationsLocalization(options =>
@@ -170,7 +162,8 @@ builder.Services.AddControllersWithViews()
             factory.Create(typeof(SharedResources));
     });
 
-// Swagger/OpenAPI Configuration
+// ─── Swagger ──────────────────────────────────────────────────────────────────
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -187,7 +180,6 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 
-    // JWT Authentication in Swagger UI
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -213,7 +205,6 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 
-    // Lees XML comments voor betere documentatie (optioneel)
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     if (File.Exists(xmlPath))
@@ -222,24 +213,26 @@ builder.Services.AddSwaggerGen(options =>
     }
 });
 
+// ─── Build ────────────────────────────────────────────────────────────────────
+
 var app = builder.Build();
 
-// Ensure database is created and apply migrations
 await using (var scope = app.Services.CreateAsyncScope())
 {
     var services = scope.ServiceProvider;
     try
     {
-        var context = services.GetRequiredService<ApplicationDbContext>();
+        var context = services.GetRequiredService<MarketioDbContext>();
         var logger = services.GetRequiredService<ILogger<Program>>();
 
         logger.LogInformation("Applying database migrations...");
         await context.Database.MigrateAsync();
         logger.LogInformation("Database migrations applied successfully.");
 
-        logger.LogInformation("Seeding roles and admin user...");
-        await SeedRolesAndAdminAsync(services);
-        logger.LogInformation("Roles and admin user seeded successfully.");
+        logger.LogInformation("Seeding data...");
+        var seeder = services.GetRequiredService<DataSeeder>();
+        await seeder.SeedAsync();
+        logger.LogInformation("Data seeded successfully.");
     }
     catch (Exception ex)
     {
@@ -249,12 +242,11 @@ await using (var scope = app.Services.CreateAsyncScope())
     }
 }
 
-// Configureer de HTTP request pipeline.
+// ─── Pipeline ─────────────────────────────────────────────────────────────────
+
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
-
-    // Enable Swagger in Development
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
@@ -293,40 +285,3 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
-
-async Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
-{
-    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-    string[] roles = { "Admin", "Manager", "Customer" };
-    foreach (var role in roles)
-    {
-        if (!await roleManager.RoleExistsAsync(role))
-        {
-            await roleManager.CreateAsync(new IdentityRole(role));
-        }
-    }
-
-    var adminEmail = "admin@marketio.nl";
-    var adminUser = await userManager.FindByEmailAsync(adminEmail);
-
-    if (adminUser == null)
-    {
-        adminUser = new ApplicationUser
-        {
-            UserName = adminEmail,
-            Email = adminEmail,
-            EmailConfirmed = true,
-            FirstName = "Admin",
-            LastName = "Marketio",
-            Address = "Hoofdstraat 1, 1000 AA Amsterdam"
-        };
-
-        var result = await userManager.CreateAsync(adminUser, "Admin123!");
-        if (result.Succeeded)
-        {
-            await userManager.AddToRoleAsync(adminUser, "Admin");
-        }
-    }
-}

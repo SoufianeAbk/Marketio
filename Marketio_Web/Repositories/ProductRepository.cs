@@ -1,16 +1,16 @@
-﻿using Marketio_Shared.Entities;
+﻿using Marketio_Shared.Data;
+using Marketio_Shared.Entities;
 using Marketio_Shared.Enums;
 using Marketio_Shared.Interfaces;
-using Marketio_Web.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Marketio_Web.Repositories
 {
     public class ProductRepository : IProductRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly MarketioDbContext _context;
 
-        public ProductRepository(ApplicationDbContext context)
+        public ProductRepository(MarketioDbContext context)
         {
             _context = context;
         }

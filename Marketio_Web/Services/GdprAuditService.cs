@@ -1,5 +1,6 @@
-﻿using Marketio_Web.Data;
-using Marketio_Web.Models;
+﻿using Marketio_Shared.Data;
+using Marketio_Shared.Entities;
+using Marketio_Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
@@ -7,27 +8,24 @@ using System.Text.Json;
 namespace Marketio_Web.Services
 {
     /// <summary>
-    /// Central logging service for all GDPR compliance activities
+    /// Central logging service voor alle GDPR compliance activiteiten.
     /// </summary>
     public class GdprAuditService : IGdprAuditService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly MarketioDbContext _context;
         private readonly ILogger<GdprAuditService> _logger;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
 
         public GdprAuditService(
-            ApplicationDbContext context,
+            MarketioDbContext context,
             ILogger<GdprAuditService> logger,
-            UserManager<ApplicationUser> userManager)
+            UserManager<AppUser> userManager)
         {
             _context = context;
             _logger = logger;
             _userManager = userManager;
         }
 
-        /// <summary>
-        /// Logs consent given or withdrawn events with full audit trail
-        /// </summary>
         public async Task LogConsentEventAsync(
             string userId,
             string consentType,
@@ -62,7 +60,7 @@ namespace Marketio_Web.Services
                     ipAddress ?? "Unknown"
                 );
 
-                // Update ApplicationUser consent fields
+                // Update AppUser consent fields
                 var user = await _userManager.FindByIdAsync(userId);
                 if (user != null)
                 {
@@ -96,9 +94,6 @@ namespace Marketio_Web.Services
             }
         }
 
-        /// <summary>
-        /// Logs when user requests account deletion (Right to be Forgotten)
-        /// </summary>
         public async Task LogDeletionRequestAsync(
             string userId,
             string? ipAddress = null,
@@ -122,7 +117,6 @@ namespace Marketio_Web.Services
                 _context.GdprAuditLogs.Add(auditLog);
                 await _context.SaveChangesAsync();
 
-                // Mark user as deletion requested
                 var user = await _userManager.FindByIdAsync(userId);
                 if (user != null)
                 {
@@ -145,9 +139,6 @@ namespace Marketio_Web.Services
             }
         }
 
-        /// <summary>
-        /// Logs when user exports their personal data
-        /// </summary>
         public async Task LogDataExportAsync(
             string userId,
             string? ipAddress = null,
@@ -185,9 +176,6 @@ namespace Marketio_Web.Services
             }
         }
 
-        /// <summary>
-        /// Marks a deletion request as processed
-        /// </summary>
         public async Task MarkDeletionProcessedAsync(string userId, string? processedBy = null)
         {
             try
@@ -219,9 +207,6 @@ namespace Marketio_Web.Services
             }
         }
 
-        /// <summary>
-        /// Permanently deletes user account and all related data (Right to be Forgotten)
-        /// </summary>
         public async Task<bool> DeleteUserAccountAsync(string userId, string? processedBy = null)
         {
             try
@@ -233,7 +218,7 @@ namespace Marketio_Web.Services
                     return false;
                 }
 
-                // Step 1: Delete user orders and order items FIRST
+                // Stap 1: verwijder orders en order items
                 var orders = await _context.Orders
                     .Where(o => o.CustomerId == userId)
                     .Include(o => o.OrderItems)
@@ -248,15 +233,14 @@ namespace Marketio_Web.Services
                 await _context.SaveChangesAsync();
                 _logger.LogInformation("Deleted {OrderCount} orders for user {UserId}", orders.Count, userId);
 
-                // Step 2: Clear ApplicationUserId foreign key references in GdprAuditLogs
-                // This breaks the FK constraint before deletion
+                // Stap 2: verbreek FK-referenties in GdprAuditLogs vóór verwijdering
                 var auditLogs = await _context.GdprAuditLogs
                     .Where(x => x.ApplicationUserId == userId)
                     .ToListAsync();
 
                 foreach (var log in auditLogs)
                 {
-                    log.ApplicationUserId = null; // Clear the FK reference
+                    log.ApplicationUserId = null;
                 }
 
                 _context.GdprAuditLogs.UpdateRange(auditLogs);
@@ -264,16 +248,16 @@ namespace Marketio_Web.Services
                 _logger.LogInformation("Cleared ApplicationUserId from {LogCount} audit logs for user {UserId}",
                     auditLogs.Count, userId);
 
-                // Step 3: Delete user account
+                // Stap 3: verwijder gebruiker
                 var result = await _userManager.DeleteAsync(user);
 
                 if (result.Succeeded)
                 {
-                    // Step 4: Add final deletion record after user is deleted
+                    // Stap 4: voeg definitieve verwijderingslog toe
                     var deletionLog = new GdprAuditLog
                     {
                         UserId = userId,
-                        ApplicationUserId = null, // User no longer exists
+                        ApplicationUserId = null,
                         EventType = "DeletionCompleted",
                         ConsentType = "All",
                         Granted = false,
@@ -314,9 +298,6 @@ namespace Marketio_Web.Services
             }
         }
 
-        /// <summary>
-        /// Retrieves all audit logs for a specific user
-        /// </summary>
         public async Task<List<GdprAuditLogDto>> GetUserAuditLogsAsync(string userId)
         {
             try
@@ -336,9 +317,6 @@ namespace Marketio_Web.Services
             }
         }
 
-        /// <summary>
-        /// Retrieves all audit logs with optional filtering
-        /// </summary>
         public async Task<List<GdprAuditLogDto>> GetAllAuditLogsAsync(
             DateTime? startDate = null,
             DateTime? endDate = null,
@@ -349,19 +327,13 @@ namespace Marketio_Web.Services
                 var query = _context.GdprAuditLogs.AsQueryable();
 
                 if (startDate.HasValue)
-                {
                     query = query.Where(x => x.Timestamp >= startDate.Value);
-                }
 
                 if (endDate.HasValue)
-                {
                     query = query.Where(x => x.Timestamp <= endDate.Value);
-                }
 
                 if (!string.IsNullOrWhiteSpace(eventType))
-                {
                     query = query.Where(x => x.EventType == eventType);
-                }
 
                 var logs = await query
                     .OrderByDescending(x => x.Timestamp)
@@ -377,9 +349,6 @@ namespace Marketio_Web.Services
             }
         }
 
-        /// <summary>
-        /// Retrieves pending deletion requests
-        /// </summary>
         public async Task<List<GdprAuditLogDto>> GetPendingDeletionRequestsAsync()
         {
             try
@@ -399,9 +368,6 @@ namespace Marketio_Web.Services
             }
         }
 
-        /// <summary>
-        /// Exports user's complete personal data in machine-readable format
-        /// </summary>
         public async Task<UserPersonalDataDto?> ExportUserDataAsync(string userId)
         {
             try
@@ -436,7 +402,7 @@ namespace Marketio_Web.Services
                     PrivacyConsentGiven = user.PrivacyConsentGiven,
                     TermsConsentGiven = user.TermsConsentGiven,
                     MarketingOptIn = user.MarketingOptIn,
-                    ConsentGivenDate = user.ConsentGivenDate,
+                    ConsentGivenDate = user.ConsentGivenDate ?? DateTime.MinValue,
                     Orders = orders.Select(o => new
                     {
                         o.Id,
@@ -478,18 +444,12 @@ namespace Marketio_Web.Services
             }
         }
 
-        /// <summary>
-        /// Checks if user has active consent for a specific type
-        /// </summary>
         public async Task<bool> HasActiveConsentAsync(string userId, string consentType)
         {
             try
             {
                 var user = await _userManager.FindByIdAsync(userId);
-                if (user == null)
-                {
-                    return false;
-                }
+                if (user == null) return false;
 
                 return consentType.ToLower() switch
                 {

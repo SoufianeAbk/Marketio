@@ -1,4 +1,4 @@
-﻿using Marketio_Web.Models;
+﻿using Marketio_Shared.Models;
 using Marketio_Web.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -14,12 +14,12 @@ namespace Marketio_Web.Controllers.Api
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AccountApiController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IGdprAuditService _gdprAuditService;
         private readonly ILogger<AccountApiController> _logger;
 
         public AccountApiController(
-            UserManager<ApplicationUser> userManager,
+            UserManager<AppUser> userManager,
             IGdprAuditService gdprAuditService,
             ILogger<AccountApiController> logger)
         {
@@ -28,11 +28,7 @@ namespace Marketio_Web.Controllers.Api
             _logger = logger;
         }
 
-        // ─── Profile Management ────────────────────────────────────────────────────
-
-        /// <summary>
-        /// GET /api/account/profile - Get current user's profile
-        /// </summary>
+        /// <summary>GET /api/account/profile - Get current user's profile</summary>
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfile()
         {
@@ -40,9 +36,7 @@ namespace Marketio_Web.Controllers.Api
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
-            {
                 return NotFound(new { message = "User not found" });
-            }
 
             return Ok(new
             {
@@ -61,11 +55,7 @@ namespace Marketio_Web.Controllers.Api
             });
         }
 
-        // ─── Consent Management ────────────────────────────────────────────────────
-
-        /// <summary>
-        /// POST /api/account/consent - Update marketing consent
-        /// </summary>
+        /// <summary>POST /api/account/consent - Update marketing consent</summary>
         [HttpPost("consent")]
         public async Task<IActionResult> UpdateConsent([FromBody] UpdateConsentRequest request)
         {
@@ -73,9 +63,7 @@ namespace Marketio_Web.Controllers.Api
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
-            {
                 return Unauthorized();
-            }
 
             var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
             var ua = HttpContext.Request.Headers["User-Agent"].ToString();
@@ -97,10 +85,7 @@ namespace Marketio_Web.Controllers.Api
                         $"Marketing toestemming {(request.MarketingOptIn ? "gegeven" : "ingetrokken")} via MAUI app");
                 }
 
-                _logger.LogInformation(
-                    "User {UserId} updated marketing consent to {Value} via API",
-                    userId,
-                    request.MarketingOptIn);
+                _logger.LogInformation("User {UserId} updated marketing consent to {Value} via API", userId, request.MarketingOptIn);
 
                 return Ok(new { message = "Consent updated successfully" });
             }
@@ -111,11 +96,7 @@ namespace Marketio_Web.Controllers.Api
             }
         }
 
-        // ─── Data Export (Right to Portability) ────────────────────────────────────
-
-        /// <summary>
-        /// GET /api/account/export-data - Export user's personal data as JSON
-        /// </summary>
+        /// <summary>GET /api/account/export-data - Export user's personal data as JSON</summary>
         [HttpGet("export-data")]
         public async Task<IActionResult> ExportData()
         {
@@ -126,25 +107,17 @@ namespace Marketio_Web.Controllers.Api
                 var personalData = await _gdprAuditService.ExportUserDataAsync(userId);
 
                 if (personalData == null)
-                {
                     return NotFound(new { message = "No personal data found" });
-                }
 
                 var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
                 var ua = HttpContext.Request.Headers["User-Agent"].ToString();
                 await _gdprAuditService.LogDataExportAsync(userId, ip, ua);
 
-                var json = JsonSerializer.Serialize(personalData, new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                });
-
+                var json = JsonSerializer.Serialize(personalData, new JsonSerializerOptions { WriteIndented = true });
                 var bytes = System.Text.Encoding.UTF8.GetBytes(json);
                 var fileName = $"marketio-mijn-gegevens-{DateTime.UtcNow:yyyy-MM-dd}.json";
 
-                _logger.LogInformation(
-                    "User {UserId} exported personal data via API",
-                    userId);
+                _logger.LogInformation("User {UserId} exported personal data via API", userId);
 
                 return File(bytes, "application/json", fileName);
             }
@@ -155,26 +128,18 @@ namespace Marketio_Web.Controllers.Api
             }
         }
 
-        // ─── Account Deletion (Right to be Forgotten) ──────────────────────────────
-
-        /// <summary>
-        /// POST /api/account/request-deletion - Request account deletion
-        /// </summary>
+        /// <summary>POST /api/account/request-deletion - Request account deletion</summary>
         [HttpPost("request-deletion")]
         public async Task<IActionResult> RequestDeletion([FromBody] DeletionRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.Password))
-            {
                 return BadRequest(new { message = "Password is required" });
-            }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
-            {
                 return Unauthorized();
-            }
 
             var passwordValid = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!passwordValid)
@@ -184,21 +149,14 @@ namespace Marketio_Web.Controllers.Api
             }
 
             var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
-            var ua = HttpContext.Request.Headers["User-Agent"].ToString();
 
             try
             {
-                // Immediately delete the account instead of just logging a request
                 var result = await _gdprAuditService.DeleteUserAccountAsync(userId, "User");
 
                 if (result)
                 {
-                    _logger.LogWarning(
-                        "User {UserId} account permanently deleted via API | Email: {Email} | IP: {IP}",
-                        userId,
-                        user.Email,
-                        ip);
-
+                    _logger.LogWarning("User {UserId} account permanently deleted via API | Email: {Email} | IP: {IP}", userId, user.Email, ip);
                     return Ok(new { message = "Account successfully deleted" });
                 }
                 else
@@ -214,11 +172,7 @@ namespace Marketio_Web.Controllers.Api
             }
         }
 
-        // ─── Audit Trail ──────────────────────────────────────────────────────────
-
-        /// <summary>
-        /// GET /api/account/audit-trail - Get user's GDPR audit trail
-        /// </summary>
+        /// <summary>GET /api/account/audit-trail - Get user's GDPR audit trail</summary>
         [HttpGet("audit-trail")]
         public async Task<IActionResult> GetAuditTrail()
         {

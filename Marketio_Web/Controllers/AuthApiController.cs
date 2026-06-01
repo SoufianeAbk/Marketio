@@ -1,4 +1,4 @@
-﻿using Marketio_Web.Models;
+﻿using Marketio_Shared.Models;
 using Marketio_Web.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,14 +10,14 @@ namespace Marketio_Web.Controllers.Api
     [Route("api/auth")]
     public class AuthApiController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
         private readonly JwtTokenService _jwtTokenService;
         private readonly ILogger<AuthApiController> _logger;
 
         public AuthApiController(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
+            UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager,
             JwtTokenService jwtTokenService,
             ILogger<AuthApiController> logger)
         {
@@ -27,16 +27,12 @@ namespace Marketio_Web.Controllers.Api
             _logger = logger;
         }
 
-        /// <summary>
-        /// Login endpoint - returns JWT token
-        /// </summary>
+        /// <summary>Login endpoint - returns JWT token</summary>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(new { message = "Invalid request data" });
-            }
 
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
@@ -45,11 +41,8 @@ namespace Marketio_Web.Controllers.Api
                 return Unauthorized(new { message = "Invalid email or password" });
             }
 
-            // Check of email is bevestigd
             if (!user.EmailConfirmed)
-            {
                 return Unauthorized(new { message = "Email not confirmed. Please confirm your email first." });
-            }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
 
@@ -67,7 +60,7 @@ namespace Marketio_Web.Controllers.Api
                     firstName = user.FirstName,
                     lastName = user.LastName,
                     roles = roles,
-                    expiresIn = 3600 // seconds
+                    expiresIn = 3600
                 });
             }
 
@@ -81,44 +74,35 @@ namespace Marketio_Web.Controllers.Api
             return Unauthorized(new { message = "Invalid email or password" });
         }
 
-        /// <summary>
-        /// Register endpoint - creates new user and returns JWT token
-        /// </summary>
+        /// <summary>Register endpoint - creates new user and returns JWT token</summary>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(new { message = "Invalid request data", errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
-            }
 
             var existingUser = await _userManager.FindByEmailAsync(request.Email);
             if (existingUser != null)
-            {
                 return BadRequest(new { message = "Email already registered" });
-            }
 
-            var user = new ApplicationUser
+            var user = new AppUser
             {
                 UserName = request.Email,
                 Email = request.Email,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                Address = request.Address ?? string.Empty,
-                EmailConfirmed = false // Require email confirmation
+                Address = request.Address,
+                EmailConfirmed = false
             };
 
             var result = await _userManager.CreateAsync(user, request.Password);
 
             if (result.Succeeded)
             {
-                // Assign Customer role
                 await _userManager.AddToRoleAsync(user, "Customer");
-
                 _logger.LogInformation("New user registered via API: {Email}", user.Email);
 
-                // Note: In production, send email confirmation here
-                // For now, auto-confirm for API users
+                // Auto-confirm email for API registrations
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 await _userManager.ConfirmEmailAsync(user, token);
 

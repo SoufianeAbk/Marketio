@@ -1,4 +1,4 @@
-﻿using Marketio_Web.Models;
+﻿using Marketio_Shared.Models;
 using Marketio_Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,12 +10,12 @@ namespace Marketio_Web.Controllers
     [Authorize]
     public class AccountDeletionController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IGdprAuditService _gdprAuditService;
         private readonly ILogger<AccountDeletionController> _logger;
 
         public AccountDeletionController(
-            UserManager<ApplicationUser> userManager,
+            UserManager<AppUser> userManager,
             IGdprAuditService gdprAuditService,
             ILogger<AccountDeletionController> logger)
         {
@@ -24,13 +24,8 @@ namespace Marketio_Web.Controllers
             _logger = logger;
         }
 
-        // GET: AccountDeletion/RequestDeletion
-        public IActionResult RequestDeletion()
-        {
-            return View();
-        }
+        public IActionResult RequestDeletion() => View();
 
-        // POST: AccountDeletion/RequestDeletion
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RequestDeletion(string password)
@@ -38,12 +33,8 @@ namespace Marketio_Web.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
 
-            if (user == null)
-            {
-                return Unauthorized();
-            }
+            if (user == null) return Unauthorized();
 
-            // Verify password
             var passwordValid = await _userManager.CheckPasswordAsync(user, password);
             if (!passwordValid)
             {
@@ -53,17 +44,12 @@ namespace Marketio_Web.Controllers
 
             try
             {
-                // Log deletion request in GDPR audit trail
                 var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
                 var userAgent = Request.Headers.UserAgent.ToString();
 
                 await _gdprAuditService.LogDeletionRequestAsync(userId, ipAddress, userAgent);
 
-                _logger.LogWarning(
-                    "User {UserId} requested account deletion | Email: {Email}",
-                    userId,
-                    user.Email
-                );
+                _logger.LogWarning("User {UserId} requested account deletion | Email: {Email}", userId, user.Email);
 
                 TempData["Success"] = "Uw verwijderingsverzoek is ingediend. Een beheerder zal dit binnenkort verwerken.";
                 return RedirectToAction("DeletionConfirmed");
@@ -76,13 +62,8 @@ namespace Marketio_Web.Controllers
             }
         }
 
-        // GET: AccountDeletion/DeletionConfirmed
-        public IActionResult DeletionConfirmed()
-        {
-            return View();
-        }
+        public IActionResult DeletionConfirmed() => View();
 
-        // GET: AccountDeletion/ExportData
         public async Task<IActionResult> ExportData()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -97,19 +78,16 @@ namespace Marketio_Web.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                // Log export request
                 var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
                 var userAgent = Request.Headers.UserAgent.ToString();
                 await _gdprAuditService.LogDataExportAsync(userId, ipAddress, userAgent);
 
-                // Return as JSON download
                 var json = System.Text.Json.JsonSerializer.Serialize(personalData,
                     new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
 
-                var fileName = $"personal-data-{DateTime.UtcNow:yyyy-MM-dd}.json";
                 return File(System.Text.Encoding.UTF8.GetBytes(json),
                     "application/json",
-                    fileName);
+                    $"personal-data-{DateTime.UtcNow:yyyy-MM-dd}.json");
             }
             catch (Exception ex)
             {
@@ -119,7 +97,6 @@ namespace Marketio_Web.Controllers
             }
         }
 
-        // GET: AccountDeletion/ViewAuditTrail
         public async Task<IActionResult> ViewAuditTrail()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

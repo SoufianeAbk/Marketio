@@ -1,4 +1,4 @@
-﻿using Marketio_Web.Models;
+﻿using Marketio_Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,15 +10,15 @@ namespace Marketio_Web.Services
     public class JwtTokenService
     {
         private readonly IConfiguration _configuration;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
 
-        public JwtTokenService(IConfiguration configuration, UserManager<ApplicationUser> userManager)
+        public JwtTokenService(IConfiguration configuration, UserManager<AppUser> userManager)
         {
             _configuration = configuration;
             _userManager = userManager;
         }
 
-        public async Task<string> GenerateTokenAsync(ApplicationUser user)
+        public async Task<string> GenerateTokenAsync(AppUser user)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
             var secretKey = _configuration["JwtSettings:SecretKey"]
@@ -27,10 +27,8 @@ namespace Marketio_Web.Services
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            // Get user roles
             var roles = await _userManager.GetRolesAsync(user);
 
-            // Create claims
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
@@ -42,7 +40,6 @@ namespace Marketio_Web.Services
                 new Claim("LastName", user.LastName)
             };
 
-            // Add role claims
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));

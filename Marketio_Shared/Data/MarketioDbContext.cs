@@ -18,6 +18,7 @@ namespace Marketio_Shared.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<GdprAuditLog> GdprAuditLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -50,7 +51,6 @@ namespace Marketio_Shared.Data
                     .IsRequired()
                     .HasMaxLength(500);
 
-                // ANSI SQL: werkt op zowel SQL Server als PostgreSQL
                 entity.Property(e => e.CreatedAt)
                     .IsRequired()
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
@@ -78,7 +78,6 @@ namespace Marketio_Shared.Data
                     .IsRequired()
                     .HasMaxLength(450);
 
-                // ANSI SQL: werkt op zowel SQL Server als PostgreSQL
                 entity.Property(e => e.OrderDate)
                     .IsRequired()
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
@@ -178,7 +177,6 @@ namespace Marketio_Shared.Data
                     .IsRequired()
                     .HasMaxLength(500);
 
-                // ANSI SQL: werkt op zowel SQL Server als PostgreSQL
                 entity.Property(e => e.CreatedAt)
                     .IsRequired()
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
@@ -191,7 +189,47 @@ namespace Marketio_Shared.Data
                     .IsUnique();
             });
 
-            // Global Query Filters
+            // GdprAuditLog Configuration
+            modelBuilder.Entity<GdprAuditLog>(entity =>
+            {
+                entity.ToTable("GdprAuditLogs");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.UserId)
+                    .IsRequired()
+                    .HasMaxLength(450);
+
+                entity.Property(x => x.ApplicationUserId)
+                    .HasMaxLength(450);
+
+                entity.Property(x => x.EventType)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(x => x.ConsentType)
+                    .HasMaxLength(100);
+
+                entity.Property(x => x.IpAddress)
+                    .HasMaxLength(45);
+
+                entity.Property(x => x.UserAgent)
+                    .HasMaxLength(500);
+
+                entity.Property(x => x.ProcessedBy)
+                    .HasMaxLength(256);
+
+                entity.HasIndex(x => x.UserId);
+                entity.HasIndex(x => x.EventType);
+                entity.HasIndex(x => x.Timestamp);
+                entity.HasIndex(x => new { x.UserId, x.EventType });
+
+                entity.HasOne(x => x.AppUser)
+                    .WithMany()
+                    .HasForeignKey(x => x.ApplicationUserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Global Query Filters (soft-delete)
             modelBuilder.Entity<Product>()
                 .HasQueryFilter(p => p.IsActive);
 

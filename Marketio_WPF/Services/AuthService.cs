@@ -4,17 +4,12 @@ using Marketio_WPF.Services.Interfaces;
 
 namespace Marketio_WPF.Services
 {
-    /// <summary>
-    /// Authentication service implementation for WPF application
-    /// Handles user authentication, registration, and account management
-    /// </summary>
     public class AuthService : IAuthService
     {
         private readonly UserManager<AppUser> _userManager;
         private AppUser? _currentUser;
 
         public AppUser? CurrentUser => _currentUser;
-
         public bool IsAuthenticated => _currentUser != null && _currentUser.IsActive;
 
         public AuthService(UserManager<AppUser> userManager)
@@ -22,55 +17,30 @@ namespace Marketio_WPF.Services
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
 
-        public Task<AppUser?> GetCurrentUserAsync()
-        {
-            return Task.FromResult(_currentUser);
-        }
+        public Task<AppUser?> GetCurrentUserAsync() => Task.FromResult(_currentUser);
 
         public async Task<bool> LoginAsync(string email, string password)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-            {
                 return false;
-            }
 
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                return false;
-            }
+            if (user == null || !user.IsActive) return false;
 
-            // Check if user is active
-            if (!user.IsActive)
-            {
-                return false;
-            }
+            if (await _userManager.IsLockedOutAsync(user)) return false;
 
-            // Check if user is locked out
-            if (await _userManager.IsLockedOutAsync(user))
-            {
-                return false;
-            }
-
-            // Verify password
             var passwordValid = await _userManager.CheckPasswordAsync(user, password);
             if (!passwordValid)
             {
-                // Increment failed login attempts
                 await _userManager.AccessFailedAsync(user);
                 return false;
             }
 
-            // Reset failed login attempts on successful login
             await _userManager.ResetAccessFailedCountAsync(user);
-
-            // Update last login
             user.LastLoginAt = DateTime.UtcNow;
             await _userManager.UpdateAsync(user);
 
-            // Set current user
             _currentUser = user;
-
             return true;
         }
 
@@ -86,16 +56,10 @@ namespace Marketio_WPF.Services
                 string.IsNullOrWhiteSpace(firstName) ||
                 string.IsNullOrWhiteSpace(lastName) ||
                 string.IsNullOrWhiteSpace(password))
-            {
                 return false;
-            }
 
-            // Check if user already exists
             var existingUser = await _userManager.FindByEmailAsync(email);
-            if (existingUser != null)
-            {
-                return false;
-            }
+            if (existingUser != null) return false;
 
             var newUser = new AppUser
             {
@@ -105,20 +69,15 @@ namespace Marketio_WPF.Services
                 FirstName = firstName,
                 LastName = lastName,
                 PhoneNumber = phoneNumber ?? string.Empty,
-                DefaultAddress = address,
+                Address = address,           // <-- was DefaultAddress
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true
             };
 
             var result = await _userManager.CreateAsync(newUser, password);
-            if (!result.Succeeded)
-            {
-                return false;
-            }
+            if (!result.Succeeded) return false;
 
-            // Add user to "User" role
             await _userManager.AddToRoleAsync(newUser, "User");
-
             return true;
         }
 
@@ -128,127 +87,74 @@ namespace Marketio_WPF.Services
             return Task.CompletedTask;
         }
 
-        public async Task<bool> ChangePasswordAsync(
-            string userId,
-            string currentPassword,
-            string newPassword)
+        public async Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword)
         {
             if (string.IsNullOrWhiteSpace(userId) ||
                 string.IsNullOrWhiteSpace(currentPassword) ||
                 string.IsNullOrWhiteSpace(newPassword))
-            {
                 return false;
-            }
 
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return false;
-            }
+            if (user == null) return false;
 
             var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
             return result.Succeeded;
         }
 
         public async Task<AppUser?> GetUserByIdAsync(string userId)
-        {
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                return null;
-            }
-
-            return await _userManager.FindByIdAsync(userId);
-        }
+            => string.IsNullOrWhiteSpace(userId) ? null : await _userManager.FindByIdAsync(userId);
 
         public async Task<AppUser?> GetUserByEmailAsync(string email)
-        {
-            if (string.IsNullOrWhiteSpace(email))
-            {
-                return null;
-            }
-
-            return await _userManager.FindByEmailAsync(email);
-        }
+            => string.IsNullOrWhiteSpace(email) ? null : await _userManager.FindByEmailAsync(email);
 
         public async Task<bool> UpdateUserAsync(AppUser user)
         {
-            if (user == null)
-            {
-                return false;
-            }
+            if (user == null) return false;
 
             var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded && _currentUser?.Id == user.Id)
-            {
                 _currentUser = user;
-            }
 
             return result.Succeeded;
         }
 
         public async Task<bool> UserHasRoleAsync(string userId, string roleName)
         {
-            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(roleName))
-            {
-                return false;
-            }
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(roleName)) return false;
 
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return false;
-            }
+            if (user == null) return false;
 
             return await _userManager.IsInRoleAsync(user, roleName);
         }
 
         public async Task<IList<string>> GetUserRolesAsync(string userId)
         {
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                return new List<string>();
-            }
+            if (string.IsNullOrWhiteSpace(userId)) return new List<string>();
 
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return new List<string>();
-            }
+            if (user == null) return new List<string>();
 
             return await _userManager.GetRolesAsync(user);
         }
 
         public async Task<bool> LockUserAsync(string userId, int duration = 30)
         {
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                return false;
-            }
+            if (string.IsNullOrWhiteSpace(userId)) return false;
 
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return false;
-            }
+            if (user == null) return false;
 
-            var lockoutEndDate = DateTime.UtcNow.AddMinutes(duration);
-            var result = await _userManager.SetLockoutEndDateAsync(user, lockoutEndDate);
-
+            var result = await _userManager.SetLockoutEndDateAsync(user, DateTime.UtcNow.AddMinutes(duration));
             return result.Succeeded;
         }
 
         public async Task<bool> UnlockUserAsync(string userId)
         {
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                return false;
-            }
+            if (string.IsNullOrWhiteSpace(userId)) return false;
 
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return false;
-            }
+            if (user == null) return false;
 
             var result = await _userManager.SetLockoutEndDateAsync(user, null);
             return result.Succeeded;
@@ -256,57 +162,36 @@ namespace Marketio_WPF.Services
 
         public async Task<bool> IsUserLockedAsync(string userId)
         {
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                return false;
-            }
+            if (string.IsNullOrWhiteSpace(userId)) return false;
 
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return false;
-            }
+            if (user == null) return false;
 
             return await _userManager.IsLockedOutAsync(user);
         }
 
         public async Task<bool> DeactivateUserAsync(string userId)
         {
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                return false;
-            }
+            if (string.IsNullOrWhiteSpace(userId)) return false;
 
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return false;
-            }
+            if (user == null) return false;
 
             user.IsActive = false;
             var result = await _userManager.UpdateAsync(user);
 
-            // Logout if deactivating current user
             if (_currentUser?.Id == userId)
-            {
                 _currentUser = null;
-            }
 
             return result.Succeeded;
         }
 
         public async Task<bool> ReactivateUserAsync(string userId)
         {
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                return false;
-            }
+            if (string.IsNullOrWhiteSpace(userId)) return false;
 
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return false;
-            }
+            if (user == null) return false;
 
             user.IsActive = true;
             var result = await _userManager.UpdateAsync(user);

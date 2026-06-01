@@ -1,16 +1,16 @@
-﻿using Marketio_Shared.Entities;
+﻿using Marketio_Shared.Data;
+using Marketio_Shared.Entities;
 using Marketio_Shared.Enums;
 using Marketio_Shared.Interfaces;
-using Marketio_Web.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Marketio_Web.Repositories
 {
     public class OrderRepository : IOrderRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly MarketioDbContext _context;
 
-        public OrderRepository(ApplicationDbContext context)
+        public OrderRepository(MarketioDbContext context)
         {
             _context = context;
         }
@@ -19,7 +19,7 @@ namespace Marketio_Web.Repositories
         {
             return await _context.Orders
                 .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Product)
+                .ThenInclude(oi => oi.Product)
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
         }
@@ -28,13 +28,12 @@ namespace Marketio_Web.Repositories
         {
             return await _context.Orders
                 .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Product)
+                .ThenInclude(oi => oi.Product)
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
         public async Task<Order> AddAsync(Order entity)
         {
-            entity.OrderDate = DateTime.UtcNow;
             await _context.Orders.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity;
@@ -59,9 +58,9 @@ namespace Marketio_Web.Repositories
         public async Task<IEnumerable<Order>> GetByCustomerIdAsync(string customerId)
         {
             return await _context.Orders
-                .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Product)
                 .Where(o => o.CustomerId == customerId)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
         }
@@ -69,9 +68,9 @@ namespace Marketio_Web.Repositories
         public async Task<IEnumerable<Order>> GetByStatusAsync(OrderStatus status)
         {
             return await _context.Orders
-                .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Product)
                 .Where(o => o.Status == status)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
         }
@@ -80,7 +79,7 @@ namespace Marketio_Web.Repositories
         {
             return await _context.Orders
                 .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Product)
+                .ThenInclude(oi => oi.Product)
                 .FirstOrDefaultAsync(o => o.OrderNumber == orderNumber);
         }
 
@@ -90,12 +89,6 @@ namespace Marketio_Web.Repositories
             if (order == null) return false;
 
             order.Status = status;
-
-            if (status == OrderStatus.Shipped)
-                order.ShippedDate = DateTime.UtcNow;
-            else if (status == OrderStatus.Delivered)
-                order.DeliveredDate = DateTime.UtcNow;
-
             await _context.SaveChangesAsync();
             return true;
         }

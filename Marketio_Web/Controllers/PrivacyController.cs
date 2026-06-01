@@ -1,4 +1,4 @@
-﻿using Marketio_Web.Models;
+﻿using Marketio_Shared.Models;
 using Marketio_Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -11,12 +11,12 @@ namespace Marketio_Web.Controllers
     [Authorize]
     public class PrivacyController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IGdprAuditService _gdprAuditService;
         private readonly ILogger<PrivacyController> _logger;
 
         public PrivacyController(
-            UserManager<ApplicationUser> userManager,
+            UserManager<AppUser> userManager,
             IGdprAuditService gdprAuditService,
             ILogger<PrivacyController> logger)
         {
@@ -25,14 +25,11 @@ namespace Marketio_Web.Controllers
             _logger = logger;
         }
 
-        // GET: /Privacy/MyPrivacy
         public async Task<IActionResult> MyPrivacy()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
-            {
                 return RedirectToPage("/Account/Login", new { area = "Identity" });
-            }
 
             var auditLogs = await _gdprAuditService.GetUserAuditLogsAsync(user.Id);
             ViewBag.AuditLogs = auditLogs;
@@ -40,7 +37,6 @@ namespace Marketio_Web.Controllers
             return View(user);
         }
 
-        // POST: /Privacy/UpdateConsent
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateConsent(bool marketingOptIn)
@@ -53,7 +49,6 @@ namespace Marketio_Web.Controllers
 
             try
             {
-                // Enkel marketing is intrekbaar — terms & privacy zijn verplicht bij registratie
                 var changed = user.MarketingOptIn != marketingOptIn;
                 user.MarketingOptIn = marketingOptIn;
                 await _userManager.UpdateAsync(user);
@@ -82,7 +77,6 @@ namespace Marketio_Web.Controllers
             return RedirectToAction(nameof(MyPrivacy));
         }
 
-        // POST: /Privacy/ExportData
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ExportData()
@@ -104,11 +98,7 @@ namespace Marketio_Web.Controllers
 
                 await _gdprAuditService.LogDataExportAsync(user.Id, ip, ua);
 
-                var json = JsonSerializer.Serialize(personalData, new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                });
-
+                var json = JsonSerializer.Serialize(personalData, new JsonSerializerOptions { WriteIndented = true });
                 var bytes = Encoding.UTF8.GetBytes(json);
                 var fileName = $"marketio-mijn-gegevens-{DateTime.UtcNow:yyyy-MM-dd}.json";
 
@@ -122,20 +112,15 @@ namespace Marketio_Web.Controllers
             }
         }
 
-        // GET: /Privacy/RequestDeletion
         public async Task<IActionResult> RequestDeletion()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
-            {
                 return RedirectToPage("/Account/Login", new { area = "Identity" });
-            }
 
-            // Toon bestaande RequestDeletion view met de user als model
             return View("~/Views/AccountDeletion/RequestDeletion.cshtml", user);
         }
 
-        // POST: /Privacy/ConfirmDeletion
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmDeletion(string password)
@@ -143,7 +128,6 @@ namespace Marketio_Web.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            // Verifieer wachtwoord
             var passwordCorrect = await _userManager.CheckPasswordAsync(user, password);
             if (!passwordCorrect)
             {
@@ -151,7 +135,6 @@ namespace Marketio_Web.Controllers
                 return RedirectToAction(nameof(RequestDeletion));
             }
 
-            // Controleer of er al een aanvraag loopt
             if (user.IsDeletionRequested)
             {
                 TempData["Info"] = "Er is al een verwijderingsaanvraag voor uw account geregistreerd.";
@@ -165,11 +148,8 @@ namespace Marketio_Web.Controllers
             {
                 await _gdprAuditService.LogDeletionRequestAsync(user.Id, ip, ua);
 
-                _logger.LogWarning(
-                    "Account verwijderingsaanvraag ingediend door gebruiker {UserId} | IP: {IP}",
-                    user.Id, ip);
+                _logger.LogWarning("Account verwijderingsaanvraag ingediend door gebruiker {UserId} | IP: {IP}", user.Id, ip);
 
-                // Uitloggen na de aanvraag
                 TempData["Success"] = "Uw verwijderingsaanvraag is ontvangen. Uw account wordt binnen 30 dagen verwijderd conform de AVG.";
                 return RedirectToAction("Index", "Home");
             }

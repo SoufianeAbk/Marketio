@@ -1,47 +1,46 @@
-﻿@page
-@using Marketio_Web
-@using Microsoft.Extensions.Localization
-@inject IStringLocalizer<SharedResources> Localizer
-@model ConfirmEmailModel
-@{
-    ViewData["Title"] = Localizer["ConfirmEmail_Title"];
-}
+﻿using Marketio_Shared.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
-<div class="container">
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header @(Model.StatusMessage.Contains("bedankt") || Model.StatusMessage.Contains("confirming") ? "bg-success" : "bg-danger") text-white">
-                    <h2 class="mb-0">
-                        <i class="bi @(Model.StatusMessage.Contains("bedankt") || Model.StatusMessage.Contains("confirming") ? "bi-check-circle" : "bi-exclamation-triangle")"></i>
-                        @Localizer["ConfirmEmail_Title"]
-                    </h2>
-                </div>
-                <div class="card-body text-center">
-                    @if (Model.StatusMessage.Contains("bedankt") || Model.StatusMessage.Contains("confirming"))
-                    {
-                        <div class="mb-4">
-                            <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
-                        </div>
-                        <h4 class="text-success mb-3">@Localizer["ConfirmEmail_Success"]</h4>
-                        <p>@Localizer["ConfirmEmail_AccountActive"]</p>
-                        <a asp-page="./Login" class="btn btn-success btn-lg mt-3">
-                            <i class="bi bi-box-arrow-in-right"></i> @Localizer["ConfirmEmail_LoginNow"]
-                        </a>
-                    }
-                    else
-                    {
-                        <div class="mb-4">
-                            <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 4rem;"></i>
-                        </div>
-                        <h4 class="text-danger mb-3">@Localizer["ConfirmEmail_Error"]</h4>
-                        <p>@Localizer["ConfirmEmail_ErrorMessage"]</p>
-                        <a asp-page="./Register" class="btn btn-primary mt-3">
-                            <i class="bi bi-arrow-left"></i> @Localizer["ConfirmEmail_BackToRegister"]
-                        </a>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+namespace Marketio_Web.Areas.Identity.Pages.Account
+{
+    [AllowAnonymous]
+    public class ConfirmEmailModel : PageModel
+    {
+        private readonly UserManager<AppUser>
+    _userManager;
+
+    public ConfirmEmailModel(UserManager<AppUser>
+        userManager)
+        {
+        _userManager = userManager;
+        }
+
+        [TempData]
+        public string StatusMessage { get; set; } = string.Empty;
+
+        public async Task<IActionResult>
+            OnGetAsync(string? userId, string? code)
+            {
+            if (userId == null || code == null)
+            return RedirectToPage("/Index");
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            return NotFound($"Kan gebruiker met ID '{userId}' niet laden.");
+
+            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+
+            StatusMessage = result.Succeeded
+            ? "Bedankt voor het bevestigen van uw email."
+            : "Fout bij het bevestigen van uw email.";
+
+            return Page();
+            }
+            }
+            }
