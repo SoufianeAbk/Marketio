@@ -1,46 +1,48 @@
-﻿using Marketio_Shared.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
-using System.Text;
+@page
+@model ConfirmEmailModel
+@{
+    ViewData["Title"] = "E-mail bevestigen";
+}
 
-namespace Marketio_Web.Areas.Identity.Pages.Account
-{
-    [AllowAnonymous]
-    public class ConfirmEmailModel : PageModel
-    {
-        private readonly UserManager<AppUser>
-    _userManager;
-
-    public ConfirmEmailModel(UserManager<AppUser>
-        userManager)
-        {
-        _userManager = userManager;
-        }
-
-        [TempData]
-        public string StatusMessage { get; set; } = string.Empty;
-
-        public async Task<IActionResult>
-            OnGetAsync(string? userId, string? code)
-            {
-            if (userId == null || code == null)
-            return RedirectToPage("/Index");
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            return NotFound($"Kan gebruiker met ID '{userId}' niet laden.");
-
-            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-            var result = await _userManager.ConfirmEmailAsync(user, code);
-
-            StatusMessage = result.Succeeded
-            ? "Bedankt voor het bevestigen van uw email."
-            : "Fout bij het bevestigen van uw email.";
-
-            return Page();
-            }
-            }
-            }
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card shadow">
+                @if (Model.StatusMessage.StartsWith("Bedankt"))
+                {
+                    <div class="card-header bg-success text-white">
+                        <h2 class="mb-0">
+                            <i class="bi bi-check-circle"></i> E-mail bevestigd
+                        </h2>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="mb-4">
+                            <i class="bi bi-envelope-check" style="font-size: 4rem; color: #198754;"></i>
+                        </div>
+                        <p class="lead">@Model.StatusMessage</p>
+                        <a asp-page="./Login" class="btn btn-primary mt-3">
+                            <i class="bi bi-box-arrow-in-right"></i> Inloggen
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="card-header bg-danger text-white">
+                        <h2 class="mb-0">
+                            <i class="bi bi-x-circle"></i> Bevestiging mislukt
+                        </h2>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="mb-4">
+                            <i class="bi bi-envelope-x" style="font-size: 4rem; color: #dc3545;"></i>
+                        </div>
+                        <p class="lead">@Model.StatusMessage</p>
+                        <a asp-page="./Register" class="btn btn-secondary mt-3">
+                            <i class="bi bi-person-plus"></i> Opnieuw registreren
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -21,6 +21,7 @@ namespace Marketio_Web.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly IGdprAuditService _gdprAuditService;
+        private readonly IConfiguration _configuration;
 
         public RegisterModel(
             UserManager<AppUser> userManager,
@@ -28,7 +29,8 @@ namespace Marketio_Web.Areas.Identity.Pages.Account
             SignInManager<AppUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            IGdprAuditService gdprAuditService)
+            IGdprAuditService gdprAuditService,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -37,6 +39,7 @@ namespace Marketio_Web.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _gdprAuditService = gdprAuditService;
+            _configuration = configuration;
         }
 
         [BindProperty]
@@ -150,6 +153,18 @@ namespace Marketio_Web.Areas.Identity.Pages.Account
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Fout bij aanmaken GDPR audit logs voor gebruiker {UserId}. Registratie gaat door.", userId);
+                    }
+
+                    var useMockEmail = _configuration.GetValue<bool>("EmailSettings:UseMockEmail");
+
+                    if (useMockEmail)
+                    {
+                        // Development: bevestig e-mail automatisch zodat de gebruiker direct kan inloggen
+                        var confirmToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        await _userManager.ConfirmEmailAsync(user, confirmToken);
+
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        return LocalRedirect(returnUrl);
                     }
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
