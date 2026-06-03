@@ -1,0 +1,71 @@
+﻿@page
+@using Marketio_Web
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
+@model LoginModel
+@{
+    ViewData["Title"] = Localizer["Login_Title"];
+}
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">
+                        <i class="bi bi-box-arrow-in-right"></i> @Localizer["Login_WelcomeBack"]
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form id="loginForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Input.Email" class="form-label">@Localizer["Login_EmailLabel"]</label>
+                            <input asp-for="Input.Email"
+                                   class="form-control"
+                                   placeholder="naam@voorbeeld.be"
+                                   autocomplete="username" />
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Input.Password" class="form-label">@Localizer["Login_PasswordLabel"]</label>
+                            <input asp-for="Input.Password"
+                                   class="form-control"
+                                   placeholder="••••••••"
+                                   autocomplete="current-password" />
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input asp-for="Input.RememberMe" class="form-check-input" />
+                            <label asp-for="Input.RememberMe" class="form-check-label">
+                                @Localizer["Login_RememberMe"]
+                            </label>
+                        </div>
+
+                        <button id="loginSubmit" type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-box-arrow-in-right"></i> @Localizer["Login_SubmitButton"]
+                        </button>
+
+                        <hr class="my-4" />
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-page="./ForgotPassword" class="text-decoration-none">
+                                <i class="bi bi-key"></i> @Localizer["Login_ForgotPassword"]
+                            </a>
+                            <a asp-page="./Register" class="text-decoration-none">
+                                <i class="bi bi-person-plus"></i> @Localizer["Login_RegisterHere"]
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

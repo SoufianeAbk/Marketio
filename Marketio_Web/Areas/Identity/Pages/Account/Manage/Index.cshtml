@@ -1,0 +1,190 @@
+﻿@page
+@using Marketio_Web
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
+@model Marketio_Web.Areas.Identity.Pages.Account.Manage.IndexModel
+@{
+    ViewData["Title"] = "Mijn profiel";
+}
+
+<div class="container">
+    <div class="row justify-content-center mt-4 mb-5">
+        <div class="col-md-8">
+
+            @if (!string.IsNullOrEmpty(Model.StatusMessage))
+            {
+                var isError = Model.StatusMessage.StartsWith("Fout");
+                <div class="alert @(isError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+                    <i class="bi @(isError ? "bi-x-circle" : "bi-check-circle")"></i>
+                    @Model.StatusMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Sluiten"></button>
+                </div>
+            }
+
+            @* ── Profielgegevens ─────────────────────────────────────────── *@
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-circle"></i> Mijn profiel
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form id="profileForm" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Input.FirstName" class="form-label">@Localizer["Register_FirstName"]</label>
+                                <input asp-for="Input.FirstName" class="form-control" autocomplete="given-name" />
+                                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Input.LastName" class="form-label">@Localizer["Register_LastName"]</label>
+                                <input asp-for="Input.LastName" class="form-control" autocomplete="family-name" />
+                                <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">E-mailadres</label>
+                            <input value="@Model.Username" class="form-control" disabled />
+                            <div class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i>
+                                E-mailadres kan niet worden gewijzigd via deze pagina.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Input.PhoneNumber" class="form-label">@Localizer["Phone"]</label>
+                            <input asp-for="Input.PhoneNumber"
+                                   class="form-control"
+                                   placeholder="+32 ..."
+                                   autocomplete="tel" />
+                            <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Input.Address" class="form-label">@Localizer["Address"]</label>
+                            <input asp-for="Input.Address"
+                                   class="form-control"
+                                   placeholder="Straat 1, 9000 Gent"
+                                   autocomplete="street-address" />
+                            <span asp-validation-for="Input.Address" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-floppy"></i> Wijzigingen opslaan
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            @* ── GDPR-instellingen ────────────────────────────────────────── *@
+            <div class="card shadow mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-shield-lock"></i> Privacy &amp; toestemmingen
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Privacybeleid geaccepteerd</dt>
+                        <dd class="col-sm-7">
+                            @if (Model.PrivacyConsentGiven)
+                            {
+                                <span class="badge bg-success"><i class="bi bi-check-lg"></i> Ja</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger"><i class="bi bi-x-lg"></i> Nee</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-5">Algemene voorwaarden geaccepteerd</dt>
+                        <dd class="col-sm-7">
+                            @if (Model.TermsConsentGiven)
+                            {
+                                <span class="badge bg-success"><i class="bi bi-check-lg"></i> Ja</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger"><i class="bi bi-x-lg"></i> Nee</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-5">Toestemmingsdatum</dt>
+                        <dd class="col-sm-7 text-muted">
+                            @(Model.ConsentGivenDate.HasValue
+                                                        ? Model.ConsentGivenDate.Value.ToString("dd-MM-yyyy HH:mm")
+                                                        : "—")
+                        </dd>
+
+                        <dt class="col-sm-5 mt-2">Marketingberichten</dt>
+                        <dd class="col-sm-7 mt-2">
+                            <form asp-page-handler="ToggleMarketing" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit"
+                                        class="btn btn-sm @(Model.MarketingOptIn ? "btn-outline-danger" : "btn-outline-success")">
+                                    <i class="bi @(Model.MarketingOptIn ? "bi-bell-slash" : "bi-bell")"></i>
+                                    @(Model.MarketingOptIn ? "Uitschrijven" : "Inschrijven")
+                                </button>
+                                <span class="ms-2 text-muted small">
+                                    Momenteel: @(Model.MarketingOptIn ? "ingeschreven" : "uitgeschreven")
+                                </span>
+                            </form>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            @* ── Accountinfo (readonly) ────────────────────────────────────── *@
+            <div class="card shadow mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 text-dark">
+                        <i class="bi bi-info-circle"></i> Accountinformatie
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Account aangemaakt op</dt>
+                        <dd class="col-sm-7 text-muted">@Model.CreatedAt.ToString("dd-MM-yyyy HH:mm")</dd>
+
+                        <dt class="col-sm-5">Laatste aanmelding</dt>
+                        <dd class="col-sm-7 text-muted">
+                            @(Model.LastLoginAt.HasValue
+                                                        ? Model.LastLoginAt.Value.ToString("dd-MM-yyyy HH:mm")
+                                                        : "Onbekend")
+                        </dd>
+
+                        <dt class="col-sm-5">Accountstatus</dt>
+                        <dd class="col-sm-7">
+                            @if (Model.IsActive)
+                            {
+                                <span class="badge bg-success"><i class="bi bi-check-circle"></i> Actief</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark"><i class="bi bi-pause-circle"></i> Inactief</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            @* ── Wachtwoord / account verwijderen ─────────────────────────── *@
+            <div class="d-flex gap-2 justify-content-end">
+                <a asp-page="./ChangePassword" class="btn btn-outline-secondary">
+                    <i class="bi bi-key"></i> Wachtwoord wijzigen
+                </a>
+                <a asp-controller="AccountDeletion" asp-action="RequestDeletion" class="btn btn-outline-danger">
+                    <i class="bi bi-trash"></i> Account verwijderen
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
