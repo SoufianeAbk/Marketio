@@ -7,28 +7,28 @@ namespace Marketio_Shared.Entities
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Product name is required")]
-        [MaxLength(200, ErrorMessage = "Product name cannot exceed 200 characters")]
+        [Required(ErrorMessage = "Validation_Product_Name_Required")]
+        [MaxLength(200, ErrorMessage = "Validation_Product_Name_MaxLength")]
         public string Name { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Description is required")]
-        [MaxLength(2000, ErrorMessage = "Description cannot exceed 2000 characters")]
+        [Required(ErrorMessage = "Validation_Product_Description_Required")]
+        [MaxLength(2000, ErrorMessage = "Validation_Product_Description_MaxLength")]
         public string Description { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Price is required")]
-        [Range(0.01, 999999.99, ErrorMessage = "Price must be between 0.01 and 999999.99")]
+        [Required(ErrorMessage = "Validation_Product_Price_Required")]
+        [Range(0.01, 999999.99, ErrorMessage = "Validation_Product_Price_Range")]
         public decimal Price { get; set; }
 
-        [Required(ErrorMessage = "Stock is required")]
-        [Range(0, int.MaxValue, ErrorMessage = "Stock cannot be negative")]
+        [Required(ErrorMessage = "Validation_Product_Stock_Required")]
+        [Range(0, int.MaxValue, ErrorMessage = "Validation_Product_Stock_Range")]
         public int Stock { get; set; }
 
-        [Required(ErrorMessage = "Category is required")]
+        [Required(ErrorMessage = "Validation_Product_Category_Required")]
         public ProductCategory Category { get; set; }
 
-        [Required(ErrorMessage = "Image URL is required")]
-        [MaxLength(500, ErrorMessage = "Image URL cannot exceed 500 characters")]
-        [Url(ErrorMessage = "Invalid URL format")]
+        [Required(ErrorMessage = "Validation_Product_ImageUrl_Required")]
+        [MaxLength(500, ErrorMessage = "Validation_Product_ImageUrl_MaxLength")]
+        [Url(ErrorMessage = "Validation_Product_ImageUrl_Url")]
         public string ImageUrl { get; set; } = string.Empty;
 
         [Required]

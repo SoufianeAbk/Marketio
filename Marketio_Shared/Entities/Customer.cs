@@ -4,30 +4,30 @@ namespace Marketio_Shared.Entities
 {
     public class Customer
     {
-        [Required(ErrorMessage = "Customer ID is required")]
-        [MaxLength(450, ErrorMessage = "Customer ID cannot exceed 450 characters")]
+        [Required(ErrorMessage = "Validation_Customer_Id_Required")]
+        [MaxLength(450, ErrorMessage = "Validation_Customer_Id_MaxLength")]
         public string Id { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Email is required")]
-        [MaxLength(256, ErrorMessage = "Email cannot exceed 256 characters")]
-        [EmailAddress(ErrorMessage = "Invalid email format")]
+        [Required(ErrorMessage = "Validation_Customer_Email_Required")]
+        [MaxLength(256, ErrorMessage = "Validation_Customer_Email_MaxLength")]
+        [EmailAddress(ErrorMessage = "Validation_Customer_Email_Format")]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "First name is required")]
-        [MaxLength(100, ErrorMessage = "First name cannot exceed 100 characters")]
+        [Required(ErrorMessage = "Validation_Customer_FirstName_Required")]
+        [MaxLength(100, ErrorMessage = "Validation_Customer_FirstName_MaxLength")]
         public string FirstName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Last name is required")]
-        [MaxLength(100, ErrorMessage = "Last name cannot exceed 100 characters")]
+        [Required(ErrorMessage = "Validation_Customer_LastName_Required")]
+        [MaxLength(100, ErrorMessage = "Validation_Customer_LastName_MaxLength")]
         public string LastName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Phone number is required")]
-        [MaxLength(20, ErrorMessage = "Phone number cannot exceed 20 characters")]
-        [Phone(ErrorMessage = "Invalid phone number format")]
+        [Required(ErrorMessage = "Validation_Customer_Phone_Required")]
+        [MaxLength(20, ErrorMessage = "Validation_Customer_Phone_MaxLength")]
+        [Phone(ErrorMessage = "Validation_Customer_Phone_Format")]
         public string PhoneNumber { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Address is required")]
-        [MaxLength(500, ErrorMessage = "Address cannot exceed 500 characters")]
+        [Required(ErrorMessage = "Validation_Customer_Address_Required")]
+        [MaxLength(500, ErrorMessage = "Validation_Customer_Address_MaxLength")]
         public string Address { get; set; } = string.Empty;
 
         [Required]

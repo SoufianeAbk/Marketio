@@ -1112,4 +1112,121 @@
 	<data name="ContactUsIntro" xml:space="preserve">
 		<value>Si vous avez des questions concernant ces Conditions d'Utilisation, veuillez nous contacter:</value>
 	</data>
+	<data name="Validation_Order_OrderNumber_Required" xml:space="preserve">
+		<value>Le numéro de commande est requis</value>
+	</data>
+	<data name="Validation_Order_OrderNumber_MaxLength" xml:space="preserve">
+		<value>Le numéro de commande ne peut pas dépasser 50 caractères</value>
+	</data>
+	<data name="Validation_Order_CustomerId_Required" xml:space="preserve">
+		<value>L'identifiant client est requis</value>
+	</data>
+	<data name="Validation_Order_CustomerId_MaxLength" xml:space="preserve">
+		<value>L'identifiant client ne peut pas dépasser 450 caractères</value>
+	</data>
+	<data name="Validation_Order_OrderDate_Required" xml:space="preserve">
+		<value>La date de commande est requise</value>
+	</data>
+	<data name="Validation_Order_Status_Required" xml:space="preserve">
+		<value>Le statut de la commande est requis</value>
+	</data>
+	<data name="Validation_Order_PaymentMethod_Required" xml:space="preserve">
+		<value>Le mode de paiement est requis</value>
+	</data>
+	<data name="Validation_Order_TotalAmount_Required" xml:space="preserve">
+		<value>Le montant total est requis</value>
+	</data>
+	<data name="Validation_Order_TotalAmount_Range" xml:space="preserve">
+		<value>Le montant total doit être compris entre 0,01 et 999 999,99</value>
+	</data>
+	<data name="Validation_Order_ShippingAddress_Required" xml:space="preserve">
+		<value>L'adresse de livraison est requise</value>
+	</data>
+	<data name="Validation_Order_ShippingAddress_MaxLength" xml:space="preserve">
+		<value>L'adresse de livraison ne peut pas dépasser 500 caractères</value>
+	</data>
+	<data name="Validation_Order_BillingAddress_Required" xml:space="preserve">
+		<value>L'adresse de facturation est requise</value>
+	</data>
+	<data name="Validation_Order_BillingAddress_MaxLength" xml:space="preserve">
+		<value>L'adresse de facturation ne peut pas dépasser 500 caractères</value>
+	</data>
+	<data name="Validation_Product_Name_Required" xml:space="preserve">
+		<value>Le nom du produit est requis</value>
+	</data>
+	<data name="Validation_Product_Name_MaxLength" xml:space="preserve">
+		<value>Le nom du produit ne peut pas dépasser 200 caractères</value>
+	</data>
+	<data name="Validation_Product_Description_Required" xml:space="preserve">
+		<value>La description est requise</value>
+	</data>
+	<data name="Validation_Product_Description_MaxLength" xml:space="preserve">
+		<value>La description ne peut pas dépasser 2 000 caractères</value>
+	</data>
+	<data name="Validation_Product_Price_Required" xml:space="preserve">
+		<value>Le prix est requis</value>
+	</data>
+	<data name="Validation_Product_Price_Range" xml:space="preserve">
+		<value>Le prix doit être compris entre 0,01 et 999 999,99</value>
+	</data>
+	<data name="Validation_Product_Stock_Required" xml:space="preserve">
+		<value>Le stock est requis</value>
+	</data>
+	<data name="Validation_Product_Stock_Range" xml:space="preserve">
+		<value>Le stock ne peut pas être négatif</value>
+	</data>
+	<data name="Validation_Product_Category_Required" xml:space="preserve">
+		<value>La catégorie est requise</value>
+	</data>
+	<data name="Validation_Product_ImageUrl_Required" xml:space="preserve">
+		<value>L'URL de l'image est requise</value>
+	</data>
+	<data name="Validation_Product_ImageUrl_MaxLength" xml:space="preserve">
+		<value>L'URL de l'image ne peut pas dépasser 500 caractères</value>
+	</data>
+	<data name="Validation_Product_ImageUrl_Url" xml:space="preserve">
+		<value>Format d'URL invalide</value>
+	</data>
+	<data name="Validation_Customer_Id_Required" xml:space="preserve">
+		<value>L'identifiant client est requis</value>
+	</data>
+	<data name="Validation_Customer_Id_MaxLength" xml:space="preserve">
+		<value>L'identifiant client ne peut pas dépasser 450 caractères</value>
+	</data>
+	<data name="Validation_Customer_Email_Required" xml:space="preserve">
+		<value>L'adresse e-mail est requise</value>
+	</data>
+	<data name="Validation_Customer_Email_MaxLength" xml:space="preserve">
+		<value>L'adresse e-mail ne peut pas dépasser 256 caractères</value>
+	</data>
+	<data name="Validation_Customer_Email_Format" xml:space="preserve">
+		<value>Format d'e-mail invalide</value>
+	</data>
+	<data name="Validation_Customer_FirstName_Required" xml:space="preserve">
+		<value>Le prénom est requis</value>
+	</data>
+	<data name="Validation_Customer_FirstName_MaxLength" xml:space="preserve">
+		<value>Le prénom ne peut pas dépasser 100 caractères</value>
+	</data>
+	<data name="Validation_Customer_LastName_Required" xml:space="preserve">
+		<value>Le nom de famille est requis</value>
+	</data>
+	<data name="Validation_Customer_LastName_MaxLength" xml:space="preserve">
+		<value>Le nom de famille ne peut pas dépasser 100 caractères</value>
+	</data>
+	<data name="Validation_Customer_Phone_Required" xml:space="preserve">
+		<value>Le numéro de téléphone est requis</value>
+	</data>
+	<data name="Validation_Customer_Phone_MaxLength" xml:space="preserve">
+		<value>Le numéro de téléphone ne peut pas dépasser 20 caractères</value>
+	</data>
+	<data name="Validation_Customer_Phone_Format" xml:space="preserve">
+		<value>Format de numéro de téléphone invalide</value>
+	</data>
+	<data name="Validation_Customer_Address_Required" xml:space="preserve">
+		<value>L'adresse est requise</value>
+	</data>
+	<data name="Validation_Customer_Address_MaxLength" xml:space="preserve">
+		<value>L'adresse ne peut pas dépasser 500 caractères</value>
+	</data>
 </root>

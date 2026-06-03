@@ -1112,4 +1112,121 @@
 	<data name="ContactUsIntro" xml:space="preserve">
 		<value>Als u vragen heeft over deze Gebruiksvoorwaarden, neem dan contact met ons op:</value>
 	</data>
+	<data name="Validation_Order_OrderNumber_Required" xml:space="preserve">
+		<value>Ordernummer is verplicht</value>
+	</data>
+	<data name="Validation_Order_OrderNumber_MaxLength" xml:space="preserve">
+		<value>Ordernummer mag niet meer dan 50 tekens bevatten</value>
+	</data>
+	<data name="Validation_Order_CustomerId_Required" xml:space="preserve">
+		<value>Klant-ID is verplicht</value>
+	</data>
+	<data name="Validation_Order_CustomerId_MaxLength" xml:space="preserve">
+		<value>Klant-ID mag niet meer dan 450 tekens bevatten</value>
+	</data>
+	<data name="Validation_Order_OrderDate_Required" xml:space="preserve">
+		<value>Orderdatum is verplicht</value>
+	</data>
+	<data name="Validation_Order_Status_Required" xml:space="preserve">
+		<value>Bestelstatus is verplicht</value>
+	</data>
+	<data name="Validation_Order_PaymentMethod_Required" xml:space="preserve">
+		<value>Betaalmethode is verplicht</value>
+	</data>
+	<data name="Validation_Order_TotalAmount_Required" xml:space="preserve">
+		<value>Totaalbedrag is verplicht</value>
+	</data>
+	<data name="Validation_Order_TotalAmount_Range" xml:space="preserve">
+		<value>Totaalbedrag moet tussen 0,01 en 999.999,99 liggen</value>
+	</data>
+	<data name="Validation_Order_ShippingAddress_Required" xml:space="preserve">
+		<value>Verzendadres is verplicht</value>
+	</data>
+	<data name="Validation_Order_ShippingAddress_MaxLength" xml:space="preserve">
+		<value>Verzendadres mag niet meer dan 500 tekens bevatten</value>
+	</data>
+	<data name="Validation_Order_BillingAddress_Required" xml:space="preserve">
+		<value>Factuuradres is verplicht</value>
+	</data>
+	<data name="Validation_Order_BillingAddress_MaxLength" xml:space="preserve">
+		<value>Factuuradres mag niet meer dan 500 tekens bevatten</value>
+	</data>
+	<data name="Validation_Product_Name_Required" xml:space="preserve">
+		<value>Productnaam is verplicht</value>
+	</data>
+	<data name="Validation_Product_Name_MaxLength" xml:space="preserve">
+		<value>Productnaam mag niet meer dan 200 tekens bevatten</value>
+	</data>
+	<data name="Validation_Product_Description_Required" xml:space="preserve">
+		<value>Beschrijving is verplicht</value>
+	</data>
+	<data name="Validation_Product_Description_MaxLength" xml:space="preserve">
+		<value>Beschrijving mag niet meer dan 2000 tekens bevatten</value>
+	</data>
+	<data name="Validation_Product_Price_Required" xml:space="preserve">
+		<value>Prijs is verplicht</value>
+	</data>
+	<data name="Validation_Product_Price_Range" xml:space="preserve">
+		<value>Prijs moet tussen 0,01 en 999.999,99 liggen</value>
+	</data>
+	<data name="Validation_Product_Stock_Required" xml:space="preserve">
+		<value>Voorraad is verplicht</value>
+	</data>
+	<data name="Validation_Product_Stock_Range" xml:space="preserve">
+		<value>Voorraad mag niet negatief zijn</value>
+	</data>
+	<data name="Validation_Product_Category_Required" xml:space="preserve">
+		<value>Categorie is verplicht</value>
+	</data>
+	<data name="Validation_Product_ImageUrl_Required" xml:space="preserve">
+		<value>Afbeeldings-URL is verplicht</value>
+	</data>
+	<data name="Validation_Product_ImageUrl_MaxLength" xml:space="preserve">
+		<value>Afbeeldings-URL mag niet meer dan 500 tekens bevatten</value>
+	</data>
+	<data name="Validation_Product_ImageUrl_Url" xml:space="preserve">
+		<value>Ongeldig URL-formaat</value>
+	</data>
+	<data name="Validation_Customer_Id_Required" xml:space="preserve">
+		<value>Klant-ID is verplicht</value>
+	</data>
+	<data name="Validation_Customer_Id_MaxLength" xml:space="preserve">
+		<value>Klant-ID mag niet meer dan 450 tekens bevatten</value>
+	</data>
+	<data name="Validation_Customer_Email_Required" xml:space="preserve">
+		<value>E-mailadres is verplicht</value>
+	</data>
+	<data name="Validation_Customer_Email_MaxLength" xml:space="preserve">
+		<value>E-mailadres mag niet meer dan 256 tekens bevatten</value>
+	</data>
+	<data name="Validation_Customer_Email_Format" xml:space="preserve">
+		<value>Ongeldig e-mailformaat</value>
+	</data>
+	<data name="Validation_Customer_FirstName_Required" xml:space="preserve">
+		<value>Voornaam is verplicht</value>
+	</data>
+	<data name="Validation_Customer_FirstName_MaxLength" xml:space="preserve">
+		<value>Voornaam mag niet meer dan 100 tekens bevatten</value>
+	</data>
+	<data name="Validation_Customer_LastName_Required" xml:space="preserve">
+		<value>Achternaam is verplicht</value>
+	</data>
+	<data name="Validation_Customer_LastName_MaxLength" xml:space="preserve">
+		<value>Achternaam mag niet meer dan 100 tekens bevatten</value>
+	</data>
+	<data name="Validation_Customer_Phone_Required" xml:space="preserve">
+		<value>Telefoonnummer is verplicht</value>
+	</data>
+	<data name="Validation_Customer_Phone_MaxLength" xml:space="preserve">
+		<value>Telefoonnummer mag niet meer dan 20 tekens bevatten</value>
+	</data>
+	<data name="Validation_Customer_Phone_Format" xml:space="preserve">
+		<value>Ongeldig telefoonnummerformaat</value>
+	</data>
+	<data name="Validation_Customer_Address_Required" xml:space="preserve">
+		<value>Adres is verplicht</value>
+	</data>
+	<data name="Validation_Customer_Address_MaxLength" xml:space="preserve">
+		<value>Adres mag niet meer dan 500 tekens bevatten</value>
+	</data>
 </root>
