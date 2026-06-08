@@ -11,12 +11,19 @@ namespace Marketio_Web.Services
     {
         private readonly IConfiguration _configuration;
         private readonly UserManager<AppUser> _userManager;
+        private readonly RefreshTokenStore _refreshTokenStore;
 
-        public JwtTokenService(IConfiguration configuration, UserManager<AppUser> userManager)
+        public JwtTokenService(
+            IConfiguration configuration,
+            UserManager<AppUser> userManager,
+            RefreshTokenStore refreshTokenStore)
         {
             _configuration = configuration;
             _userManager = userManager;
+            _refreshTokenStore = refreshTokenStore;
         }
+
+        // ─── Access token (JWT) ───────────────────────────────────────────────────
 
         public async Task<string> GenerateTokenAsync(AppUser user)
         {
@@ -41,9 +48,7 @@ namespace Marketio_Web.Services
             };
 
             foreach (var role in roles)
-            {
                 claims.Add(new Claim(ClaimTypes.Role, role));
-            }
 
             var expirationMinutes = int.Parse(jwtSettings["ExpirationInMinutes"] ?? "60");
 
@@ -57,5 +62,26 @@ namespace Marketio_Web.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        // ─── Refresh token ────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Genereert een nieuw refresh token voor de gebruiker.
+        /// Eventuele bestaande tokens voor deze gebruiker worden ingetrokken.
+        /// </summary>
+        public string GenerateRefreshToken(string userId, int expiryDays = 30)
+            => _refreshTokenStore.Create(userId, expiryDays);
+
+        /// <summary>
+        /// Valideert en verbruikt het refresh token (one-time use).
+        /// </summary>
+        public (bool IsValid, string? UserId) ValidateAndConsumeRefreshToken(string refreshToken)
+            => _refreshTokenStore.ValidateAndConsume(refreshToken);
+
+        /// <summary>
+        /// Trekt alle refresh tokens voor een gebruiker in (bij uitloggen).
+        /// </summary>
+        public void RevokeRefreshTokens(string userId)
+            => _refreshTokenStore.RevokeForUser(userId);
     }
 }

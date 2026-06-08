@@ -32,6 +32,7 @@ namespace Marketio_App.Services
         private class LoginResponse
         {
             public string? Token { get; set; }
+            public string? RefreshToken { get; set; }   // nieuw: refresh token van server
             public string? Email { get; set; }
             public string? FirstName { get; set; }
             public string? LastName { get; set; }
@@ -44,6 +45,7 @@ namespace Marketio_App.Services
         {
             public string? Message { get; set; }
             public string? Token { get; set; }
+            public string? RefreshToken { get; set; }   // nieuw: refresh token van server
             public string? Email { get; set; }
             public string? FirstName { get; set; }
             public string? LastName { get; set; }
@@ -61,12 +63,16 @@ namespace Marketio_App.Services
 
                 if (resp == null || string.IsNullOrWhiteSpace(resp.Token))
                 {
-                    // Extract error message from response if available
                     var errorMsg = resp?.Message ?? "Login failed. Please check your credentials.";
                     return (false, errorMsg);
                 }
 
                 await _api.SaveTokenAsync(resp.Token);
+
+                // Refresh token opslaan zodat stille vernieuwing mogelijk is
+                if (!string.IsNullOrWhiteSpace(resp.RefreshToken))
+                    await _api.SaveRefreshTokenAsync(resp.RefreshToken);
+
                 return (true, null);
             }
             catch (Exception ex)
@@ -100,7 +106,6 @@ namespace Marketio_App.Services
 
             try
             {
-                // Use the tolerant overload
                 var resp = await _api.PostAsync<RegisterRequest, RegisterResponse>("api/auth/register", req, allowNonSuccess: true);
 
                 if (resp == null || string.IsNullOrWhiteSpace(resp.Token))
@@ -110,6 +115,11 @@ namespace Marketio_App.Services
                 }
 
                 await _api.SaveTokenAsync(resp.Token);
+
+                // Refresh token opslaan zodat stille vernieuwing direct na registratie werkt
+                if (!string.IsNullOrWhiteSpace(resp.RefreshToken))
+                    await _api.SaveRefreshTokenAsync(resp.RefreshToken);
+
                 return (true, null);
             }
             catch (Exception ex)
@@ -118,6 +128,10 @@ namespace Marketio_App.Services
             }
         }
 
+        /// <summary>
+        /// Logt de gebruiker uit: wist JWT + refresh token lokaal.
+        /// ClearTokenAsync ruimt beide sleutels op uit SecureStorage.
+        /// </summary>
         public Task LogoutAsync()
         {
             return _api.ClearTokenAsync();
@@ -145,21 +159,14 @@ namespace Marketio_App.Services
             {
                 var token = await GetTokenAsync();
                 if (string.IsNullOrWhiteSpace(token))
-                {
                     return false;
-                }
 
                 var handler = new JwtSecurityTokenHandler();
-
-                // Try to parse the JWT
                 if (!handler.CanReadToken(token))
-                {
                     return false;
-                }
 
                 var jwtToken = handler.ReadJwtToken(token);
 
-                // Check expiration time against UTC now
                 if (jwtToken.ValidTo <= DateTime.UtcNow)
                 {
                     System.Diagnostics.Debug.WriteLine($"[AuthService] JWT token expired at {jwtToken.ValidTo}");

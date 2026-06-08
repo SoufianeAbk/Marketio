@@ -27,7 +27,7 @@ namespace Marketio_Web.Controllers.Api
             _logger = logger;
         }
 
-        /// <summary>Login endpoint - returns JWT token</summary>
+        /// <summary>Login endpoint - retourneert JWT-token + refresh token</summary>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -49,17 +49,19 @@ namespace Marketio_Web.Controllers.Api
             if (result.Succeeded)
             {
                 var token = await _jwtTokenService.GenerateTokenAsync(user);
+                var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
                 var roles = await _userManager.GetRolesAsync(user);
 
                 _logger.LogInformation("User logged in via API: {Email}", user.Email);
 
                 return Ok(new
                 {
-                    token = token,
+                    token,
+                    refreshToken,
                     email = user.Email,
                     firstName = user.FirstName,
                     lastName = user.LastName,
-                    roles = roles,
+                    roles,
                     expiresIn = 3600
                 });
             }
@@ -74,7 +76,7 @@ namespace Marketio_Web.Controllers.Api
             return Unauthorized(new { message = "Invalid email or password" });
         }
 
-        /// <summary>Register endpoint - creates new user and returns JWT token</summary>
+        /// <summary>Register endpoint - maakt nieuwe gebruiker aan en retourneert JWT + refresh token</summary>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
@@ -102,16 +104,18 @@ namespace Marketio_Web.Controllers.Api
                 await _userManager.AddToRoleAsync(user, "Customer");
                 _logger.LogInformation("New user registered via API: {Email}", user.Email);
 
-                // Auto-confirm email for API registrations
-                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                await _userManager.ConfirmEmailAsync(user, token);
+                // Auto-confirm e-mail voor API-registraties
+                var confirmToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                await _userManager.ConfirmEmailAsync(user, confirmToken);
 
                 var jwtToken = await _jwtTokenService.GenerateTokenAsync(user);
+                var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
 
                 return Ok(new
                 {
                     message = "Registration successful",
                     token = jwtToken,
+                    refreshToken,
                     email = user.Email,
                     firstName = user.FirstName,
                     lastName = user.LastName,
@@ -122,7 +126,66 @@ namespace Marketio_Web.Controllers.Api
 
             return BadRequest(new { message = "Registration failed", errors = result.Errors.Select(e => e.Description) });
         }
+
+        /// <summary>
+        /// Vernieuwt het JWT-token via het refresh token (silent re-auth).
+        /// Retourneert een nieuw JWT-token én een nieuw refresh token (token-rotatie).
+        /// </summary>
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.RefreshToken))
+                return BadRequest(new { message = "Refresh token is required" });
+
+            var (isValid, userId) = _jwtTokenService.ValidateAndConsumeRefreshToken(request.RefreshToken);
+
+            if (!isValid || userId == null)
+            {
+                _logger.LogWarning("Refresh token validatie mislukt — token ongeldig of verlopen");
+                return Unauthorized(new { message = "Invalid or expired refresh token" });
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null || !user.IsActive)
+            {
+                _logger.LogWarning("Refresh token verzoek voor onbekende of inactieve gebruiker: {UserId}", userId);
+                return Unauthorized(new { message = "User not found or account deactivated" });
+            }
+
+            // Genereer nieuw JWT en nieuw refresh token (rotatie)
+            var newJwt = await _jwtTokenService.GenerateTokenAsync(user);
+            var newRefreshToken = _jwtTokenService.GenerateRefreshToken(userId);
+
+            _logger.LogInformation("Token vernieuwd voor gebruiker: {Email}", user.Email);
+
+            return Ok(new
+            {
+                token = newJwt,
+                refreshToken = newRefreshToken,
+                expiresIn = 3600
+            });
+        }
+
+        /// <summary>
+        /// Logt de gebruiker uit door het refresh token in te trekken.
+        /// Het JWT blijft technisch geldig tot het verloopt, maar refresh is niet meer mogelijk.
+        /// </summary>
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout([FromBody] LogoutRequest request)
+        {
+            if (!string.IsNullOrWhiteSpace(request.RefreshToken))
+            {
+                // Verbruik het token zonder het opnieuw uit te geven (intrekken)
+                _jwtTokenService.ValidateAndConsumeRefreshToken(request.RefreshToken);
+            }
+
+            _logger.LogInformation("Gebruiker uitgelogd via API");
+            return Ok(new { message = "Logged out successfully" });
+        }
     }
+
+    // ─── Request / Response DTOs ──────────────────────────────────────────────────
 
     public class LoginRequest
     {
@@ -151,5 +214,16 @@ namespace Marketio_Web.Controllers.Api
         [Required(ErrorMessage = "Password is required")]
         [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
         public string Password { get; set; } = string.Empty;
+    }
+
+    public class RefreshTokenRequest
+    {
+        [Required]
+        public string RefreshToken { get; set; } = string.Empty;
+    }
+
+    public class LogoutRequest
+    {
+        public string? RefreshToken { get; set; }
     }
 }

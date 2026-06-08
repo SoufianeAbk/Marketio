@@ -49,6 +49,7 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddSingleton<RefreshTokenStore>();
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<IGdprAuditService, GdprAuditService>();
 builder.Services.AddTransient<IEmailSender, EmailSenderService>();

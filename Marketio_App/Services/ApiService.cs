@@ -15,7 +15,12 @@ namespace Marketio_App.Services
         private readonly HttpClient _client;
         private readonly ILogger<ApiService> _logger;
         private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
+
         private const string JwtKey = "jwt_token";
+        private const string RefreshTokenKey = "refresh_token";  // nieuw
+
+        // Voorkomt oneindige recursie als refresh zelf ook een 401 teruggeeft
+        private bool _isRefreshing;
 
         /// <summary>
         /// Exposes the base API URL for constructing absolute URLs (e.g., for images)
@@ -30,7 +35,8 @@ namespace Marketio_App.Services
         public HttpClient HttpClient => _client;
 
         /// <summary>
-        /// Raised when a 401 Unauthorized response is received (token expired or invalid)
+        /// Raised when a 401 Unauthorized response is received AND the refresh token
+        /// also failed (or was absent). The app should navigate to the login page.
         /// </summary>
         public event EventHandler? TokenExpired;
 
@@ -125,19 +131,130 @@ namespace Marketio_App.Services
             }
         }
 
-        public async Task ClearTokenAsync()
+        /// <summary>Slaat het refresh token op in SecureStorage.</summary>
+        public async Task SaveRefreshTokenAsync(string refreshToken)
         {
-            _logger.LogDebug("[ApiService] ClearTokenAsync called.");
+            if (string.IsNullOrWhiteSpace(refreshToken))
+            {
+                _logger.LogWarning("[ApiService] SaveRefreshTokenAsync called with empty token — ignored.");
+                return;
+            }
             try
             {
-                SecureStorage.Default.Remove(JwtKey);
+                await SecureStorage.Default.SetAsync(RefreshTokenKey, refreshToken);
+                _logger.LogDebug("[ApiService] Refresh token persisted to SecureStorage.");
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "[ApiService] SecureStorage.Remove failed — continuing.");
+                _logger.LogWarning(ex, "[ApiService] SecureStorage.SetAsync (refresh) failed.");
             }
+        }
+
+        public async Task ClearTokenAsync()
+        {
+            _logger.LogDebug("[ApiService] ClearTokenAsync called — JWT + refresh token wissen.");
+            try { SecureStorage.Default.Remove(JwtKey); }
+            catch (Exception ex) { _logger.LogWarning(ex, "[ApiService] SecureStorage.Remove (JWT) failed."); }
+
+            try { SecureStorage.Default.Remove(RefreshTokenKey); }
+            catch (Exception ex) { _logger.LogWarning(ex, "[ApiService] SecureStorage.Remove (refresh) failed."); }
+
             _client.DefaultRequestHeaders.Authorization = null;
-            await Task.CompletedTask; // keep async signature consistent
+            await Task.CompletedTask;
+        }
+
+        // ─── Silent token refresh (401-interceptor) ───────────────────────────────
+
+        /// <summary>
+        /// Probeert het toegangstoken te vernieuwen via het opgeslagen refresh token.
+        /// Retourneert true als de vernieuwing slaagde; anders false.
+        /// </summary>
+        private async Task<bool> TryRefreshTokenInternalAsync()
+        {
+            if (_isRefreshing)
+                return false; // circulaire aanroep voorkomen
+
+            _isRefreshing = true;
+            try
+            {
+                var refreshToken = await SecureStorage.Default.GetAsync(RefreshTokenKey);
+                if (string.IsNullOrWhiteSpace(refreshToken))
+                {
+                    _logger.LogDebug("[ApiService] TryRefresh: geen refresh token beschikbaar.");
+                    return false;
+                }
+
+                _logger.LogDebug("[ApiService] TryRefresh: refresh token aanwezig, aanvraag versturen.");
+
+                // Directe HTTP-aanroep (geen interceptors, geen recursie)
+                var jsonPayload = JsonSerializer.Serialize(new { refreshToken });
+                using var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+                using var res = await _client.PostAsync("api/auth/refresh", content);
+
+                if (!res.IsSuccessStatusCode)
+                {
+                    _logger.LogWarning("[ApiService] TryRefresh: server retourneerde {Status}.", (int)res.StatusCode);
+                    return false;
+                }
+
+                var json = await res.Content.ReadAsStringAsync();
+                if (!IsValidJson(json))
+                {
+                    _logger.LogWarning("[ApiService] TryRefresh: ongeldige JSON in antwoord.");
+                    return false;
+                }
+
+                var response = JsonSerializer.Deserialize<RefreshResponse>(json, _jsonOptions);
+                if (response?.Token == null)
+                {
+                    _logger.LogWarning("[ApiService] TryRefresh: leeg token in antwoord.");
+                    return false;
+                }
+
+                // Nieuw JWT opslaan + Authorization header updaten
+                await SaveTokenAsync(response.Token);
+
+                // Nieuw refresh token opslaan (token-rotatie)
+                if (!string.IsNullOrWhiteSpace(response.RefreshToken))
+                    await SaveRefreshTokenAsync(response.RefreshToken);
+
+                _logger.LogInformation("[ApiService] TryRefresh: token succesvol vernieuwd.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "[ApiService] TryRefresh: onverwachte fout.");
+                return false;
+            }
+            finally
+            {
+                _isRefreshing = false;
+            }
+        }
+
+        /// <summary>
+        /// Voert het HTTP-verzoek uit. Bij een 401 wordt eerst geprobeerd het token
+        /// te vernieuwen en het verzoek opnieuw te versturen. Pas als ook dat mislukt,
+        /// wordt <see cref="TokenExpired"/> getriggerd.
+        /// </summary>
+        private async Task<HttpResponseMessage> SendWithRefreshAsync(
+            Func<Task<HttpResponseMessage>> requestFactory)
+        {
+            var response = await requestFactory();
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                _logger.LogDebug("[ApiService] SendWithRefresh: 401 ontvangen — refresh proberen.");
+
+                if (await TryRefreshTokenInternalAsync())
+                {
+                    response.Dispose(); // gooi de 401-response weg
+                    response = await requestFactory(); // herhaal met nieuw token
+                    _logger.LogDebug("[ApiService] SendWithRefresh: herhaald verzoek → {Status}", (int)response.StatusCode);
+                }
+            }
+
+            return response; // aanroeper verantwoordelijk voor Dispose (via using)
         }
 
         // ─── HTTP helpers ─────────────────────────────────────────────────────────
@@ -148,13 +265,12 @@ namespace Marketio_App.Services
             _logger.LogDebug("[ApiService] GET {Endpoint}", endpoint);
             try
             {
-                using var res = await _client.GetAsync(endpoint);
+                using var res = await SendWithRefreshAsync(() => _client.GetAsync(endpoint));
                 _logger.LogDebug("[ApiService] GET {Endpoint} → {Status}", endpoint, (int)res.StatusCode);
 
-                // Handle 401 Unauthorized (token expired or invalid)
                 if (res.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    _logger.LogWarning("[ApiService] GET {Endpoint} returned 401 Unauthorized — token likely expired", endpoint);
+                    _logger.LogWarning("[ApiService] GET {Endpoint}: refresh mislukt — token verlopen", endpoint);
                     OnTokenExpired();
                     throw new UnauthorizedAccessException("Token expired or invalid. Please log in again.");
                 }
@@ -165,7 +281,6 @@ namespace Marketio_App.Services
                 _logger.LogDebug("[ApiService] GET response body ({Len} chars): {Body}",
                     json.Length, Truncate(json, 500));
 
-                // Validate response is JSON before attempting deserialization
                 if (string.IsNullOrWhiteSpace(json))
                 {
                     _logger.LogWarning("[ApiService] GET {Endpoint} returned empty response body", endpoint);
@@ -181,19 +296,13 @@ namespace Marketio_App.Services
 
                 return JsonSerializer.Deserialize<T>(json, _jsonOptions);
             }
-            catch (UnauthorizedAccessException)
-            {
-                throw;
-            }
+            catch (UnauthorizedAccessException) { throw; }
             catch (HttpRequestException ex)
             {
                 _logger.LogError(ex, "[ApiService] GET {Endpoint} failed — HttpRequestException", endpoint);
                 throw;
             }
-            catch (InvalidOperationException)
-            {
-                throw;
-            }
+            catch (InvalidOperationException) { throw; }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "[ApiService] GET {Endpoint} failed — unexpected error", endpoint);
@@ -210,14 +319,16 @@ namespace Marketio_App.Services
 
             try
             {
-                using var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-                using var res = await _client.PostAsync(endpoint, content);
+                using var res = await SendWithRefreshAsync(() =>
+                {
+                    var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+                    return _client.PostAsync(endpoint, content);
+                });
                 _logger.LogDebug("[ApiService] POST {Endpoint} → {Status}", endpoint, (int)res.StatusCode);
 
-                // Handle 401 Unauthorized
                 if (res.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    _logger.LogWarning("[ApiService] POST {Endpoint} returned 401 Unauthorized — token likely expired", endpoint);
+                    _logger.LogWarning("[ApiService] POST {Endpoint}: refresh mislukt — token verlopen", endpoint);
                     OnTokenExpired();
                     throw new UnauthorizedAccessException("Token expired or invalid. Please log in again.");
                 }
@@ -228,35 +339,21 @@ namespace Marketio_App.Services
                 _logger.LogDebug("[ApiService] POST response body ({Len} chars): {Body}",
                     json.Length, Truncate(json, 500));
 
-                // Validate response is JSON before attempting deserialization
                 if (string.IsNullOrWhiteSpace(json))
-                {
-                    _logger.LogWarning("[ApiService] POST {Endpoint} returned empty response body", endpoint);
-                    throw new InvalidOperationException("API returned empty response. This may indicate a server error or redirect.");
-                }
+                    throw new InvalidOperationException("API returned empty response.");
 
                 if (!IsValidJson(json))
-                {
-                    _logger.LogError("[ApiService] POST {Endpoint} returned non-JSON response. Body: {Body}",
-                        endpoint, Truncate(json, 500));
-                    throw new InvalidOperationException($"API returned invalid JSON. Response starts with: {Truncate(json, 100)}. This may indicate a server error page or HTML response.");
-                }
+                    throw new InvalidOperationException($"API returned invalid JSON. Response starts with: {Truncate(json, 100)}.");
 
                 return JsonSerializer.Deserialize<TResponse>(json, _jsonOptions);
             }
-            catch (UnauthorizedAccessException)
-            {
-                throw;
-            }
+            catch (UnauthorizedAccessException) { throw; }
             catch (HttpRequestException ex)
             {
                 _logger.LogError(ex, "[ApiService] POST {Endpoint} failed — HttpRequestException", endpoint);
                 throw;
             }
-            catch (InvalidOperationException)
-            {
-                throw;
-            }
+            catch (InvalidOperationException) { throw; }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "[ApiService] POST {Endpoint} failed — unexpected error", endpoint);
@@ -265,8 +362,9 @@ namespace Marketio_App.Services
         }
 
         /// <summary>
-        /// POST overload that swallows non-success status codes and returns default
-        /// instead of throwing (useful for login/register where the caller handles errors).
+        /// POST overload die non-success statuscodes niet gooit (voor login/register
+        /// waarbij de aanroeper de fout afhandelt). Geen refresh-interceptie: een 401
+        /// bij login betekent gewoon verkeerde credentials.
         /// </summary>
         public async Task<TResponse?> PostAsync<TRequest, TResponse>(
             string endpoint, TRequest payload, bool allowNonSuccess)
@@ -294,19 +392,8 @@ namespace Marketio_App.Services
                 _logger.LogDebug("[ApiService] POST (tolerant) response body ({Len} chars): {Body}",
                     json.Length, Truncate(json, 500));
 
-                // Validate response is JSON before attempting deserialization
-                if (string.IsNullOrWhiteSpace(json))
-                {
-                    _logger.LogWarning("[ApiService] POST (tolerant) {Endpoint} returned empty response body", endpoint);
-                    return default;
-                }
-
-                if (!IsValidJson(json))
-                {
-                    _logger.LogError("[ApiService] POST (tolerant) {Endpoint} returned non-JSON response. Body: {Body}",
-                        endpoint, Truncate(json, 500));
-                    return default;
-                }
+                if (string.IsNullOrWhiteSpace(json)) return default;
+                if (!IsValidJson(json)) return default;
 
                 return JsonSerializer.Deserialize<TResponse>(json, _jsonOptions);
             }
@@ -328,13 +415,12 @@ namespace Marketio_App.Services
             _logger.LogDebug("[ApiService] DELETE {Endpoint}", endpoint);
             try
             {
-                using var res = await _client.DeleteAsync(endpoint);
+                using var res = await SendWithRefreshAsync(() => _client.DeleteAsync(endpoint));
                 _logger.LogDebug("[ApiService] DELETE {Endpoint} → {Status}", endpoint, (int)res.StatusCode);
 
-                // Handle 401 Unauthorized (token expired or invalid)
                 if (res.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    _logger.LogWarning("[ApiService] DELETE {Endpoint} returned 401 Unauthorized — token likely expired", endpoint);
+                    _logger.LogWarning("[ApiService] DELETE {Endpoint}: refresh mislukt — token verlopen", endpoint);
                     OnTokenExpired();
                     throw new UnauthorizedAccessException("Token expired or invalid. Please log in again.");
                 }
@@ -342,10 +428,7 @@ namespace Marketio_App.Services
                 res.EnsureSuccessStatusCode();
                 _logger.LogDebug("[ApiService] DELETE {Endpoint} completed successfully", endpoint);
             }
-            catch (UnauthorizedAccessException)
-            {
-                throw;
-            }
+            catch (UnauthorizedAccessException) { throw; }
             catch (HttpRequestException ex)
             {
                 _logger.LogError(ex, "[ApiService] DELETE {Endpoint} failed — HttpRequestException", endpoint);
@@ -360,45 +443,35 @@ namespace Marketio_App.Services
 
         // ─── Helpers ──────────────────────────────────────────────────────────────
 
-        private void OnTokenExpired()
-        {
-            TokenExpired?.Invoke(this, EventArgs.Empty);
-        }
+        private void OnTokenExpired() => TokenExpired?.Invoke(this, EventArgs.Empty);
 
         private static string Truncate(string value, int maxLength) =>
             value.Length <= maxLength ? value : value[..maxLength] + $"… (+{value.Length - maxLength} chars)";
 
-        /// <summary>
-        /// Validates if a string is valid JSON without fully deserializing it.
-        /// Helps detect HTML or other non-JSON responses early.
-        /// </summary>
         private static bool IsValidJson(string value)
         {
-            if (string.IsNullOrWhiteSpace(value))
-                return false;
+            if (string.IsNullOrWhiteSpace(value)) return false;
 
             var trimmed = value.Trim();
-
-            // JSON must start with { [ " or be true/false/null
             if (!((trimmed.StartsWith('{') && trimmed.EndsWith('}')) ||
                   (trimmed.StartsWith('[') && trimmed.EndsWith(']')) ||
                   (trimmed.StartsWith('"') && trimmed.EndsWith('"')) ||
                   trimmed.Equals("true", StringComparison.OrdinalIgnoreCase) ||
                   trimmed.Equals("false", StringComparison.OrdinalIgnoreCase) ||
                   trimmed.Equals("null", StringComparison.OrdinalIgnoreCase)))
-            {
                 return false;
-            }
 
-            try
-            {
-                JsonDocument.Parse(value);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            try { JsonDocument.Parse(value); return true; }
+            catch { return false; }
+        }
+
+        // ─── Interne DTO voor het refresh-antwoord ────────────────────────────────
+
+        private sealed class RefreshResponse
+        {
+            public string? Token { get; set; }
+            public string? RefreshToken { get; set; }
+            public int ExpiresIn { get; set; }
         }
     }
 }
