@@ -73,7 +73,7 @@
                                 <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Privacy" ? "active" : "")"
                                    asp-controller="Privacy"
                                    asp-action="MyPrivacy">
-                                    <i class="bi bi-shield-lock"></i> Mijn Privacy
+                                    <i class="bi bi-shield-lock"></i> @Localizer["MyPrivacy"]
                                 </a>
                             </li>
                         }

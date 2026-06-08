@@ -143,6 +143,9 @@
 	<data name="Privacy" xml:space="preserve">
 		<value>Privacy</value>
 	</data>
+	<data name="MyPrivacy" xml:space="preserve">
+		<value>My Privacy</value>
+	</data>
 	<data name="SearchPlaceholder" xml:space="preserve">
 		<value>Search products...</value>
 	</data>
