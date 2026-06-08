@@ -38,28 +38,28 @@
         <!-- Products Tab -->
         <ShellContent 
             Title="Producten"
-            Icon="shop.png"
+            Icon="shop.svg"
             ContentTemplate="{DataTemplate local:ProductsPage}"
             Route="producten" />
 
         <!-- Cart Tab -->
         <ShellContent 
             Title="Winkelwagen"
-            Icon="bag.png"
+            Icon="bag.svg"
             ContentTemplate="{DataTemplate local:CartPage}"
             Route="cart" />
 
         <!-- Orders Tab -->
         <ShellContent 
             Title="Bestellingen"
-            Icon="bag.png"
+            Icon="bag.svg"
             ContentTemplate="{DataTemplate local:OrdersPage}"
             Route="orders" />
 
         <!-- Account Settings Tab -->
         <ShellContent 
             Title="Instellingen"
-            Icon="settings.png"
+            Icon="settings.svg"
             ContentTemplate="{DataTemplate local:AccountSettingsPage}"
             Route="account-settings" />
     </TabBar>
