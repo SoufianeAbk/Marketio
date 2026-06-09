@@ -49,5 +49,7 @@ namespace Marketio_Shared.Entities
 
         [MaxLength(256)]
         public string? ProcessedBy { get; set; }
+
+        public bool IsActive { get; set; } = true;
     }
 }

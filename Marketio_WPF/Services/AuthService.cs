@@ -77,7 +77,7 @@ namespace Marketio_WPF.Services
             var result = await _userManager.CreateAsync(newUser, password);
             if (!result.Succeeded) return false;
 
-            await _userManager.AddToRoleAsync(newUser, "User");
+            await _userManager.AddToRoleAsync(newUser, "Customer");
             return true;
         }
 

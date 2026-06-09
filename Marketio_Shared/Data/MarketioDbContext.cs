@@ -218,6 +218,10 @@ namespace Marketio_Shared.Data
                 entity.Property(x => x.ProcessedBy)
                     .HasMaxLength(256);
 
+                entity.Property(x => x.IsActive)
+                    .IsRequired()
+                    .HasDefaultValue(true);
+
                 entity.HasIndex(x => x.UserId);
                 entity.HasIndex(x => x.EventType);
                 entity.HasIndex(x => x.Timestamp);
@@ -241,6 +245,9 @@ namespace Marketio_Shared.Data
 
             modelBuilder.Entity<Customer>()
                 .HasQueryFilter(c => c.IsActive);
+
+            modelBuilder.Entity<GdprAuditLog>()
+                .HasQueryFilter(g => g.IsActive);
         }
     }
 }
