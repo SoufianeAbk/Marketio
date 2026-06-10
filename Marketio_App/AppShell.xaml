@@ -52,7 +52,7 @@
         <!-- Orders Tab -->
         <ShellContent 
             Title="Bestellingen"
-            Icon="bag.svg"
+            Icon="orders.svg"
             ContentTemplate="{DataTemplate local:OrdersPage}"
             Route="orders" />
 
