@@ -6,15 +6,15 @@ namespace Marketio_Shared.Models
 {
     public class AppUser : IdentityUser
     {
-        [Required(ErrorMessage = "First name is required")]
-        [MaxLength(100, ErrorMessage = "First name cannot exceed 100 characters")]
+        [Required(ErrorMessage = "Validation_AppUser_FirstName_Required")]
+        [MaxLength(100, ErrorMessage = "Validation_AppUser_FirstName_MaxLength")]
         public string FirstName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Last name is required")]
-        [MaxLength(100, ErrorMessage = "Last name cannot exceed 100 characters")]
+        [Required(ErrorMessage = "Validation_AppUser_LastName_Required")]
+        [MaxLength(100, ErrorMessage = "Validation_AppUser_LastName_MaxLength")]
         public string LastName { get; set; } = string.Empty;
 
-        [MaxLength(500, ErrorMessage = "Address cannot exceed 500 characters")]
+        [MaxLength(500, ErrorMessage = "Validation_AppUser_Address_MaxLength")]
         public string? Address { get; set; }
 
         [Required]

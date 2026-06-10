@@ -1232,4 +1232,43 @@
 	<data name="Validation_Customer_Address_MaxLength" xml:space="preserve">
 		<value>Address cannot exceed 500 characters</value>
 	</data>
+	<data name="Validation_OrderItem_OrderId_Required" xml:space="preserve">
+		<value>Order ID is required</value>
+	</data>
+	<data name="Validation_OrderItem_ProductId_Required" xml:space="preserve">
+		<value>Product ID is required</value>
+	</data>
+	<data name="Validation_OrderItem_Quantity_Required" xml:space="preserve">
+		<value>Quantity is required</value>
+	</data>
+	<data name="Validation_OrderItem_Quantity_Range" xml:space="preserve">
+		<value>Quantity must be between 1 and 10000</value>
+	</data>
+	<data name="Validation_OrderItem_UnitPrice_Required" xml:space="preserve">
+		<value>Unit price is required</value>
+	</data>
+	<data name="Validation_OrderItem_UnitPrice_Range" xml:space="preserve">
+		<value>Unit price must be between 0.01 and 999999.99</value>
+	</data>
+	<data name="Validation_OrderItem_TotalPrice_Required" xml:space="preserve">
+		<value>Total price is required</value>
+	</data>
+	<data name="Validation_OrderItem_TotalPrice_Range" xml:space="preserve">
+		<value>Total price must be between 0.01 and 999999.99</value>
+	</data>
+	<data name="Validation_AppUser_FirstName_Required" xml:space="preserve">
+		<value>First name is required</value>
+	</data>
+	<data name="Validation_AppUser_FirstName_MaxLength" xml:space="preserve">
+		<value>First name cannot exceed 100 characters</value>
+	</data>
+	<data name="Validation_AppUser_LastName_Required" xml:space="preserve">
+		<value>Last name is required</value>
+	</data>
+	<data name="Validation_AppUser_LastName_MaxLength" xml:space="preserve">
+		<value>Last name cannot exceed 100 characters</value>
+	</data>
+	<data name="Validation_AppUser_Address_MaxLength" xml:space="preserve">
+		<value>Address cannot exceed 500 characters</value>
+	</data>
 </root>

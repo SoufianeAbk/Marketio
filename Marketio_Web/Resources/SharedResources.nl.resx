@@ -1232,4 +1232,43 @@
 	<data name="Validation_Customer_Address_MaxLength" xml:space="preserve">
 		<value>Adres mag niet meer dan 500 tekens bevatten</value>
 	</data>
+	<data name="Validation_OrderItem_OrderId_Required" xml:space="preserve">
+		<value>Bestelling-ID is verplicht</value>
+	</data>
+	<data name="Validation_OrderItem_ProductId_Required" xml:space="preserve">
+		<value>Product-ID is verplicht</value>
+	</data>
+	<data name="Validation_OrderItem_Quantity_Required" xml:space="preserve">
+		<value>Hoeveelheid is verplicht</value>
+	</data>
+	<data name="Validation_OrderItem_Quantity_Range" xml:space="preserve">
+		<value>Hoeveelheid moet tussen 1 en 10.000 liggen</value>
+	</data>
+	<data name="Validation_OrderItem_UnitPrice_Required" xml:space="preserve">
+		<value>Eenheidsprijs is verplicht</value>
+	</data>
+	<data name="Validation_OrderItem_UnitPrice_Range" xml:space="preserve">
+		<value>Eenheidsprijs moet tussen 0,01 en 999.999,99 liggen</value>
+	</data>
+	<data name="Validation_OrderItem_TotalPrice_Required" xml:space="preserve">
+		<value>Totaalprijs is verplicht</value>
+	</data>
+	<data name="Validation_OrderItem_TotalPrice_Range" xml:space="preserve">
+		<value>Totaalprijs moet tussen 0,01 en 999.999,99 liggen</value>
+	</data>
+	<data name="Validation_AppUser_FirstName_Required" xml:space="preserve">
+		<value>Voornaam is verplicht</value>
+	</data>
+	<data name="Validation_AppUser_FirstName_MaxLength" xml:space="preserve">
+		<value>Voornaam mag niet meer dan 100 tekens bevatten</value>
+	</data>
+	<data name="Validation_AppUser_LastName_Required" xml:space="preserve">
+		<value>Achternaam is verplicht</value>
+	</data>
+	<data name="Validation_AppUser_LastName_MaxLength" xml:space="preserve">
+		<value>Achternaam mag niet meer dan 100 tekens bevatten</value>
+	</data>
+	<data name="Validation_AppUser_Address_MaxLength" xml:space="preserve">
+		<value>Adres mag niet meer dan 500 tekens bevatten</value>
+	</data>
 </root>
