@@ -29,6 +29,7 @@ namespace Marketio_Shared.Data
                 await SeedRolesAsync();
                 await SeedUsersAsync();
                 await SeedProductsAsync();
+                await SeedProductTranslationsAsync();
                 await SeedCustomersAsync();
                 await SeedOrdersAsync();
 
@@ -253,6 +254,111 @@ namespace Marketio_Shared.Data
 
             await _context.Products.AddRangeAsync(products);
             await _context.SaveChangesAsync();
+        }
+
+        private async Task SeedProductTranslationsAsync()
+        {
+            if (await _context.ProductTranslations.AnyAsync())
+                return;
+
+            // Laad alle producten (inclusief inactieve) om de IDs op te halen
+            var products = await _context.Products
+                .IgnoreQueryFilters()
+                .ToListAsync();
+
+            // Vertalingen per productnaam (Engels = fallback in de DB, hier enkel nl + fr)
+            var translationMap = new Dictionary<string, (string NameNl, string DescNl, string NameFr, string DescFr)>
+            {
+                ["Wireless Headphones"] = (
+                    "Draadloze Koptelefoon",
+                    "Premium ruisonderdrukkende draadloze koptelefoon met 30 uur batterijduur",
+                    "Casque sans fil",
+                    "Casque sans fil à réduction de bruit premium avec 30 heures d'autonomie"),
+
+                ["USB-C Hub"] = (
+                    "USB-C Hub",
+                    "7-in-1 USB-C hub met HDMI, USB 3.0 en SD-kaartlezer",
+                    "Hub USB-C",
+                    "Hub USB-C 7-en-1 avec HDMI, USB 3.0 et lecteur de carte SD"),
+
+                ["Cotton T-Shirt"] = (
+                    "Katoenen T-Shirt",
+                    "100% biologisch katoenen t-shirt beschikbaar in meerdere kleuren",
+                    "T-Shirt en Coton",
+                    "T-shirt confortable en coton biologique 100% disponible en plusieurs couleurs"),
+
+                ["Denim Jeans"] = (
+                    "Spijkerbroek",
+                    "Klassieke blauwe spijkerbroek met comfortabele pasvorm",
+                    "Jean en Denim",
+                    "Jean bleu classique avec une coupe confortable"),
+
+                ["C# Programming Guide"] = (
+                    "C# Programmeergids",
+                    "Uitgebreide gids voor C# programmeren met praktische voorbeelden",
+                    "Guide de programmation C#",
+                    "Guide complet de programmation C# avec des exemples pratiques"),
+
+                ["Web Development Basics"] = (
+                    "Basis Webontwikkeling",
+                    "Leer webontwikkeling van HTML tot backend-frameworks",
+                    "Bases du développement web",
+                    "Apprenez le développement web de HTML aux frameworks backend"),
+
+                ["Plant Pot Set"] = (
+                    "Bloempottenset",
+                    "Set van 5 keramische bloempotten met afvoergaten",
+                    "Set de pots de fleurs",
+                    "Ensemble de 5 pots en céramique avec trous de drainage"),
+
+                ["Garden Tool Set"] = (
+                    "Tuingereedschapsset",
+                    "Complete tuingereedschapsset met 10 essentiële gereedschappen",
+                    "Set d'outils de jardin",
+                    "Set d'outils de jardin complet avec 10 outils essentiels"),
+
+                ["Running Shoes"] = (
+                    "Hardloopschoenen",
+                    "Professionele hardloopschoenen met geavanceerde demping",
+                    "Chaussures de course",
+                    "Chaussures de course professionnelles avec amorti avancé"),
+
+                ["Yoga Mat"] = (
+                    "Yogamat",
+                    "Antislip yogamat met 8 mm demping, milieuvriendelijk",
+                    "Tapis de yoga",
+                    "Tapis de yoga antidérapant avec 8 mm de rembourrage, écologique")
+            };
+
+            var translations = new List<ProductTranslation>();
+
+            foreach (var product in products)
+            {
+                if (!translationMap.TryGetValue(product.Name, out var t))
+                    continue;
+
+                translations.Add(new ProductTranslation
+                {
+                    ProductId = product.Id,
+                    Locale = "nl",
+                    Name = t.NameNl,
+                    Description = t.DescNl
+                });
+
+                translations.Add(new ProductTranslation
+                {
+                    ProductId = product.Id,
+                    Locale = "fr",
+                    Name = t.NameFr,
+                    Description = t.DescFr
+                });
+            }
+
+            if (translations.Count > 0)
+            {
+                await _context.ProductTranslations.AddRangeAsync(translations);
+                await _context.SaveChangesAsync();
+            }
         }
 
         private async Task SeedCustomersAsync()

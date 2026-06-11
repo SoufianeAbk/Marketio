@@ -1,7 +1,9 @@
 ﻿using Marketio_Shared.DTOs;
 using Marketio_Shared.Enums;
 using Marketio_Shared.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Marketio_Web.Controllers
 {
@@ -24,8 +26,29 @@ namespace Marketio_Web.Controllers
         // GET: Orders
         public IActionResult Index()
         {
-            // Placeholder voor toekomstige implementatie met customer filtering
             return View();
+        }
+
+        // GET: Orders/MyOrders
+        [Authorize]
+        public async Task<IActionResult> MyOrders()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+
+            try
+            {
+                var orders = await _orderService.GetCustomerOrdersAsync(userId);
+                ViewBag.CustomerEmail = User.Identity?.Name ?? "";
+                return View(orders ?? new List<OrderDto>());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading orders for user {UserId}", userId);
+                TempData["Error"] = "Er is een fout opgetreden bij het laden van uw bestellingen.";
+                return View(new List<OrderDto>());
+            }
         }
 
         // GET: Orders/Details/5
@@ -35,9 +58,7 @@ namespace Marketio_Web.Controllers
             {
                 var order = await _orderService.GetOrderByIdAsync(id);
                 if (order == null)
-                {
                     return NotFound();
-                }
 
                 return View(order);
             }
@@ -57,7 +78,6 @@ namespace Marketio_Web.Controllers
                 var products = await _productService.GetAllProductsAsync();
                 ViewBag.Products = products.Where(p => p.IsActive && p.Stock > 0).ToList();
                 ViewBag.PaymentMethods = Enum.GetValues<PaymentMethod>();
-
                 return View(new CreateOrderDto());
             }
             catch (Exception ex)
@@ -120,9 +140,7 @@ namespace Marketio_Web.Controllers
         public async Task<IActionResult> CustomerOrders(string customerId)
         {
             if (string.IsNullOrEmpty(customerId))
-            {
                 return BadRequest("Customer ID is vereist.");
-            }
 
             try
             {
@@ -146,14 +164,9 @@ namespace Marketio_Web.Controllers
             try
             {
                 var result = await _orderService.CancelOrderAsync(id);
-                if (result)
-                {
-                    TempData["Success"] = "Bestelling succesvol geannuleerd!";
-                }
-                else
-                {
-                    TempData["Error"] = "De bestelling kon niet worden geannuleerd.";
-                }
+                TempData[result ? "Success" : "Error"] = result
+                    ? "Bestelling succesvol geannuleerd!"
+                    : "De bestelling kon niet worden geannuleerd.";
 
                 return RedirectToAction(nameof(Details), new { id });
             }
@@ -162,6 +175,37 @@ namespace Marketio_Web.Controllers
                 _logger.LogError(ex, "Error cancelling order, ID: {OrderId}", id);
                 TempData["Error"] = "Er is een fout opgetreden bij het annuleren van de bestelling.";
                 return RedirectToAction(nameof(Details), new { id });
+            }
+        }
+
+        // POST: Orders/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var order = await _orderService.GetOrderByIdAsync(id);
+                if (order == null)
+                {
+                    TempData["Error"] = "Bestelling niet gevonden.";
+                    return RedirectToAction(nameof(MyOrders));
+                }
+
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (order.CustomerId != userId && !User.IsInRole("Admin"))
+                    return Forbid();
+
+                await _orderService.DeleteOrderAsync(id);
+                TempData["Success"] = $"Bestelling {order.OrderNumber} succesvol verwijderd.";
+                return RedirectToAction(nameof(MyOrders));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting order, ID: {OrderId}", id);
+                TempData["Error"] = "Er is een fout opgetreden bij het verwijderen van de bestelling.";
+                return RedirectToAction(nameof(MyOrders));
             }
         }
     }

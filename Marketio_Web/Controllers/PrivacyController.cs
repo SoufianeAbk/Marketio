@@ -31,10 +31,18 @@ namespace Marketio_Web.Controllers
             if (user == null)
                 return RedirectToPage("/Account/Login", new { area = "Identity" });
 
-            var auditLogs = await _gdprAuditService.GetUserAuditLogsAsync(user.Id);
-            ViewBag.AuditLogs = auditLogs;
-
-            return View(user);
+            try
+            {
+                var auditLogs = await _gdprAuditService.GetUserAuditLogsAsync(user.Id);
+                ViewBag.AuditLogs = auditLogs;
+                return View(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Fout bij laden privacy pagina voor gebruiker {UserId}", user.Id);
+                ViewBag.AuditLogs = new List<GdprAuditLogDto>();
+                return View(user);
+            }
         }
 
         [HttpPost]

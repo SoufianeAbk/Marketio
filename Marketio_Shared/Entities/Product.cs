@@ -41,5 +41,6 @@ namespace Marketio_Shared.Entities
 
         // Navigation properties
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+        public ICollection<ProductTranslation> Translations { get; set; } = new List<ProductTranslation>();
     }
 }

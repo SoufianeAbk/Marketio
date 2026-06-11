@@ -1,0 +1,102 @@
+﻿@model Marketio_Shared.Models.AppUser
+
+@{
+    ViewData["Title"] = "Gebruikersdetails";
+    var userRoles = ViewBag.UserRoles as IList<string>;
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5">
+                <i class="bi bi-person-circle"></i> Gebruikersdetails
+            </h1>
+            <p class="lead text-muted">@Model.FullName</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="ManageRoles" asp-route-id="@Model.Id" class="btn btn-primary me-2">
+                <i class="bi bi-shield-check"></i> Beheer Rollen
+            </a>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Terug
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-person"></i> Persoonsgegevens</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Naam</dt>
+                        <dd class="col-sm-8">@Model.FullName</dd>
+
+                        <dt class="col-sm-4">Email</dt>
+                        <dd class="col-sm-8">@Model.Email</dd>
+
+                        <dt class="col-sm-4">Email bevestigd</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.EmailConfirmed)
+                            {
+                                <span class="badge bg-success"><i class="bi bi-envelope-check"></i> Ja</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark"><i class="bi bi-envelope-x"></i> Nee</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Telefoon</dt>
+                        <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "Niet opgegeven" : Model.PhoneNumber)</dd>
+
+                        <dt class="col-sm-4">Adres</dt>
+                        <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Address) ? "Niet opgegeven" : Model.Address)</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-shield-check"></i> Rollen & Status</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Status</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.LockoutEnd.HasValue && Model.LockoutEnd > DateTimeOffset.UtcNow)
+                            {
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-lock-fill"></i> Geblokkeerd tot @Model.LockoutEnd.Value.ToString("dd-MM-yyyy HH:mm")
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success"><i class="bi bi-check-circle-fill"></i> Actief</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Rollen</dt>
+                        <dd class="col-sm-8">
+                            @if (userRoles != null && userRoles.Any())
+                            {
+                                foreach (var role in userRoles)
+                                {
+                                    <span class="badge bg-secondary me-1">@role</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted fst-italic">Geen rollen</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

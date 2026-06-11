@@ -130,7 +130,11 @@
     }
 
     <script>
-        const products = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(products ?? new List<Marketio_Shared.DTOs.ProductDto>()));
+        const products = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+            products ?? new List<Marketio_Shared.DTOs.ProductDto>(),
+            new System.Text.Json.JsonSerializerOptions {
+                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+            }));
         let itemIndex = 0;
 
         function addOrderItem() {

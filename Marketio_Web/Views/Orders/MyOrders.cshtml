@@ -114,11 +114,22 @@
 
                                 @if (order.Status == Marketio_Shared.Enums.OrderStatus.Pending)
                                 {
-                                    <form asp-action="Cancel" asp-route-id="@order.Id" method="post" class="d-inline"
+                                    <form asp-action="Cancel" asp-route-id="@order.Id" method="post"
                                           onsubmit="return confirm('@Localizer["ConfirmCancelOrder"]');">
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="btn btn-outline-danger btn-sm w-100">
                                             <i class="bi bi-x-circle"></i> @Localizer["Cancel"]
+                                        </button>
+                                    </form>
+                                }
+
+                                @if (order.Status == Marketio_Shared.Enums.OrderStatus.Cancelled)
+                                {
+                                    <form asp-action="Delete" asp-route-id="@order.Id" method="post"
+                                          onsubmit="return confirm('Bent u zeker dat u bestelling @order.OrderNumber permanent wilt verwijderen?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm w-100">
+                                            <i class="bi bi-trash"></i> Verwijderen
                                         </button>
                                     </form>
                                 }

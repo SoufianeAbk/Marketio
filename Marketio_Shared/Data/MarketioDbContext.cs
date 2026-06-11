@@ -15,6 +15,7 @@ namespace Marketio_Shared.Data
         }
 
         public DbSet<Product> Products { get; set; }
+        public DbSet<ProductTranslation> ProductTranslations { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Customer> Customers { get; set; }
@@ -63,6 +64,33 @@ namespace Marketio_Shared.Data
                     .WithOne(oi => oi.Product)
                     .HasForeignKey(oi => oi.ProductId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasMany(e => e.Translations)
+                    .WithOne(t => t.Product)
+                    .HasForeignKey(t => t.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // ProductTranslation Configuration
+            modelBuilder.Entity<ProductTranslation>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Locale)
+                    .IsRequired()
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Description)
+                    .IsRequired()
+                    .HasMaxLength(2000);
+
+                // Unieke index: per product slechts één vertaling per taal
+                entity.HasIndex(e => new { e.ProductId, e.Locale })
+                    .IsUnique();
             });
 
             // Order Configuration

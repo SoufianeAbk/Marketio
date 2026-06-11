@@ -29,6 +29,52 @@ namespace Marketio_Web.Controllers
             return View(users);
         }
 
+        // ── NIEUW ──────────────────────────────────────────────────
+        [HttpGet]
+        public async Task<IActionResult> Details(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            ViewBag.UserRoles = await _userManager.GetRolesAsync(user);
+            return View(user);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ManageRoles(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            ViewBag.User = user;
+            ViewBag.UserRoles = await _userManager.GetRolesAsync(user);
+            ViewBag.AllRoles = _roleManager.Roles.Select(r => r.Name).ToList();
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveRole(string userId, string role)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound();
+
+            var result = await _userManager.RemoveFromRoleAsync(user, role);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("Role {Role} removed from user {Email}", role, user.Email);
+                TempData["Success"] = $"Rol '{role}' verwijderd van {user.Email}.";
+            }
+            else
+            {
+                TempData["Error"] = "Fout bij het verwijderen van rol.";
+            }
+
+            return RedirectToAction(nameof(ManageRoles), new { id = userId });
+        }
+        // ──────────────────────────────────────────────────────────
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LockUser(string userId, int lockoutDays = 30)
@@ -94,7 +140,7 @@ namespace Marketio_Web.Controllers
             if (!await _roleManager.RoleExistsAsync(role))
             {
                 TempData["Error"] = $"Rol '{role}' bestaat niet.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(ManageRoles), new { id = userId });
             }
 
             var currentRoles = await _userManager.GetRolesAsync(user);
@@ -111,7 +157,8 @@ namespace Marketio_Web.Controllers
                 TempData["Error"] = "Fout bij het toewijzen van rol.";
             }
 
-            return RedirectToAction(nameof(Index));
+            // Redirect terug naar ManageRoles i.p.v. Index
+            return RedirectToAction(nameof(ManageRoles), new { id = userId });
         }
     }
 }

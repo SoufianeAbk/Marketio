@@ -18,6 +18,7 @@ namespace Marketio_Web.Repositories
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
             return await _context.Products
+                .Include(p => p.Translations)
                 .OrderBy(p => p.Name)
                 .ToListAsync();
         }
@@ -25,6 +26,7 @@ namespace Marketio_Web.Repositories
         public async Task<Product?> GetByIdAsync(int id)
         {
             return await _context.Products
+                .Include(p => p.Translations)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
@@ -56,6 +58,7 @@ namespace Marketio_Web.Repositories
         public async Task<IEnumerable<Product>> GetByCategoryAsync(ProductCategory category)
         {
             return await _context.Products
+                .Include(p => p.Translations)
                 .Where(p => p.Category == category)
                 .OrderBy(p => p.Name)
                 .ToListAsync();
@@ -64,6 +67,7 @@ namespace Marketio_Web.Repositories
         public async Task<IEnumerable<Product>> GetActiveProductsAsync()
         {
             return await _context.Products
+                .Include(p => p.Translations)
                 .Where(p => p.IsActive)
                 .OrderBy(p => p.Name)
                 .ToListAsync();
