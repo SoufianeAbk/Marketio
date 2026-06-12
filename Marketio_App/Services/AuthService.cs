@@ -58,7 +58,7 @@ namespace Marketio_App.Services
             var req = new LoginRequest(email, password);
             try
             {
-                // Use the tolerant overload that doesn't throw on non-success status codes
+                // Gebruikt de tolerante overload die geen fout veroorzaakt wanneer een niet-succesvolle statuscode wordt geretourneerd.
                 var resp = await _api.PostAsync<LoginRequest, LoginResponse>("api/auth/login", req, allowNonSuccess: true);
 
                 if (resp == null || string.IsNullOrWhiteSpace(resp.Token))
@@ -150,8 +150,8 @@ namespace Marketio_App.Services
         }
 
         /// <summary>
-        /// Validates if the stored JWT token is still valid (not expired).
-        /// Returns true if token exists and is valid, false otherwise.
+        /// Valideert of het opgeslagen JWT-token nog geldig is en niet is verlopen.
+        /// Geeft true terug wanneer een geldig token aanwezig is, anders false.
         /// </summary>
         public async Task<bool> IsTokenValidAsync()
         {

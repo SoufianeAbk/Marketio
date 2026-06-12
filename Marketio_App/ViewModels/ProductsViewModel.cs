@@ -44,10 +44,10 @@ namespace Marketio_App.ViewModels
             _productService = productService ?? throw new ArgumentNullException(nameof(productService));
             _connectivity = connectivity ?? throw new ArgumentNullException(nameof(connectivity));
 
-            // Initialize offline state based on current connectivity
+            // Initialiseer de offline status op basis van de huidige netwerkverbinding
             IsOffline = !_connectivity.IsConnected;
 
-            // Subscribe to connectivity changes
+            // Luister naar wijzigingen in de netwerkverbinding
             _connectivity.ConnectivityChanged += OnConnectivityChanged;
 
             InitializeCategories();
@@ -63,7 +63,7 @@ namespace Marketio_App.ViewModels
         {
             IsOffline = !isConnected;
 
-            // Automatically sync when connection is restored
+            // Synchroniseer automatisch wanneer de verbinding wordt hersteld
             if (isConnected && _allProducts.Any())
             {
                 await RefreshProductsCommand.ExecuteAsync(null);
@@ -88,10 +88,11 @@ namespace Marketio_App.ViewModels
 
                 System.Diagnostics.Debug.WriteLine($"[ProductsViewModel] Received {productList.Count} products from service");
 
-                // ✅ Update the all products list
+                // Update de lijst met alle producten
+
                 _allProducts = productList;
 
-                // ✅ Update the UI collection
+                // Update de UI collectie
                 ApplyFilters();
 
                 System.Diagnostics.Debug.WriteLine($"[ProductsViewModel] LoadProductsAsync completed: {Products.Count} items in UI");

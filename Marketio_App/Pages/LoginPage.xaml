@@ -54,7 +54,7 @@
                     PlaceholderColor="{AppThemeBinding Light=#999999, Dark=#666666}" />
             </VerticalStackLayout>
 
-            <!-- Password Input -->
+            <!-- Passwoord Input -->
             <VerticalStackLayout Spacing="8">
                 <Label 
                     Text="Wachtwoord"

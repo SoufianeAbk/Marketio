@@ -57,7 +57,7 @@ namespace Marketio_Shared.Data
 
         private async Task SeedUsersAsync()
         {
-            // Admin user
+            // Admin gebruiker
             var adminUser = new AppUser
             {
                 UserName = "admin@marketio.be",
@@ -79,7 +79,7 @@ namespace Marketio_Shared.Data
                 }
             }
 
-            // Test user
+            // Test gebruiker
             var testUser = new AppUser
             {
                 UserName = "user@marketio.be",
@@ -101,7 +101,7 @@ namespace Marketio_Shared.Data
                 }
             }
 
-            // Manager user
+            // Manager gebruiker
             var managerUser = new AppUser
             {
                 UserName = "manager@marketio.be",
@@ -131,7 +131,7 @@ namespace Marketio_Shared.Data
 
             var products = new List<Product>
             {
-                // Electronics
+                // Electronica
                 new Product
                 {
                     Name = "Wireless Headphones",
@@ -155,7 +155,7 @@ namespace Marketio_Shared.Data
                     CreatedAt = DateTime.UtcNow
                 },
 
-                // Clothing
+                // Kledij
                 new Product
                 {
                     Name = "Cotton T-Shirt",
@@ -179,7 +179,7 @@ namespace Marketio_Shared.Data
                     CreatedAt = DateTime.UtcNow
                 },
 
-                // Books
+                // Boeken
                 new Product
                 {
                     Name = "C# Programming Guide",
@@ -203,7 +203,7 @@ namespace Marketio_Shared.Data
                     CreatedAt = DateTime.UtcNow
                 },
 
-                // Home and Garden
+                // Huis en Tuin
                 new Product
                 {
                     Name = "Plant Pot Set",

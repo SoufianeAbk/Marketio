@@ -17,7 +17,7 @@ namespace Marketio_App.Pages
         {
             base.OnAppearing();
 
-            // Only load once to prevent duplicate requests
+            // Laad alleen een keer om duplicatie te vermijden
             if (_isInitialized)
                 return;
 

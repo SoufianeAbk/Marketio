@@ -39,7 +39,7 @@ namespace Marketio_Shared.Entities
         [Required]
         public bool IsActive { get; set; } = true;
 
-        // Navigation properties
+        // Navigatie properties
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public ICollection<ProductTranslation> Translations { get; set; } = new List<ProductTranslation>();
     }

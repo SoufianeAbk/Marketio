@@ -15,7 +15,7 @@ namespace Marketio_App.Services
             _keyManagementService = keyManagementService ?? throw new ArgumentNullException(nameof(keyManagementService));
         }
 
-        // ─── Local entities ────────────────────────────────────────────────────────
+        // Local entities
 
         [Table("Products")]
         private class LocalProduct
@@ -66,39 +66,61 @@ namespace Marketio_App.Services
             public int AvailableStock { get; set; }
         }
 
-        // ─── Init ─────────────────────────────────────────────────────────────────
+        // Init
 
         public async Task InitializeAsync()
         {
             if (_db != null)
                 return;
 
+            var dbPath = System.IO.Path.Combine(FileSystem.AppDataDirectory, "marketio.db3");
+
             try
             {
-                var dbPath = System.IO.Path.Combine(FileSystem.AppDataDirectory, "marketio.db3");
-
-                // Get encryption key from secure storage
                 _cachedDatabasePassword = await _keyManagementService.GetOrCreateDatabaseKeyAsync();
-
-                // Create encrypted connection with password
-                var connectionString = new SQLiteConnectionString(dbPath, storeDateTimeAsTicks: false, key: _cachedDatabasePassword);
-                _db = new SQLiteAsyncConnection(connectionString);
-
-                await _db.CreateTableAsync<LocalProduct>();
-                await _db.CreateTableAsync<LocalOrder>();
-                await _db.CreateTableAsync<PendingOrder>();
-                await _db.CreateTableAsync<LocalCartItem>();
-
+                await OpenAndCreateTablesAsync(dbPath, _cachedDatabasePassword);
                 System.Diagnostics.Debug.WriteLine("[LocalDatabase] Initialized with encryption successfully.");
+            }
+            catch (SQLiteException ex) when (ex.Message.Contains("file is not a database"))
+            {
+                // Bestand is onversleuteld of heeft een andere sleutel (dev-leftover of SecureStorage reset)
+                System.Diagnostics.Debug.WriteLine("[LocalDatabase] DB incompatible (wrong key / unencrypted leftover) — deleting and recreating.");
+
+                if (_db != null)
+                {
+                    await _db.CloseAsync();
+                    _db = null;
+                }
+
+                if (File.Exists(dbPath))
+                    File.Delete(dbPath);
+
+                // Nieuwe sleutel genereren zodat de mismatch zich niet herhaalt
+                _cachedDatabasePassword = await _keyManagementService.RotateKeyAsync();
+                await OpenAndCreateTablesAsync(dbPath, _cachedDatabasePassword);
+
+                System.Diagnostics.Debug.WriteLine("[LocalDatabase] DB recreated successfully after key mismatch.");
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[LocalDatabase] Initialization failed: {ex.Message}");
+                _db = null;
                 throw;
             }
         }
 
-        // ─── Products ─────────────────────────────────────────────────────────────
+        private async Task OpenAndCreateTablesAsync(string dbPath, string password)
+        {
+            var connectionString = new SQLiteConnectionString(dbPath, storeDateTimeAsTicks: false, key: password);
+            _db = new SQLiteAsyncConnection(connectionString);
+
+            await _db.CreateTableAsync<LocalProduct>();
+            await _db.CreateTableAsync<LocalOrder>();
+            await _db.CreateTableAsync<PendingOrder>();
+            await _db.CreateTableAsync<LocalCartItem>();
+        }
+
+        // Products
 
         private static LocalProduct ToLocal(ProductDto p) => new()
         {
@@ -156,7 +178,7 @@ namespace Marketio_App.Services
             return p == null ? null : FromLocal(p);
         }
 
-        // ─── Orders ───────────────────────────────────────────────────────────────
+        // Orders
 
         private static LocalOrder ToLocal(OrderDto o) => new()
         {
@@ -224,7 +246,7 @@ namespace Marketio_App.Services
             await _db!.DeleteAsync<LocalOrder>(orderId);
         }
 
-        // ─── Pending Orders (offline queue) ───────────────────────────────────────
+        // Pending Orders (offline queue)
 
         /// <summary>
         /// Slaat een offline bestelling op in de wachtrij. Geeft het lokale ID terug.
@@ -261,7 +283,7 @@ namespace Marketio_App.Services
             return await _db!.Table<PendingOrder>().CountAsync();
         }
 
-        // ─── Cart ─────────────────────────────────────────────────────────────────
+        // Cart
 
         private static LocalCartItem ToLocal(CartItemDto c) => new()
         {
@@ -308,7 +330,7 @@ namespace Marketio_App.Services
             await _db!.DeleteAllAsync<LocalCartItem>();
         }
 
-        // ─── GDPR: alles wissen ───────────────────────────────────────────────────
+        // GDPR: alles wissen
 
         /// <summary>
         /// Wist alle lokale data en de encryptie-sleutel (GDPR recht op vergetelheid).

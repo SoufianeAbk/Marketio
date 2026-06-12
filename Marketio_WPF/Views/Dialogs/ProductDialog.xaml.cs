@@ -23,7 +23,7 @@ namespace Marketio_WPF.Views.Dialogs
 
                 int catValue = (int)product.Category;
                 foreach (ComboBoxItem item in CategoryBox.Items)
-                    if ((int)item.Tag == catValue) { CategoryBox.SelectedItem = item; break; }
+                    if (Convert.ToInt32(item.Tag) == catValue) { CategoryBox.SelectedItem = item; break; }
             }
             else
             {
@@ -42,7 +42,7 @@ namespace Marketio_WPF.Views.Dialogs
                 Description = DescriptionBox.Text.Trim(),
                 Price = decimal.TryParse(PriceBox.Text, out var p) ? p : 0m,
                 Stock = int.TryParse(StockBox.Text, out var s) ? s : 0,
-                Category = (ProductCategory)(int)selected.Tag,
+                Category = (ProductCategory)Convert.ToInt32(selected.Tag),
                 ImageUrl = ImageUrlBox.Text.Trim(),
                 IsActive = IsActiveCheck.IsChecked == true
             };

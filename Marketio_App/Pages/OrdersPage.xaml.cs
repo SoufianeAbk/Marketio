@@ -18,16 +18,16 @@ namespace Marketio_App.Pages
         {
             base.OnAppearing();
 
-            // Check if user is authenticated
+            // Check of user aangemeld is
             var token = await _authService.GetTokenAsync();
             if (string.IsNullOrWhiteSpace(token))
             {
-                // User not logged in, redirect to login
+                // User niet ingelogd, redirect naar login
                 await Shell.Current.GoToAsync("///login");
                 return;
             }
 
-            // User is authenticated, load orders
+            // User is ingelogd, load orders
             if (BindingContext is OrdersViewModel viewModel)
             {
                 await viewModel.LoadOrdersCommand.ExecuteAsync(null);

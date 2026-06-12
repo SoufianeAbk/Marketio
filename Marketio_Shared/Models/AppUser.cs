@@ -25,14 +25,14 @@ namespace Marketio_Shared.Models
         [Required]
         public bool IsActive { get; set; } = true;
 
-        // ─── GDPR-velden ─────────────────────────────────────────────────────────
+        // GDPR-velden
 
         public bool PrivacyConsentGiven { get; set; }
         public bool TermsConsentGiven { get; set; }
         public bool MarketingOptIn { get; set; }
         public DateTime? ConsentGivenDate { get; set; }
 
-        // ─── Account deletion (Right to be Forgotten) ─────────────────────────
+        // Account verwijderen (Recht om vergeten te worden)
 
         public bool IsDeletionRequested { get; set; }
         public DateTime? DeletionRequestedDate { get; set; }

@@ -102,7 +102,7 @@ namespace Marketio_App.ViewModels
                     MarketingOptIn = profile.MarketingOptIn;
                     IsDeletionRequested = profile.IsDeletionRequested;
 
-                    // Load audit trail
+                    // Laad audit trail
                     await LoadAuditTrailInternalAsync();
                 }
                 else
@@ -165,13 +165,13 @@ namespace Marketio_App.ViewModels
 
                 if (success && fileContent != null && fileName != null)
                 {
-                    // Save to device
+                    // Sla op op het apparaat
                     var filePath = Path.Combine(FileSystem.CacheDirectory, fileName);
                     await File.WriteAllBytesAsync(filePath, fileContent);
 
                     SuccessMessage = $"Gegevens geëxporteerd naar: {fileName}";
 
-                    // Optionally share the file
+                    // Deel het bestand indien gewenst
                     if (File.Exists(filePath))
                     {
                         await Share.Default.RequestAsync(new ShareFileRequest
@@ -234,10 +234,10 @@ namespace Marketio_App.ViewModels
                     DeletionPassword = string.Empty;
                     IsDeletionRequested = true;
 
-                    // ─── GDPR Compliance: Clear all local data ──────────────────────
+                    // ─── AVG-naleving: Verwijder alle lokale gegevens ───
                     await ClearAllLocalDataAsync();
 
-                    // Log out after successful deletion request
+                    // Uitloggen na succesvolle verwijderingsaanvraag
                     await Task.Delay(2000);
                     await Shell.Current.GoToAsync("///login");
                 }
@@ -271,15 +271,15 @@ namespace Marketio_App.ViewModels
         }
 
         /// <summary>
-        /// Clears all cached data and refreshes the profile
-        /// Call this when logging in with a new user
+        /// Wist alle gecachede gegevens en vernieuwt het profiel.
+        /// Aanroepen bij het inloggen met een nieuwe gebruiker.
         /// </summary>
         [RelayCommand]
         public async Task RefreshProfileDataAsync()
         {
             try
             {
-                // Clear all cached properties
+                // Wis alle gecachede eigenschappen
                 Email = string.Empty;
                 FirstName = string.Empty;
                 LastName = string.Empty;
@@ -291,7 +291,7 @@ namespace Marketio_App.ViewModels
                 ErrorMessage = string.Empty;
                 SuccessMessage = string.Empty;
 
-                // Reload profile with fresh data
+                // Herlaad profiel met verse gegevens
                 await LoadProfileAsync();
             }
             catch (Exception ex)
@@ -300,48 +300,48 @@ namespace Marketio_App.ViewModels
             }
         }
 
-        // ─── GDPR Compliance: Private helper methods ───────────────────────────────
+        // AVG-naleving: Privé-hulpmethoden
 
         /// <summary>
-        /// Clears all local data as per GDPR "Right to be Forgotten" requirement.
-        /// Includes database, encryption keys, and temporary files.
-        /// GDPR Article 17 - Right to erasure.
+        /// Wist alle lokale gegevens conform het AVG-recht op vergetelheid.
+        /// Omvat de database, versleutelingssleutels en tijdelijke bestanden.
+        /// AVG Artikel 17 – Recht op wissing.
         /// </summary>
         private async Task ClearAllLocalDataAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] Starting GDPR data cleanup...");
+                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] AVG-gegevensopruiming gestart...");
 
-                // Step 1: Clear all local database content
+                // Stap 1: Wis alle lokale database-inhoud
                 await _localDatabase.ClearAllDataAsync();
-                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] ✓ Local database cleared.");
+                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] ✓ Lokale database gewist.");
 
-                // Step 2: Clear encryption key from secure storage
+                // Stap 2: Verwijder versleutelingssleutel uit beveiligde opslag
                 await _keyManagement.ClearDatabaseKeyAsync();
-                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] ✓ Encryption key cleared.");
+                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] ✓ Versleutelingssleutel verwijderd.");
 
-                // Step 3: Clear auth token
+                // Stap 3: Wis authenticatietoken
                 await _authService.LogoutAsync();
-                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] ✓ Auth token cleared.");
+                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] ✓ Authenticatietoken gewist.");
 
-                // Step 4: Clear temporary cache files
+                // Stap 4: Wis tijdelijke cachebestanden
                 await ClearCacheFilesAsync();
-                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] ✓ Cache files cleared.");
+                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] ✓ Cachebestanden gewist.");
 
-                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] GDPR data cleanup completed successfully.");
+                System.Diagnostics.Debug.WriteLine("[AccountSettingsViewModel] AVG-gegevensopruiming succesvol afgerond.");
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(
-                    $"[AccountSettingsViewModel] Warning: Error during GDPR cleanup: {ex.Message}");
-                // Log but don't throw - deletion request already succeeded on server
+                    $"[AccountSettingsViewModel] Waarschuwing: fout tijdens AVG-opruiming: {ex.Message}");
+                // Loggen maar niet gooien – verwijderingsaanvraag is al geslaagd op de server
             }
         }
 
         /// <summary>
-        /// Clears temporary cache files (exported data, temporary downloads, etc.).
-        /// Searches for files matching "marketio-*" pattern.
+        /// Wist tijdelijke cachebestanden (geëxporteerde gegevens, tijdelijke downloads, enz.).
+        /// Zoekt naar bestanden die overeenkomen met het patroon "marketio-*".
         /// </summary>
         private async Task ClearCacheFilesAsync()
         {
@@ -356,12 +356,12 @@ namespace Marketio_App.ViewModels
                         try
                         {
                             File.Delete(file);
-                            System.Diagnostics.Debug.WriteLine($"[AccountSettingsViewModel] Deleted cache file: {file}");
+                            System.Diagnostics.Debug.WriteLine($"[AccountSettingsViewModel] Cachebestand verwijderd: {file}");
                         }
                         catch (Exception ex)
                         {
                             System.Diagnostics.Debug.WriteLine(
-                                $"[AccountSettingsViewModel] Failed to delete cache file {file}: {ex.Message}");
+                                $"[AccountSettingsViewModel] Verwijderen van cachebestand mislukt {file}: {ex.Message}");
                         }
                     }
                 }
@@ -370,11 +370,11 @@ namespace Marketio_App.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[AccountSettingsViewModel] Error clearing cache: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[AccountSettingsViewModel] Fout bij wissen van cache: {ex.Message}");
             }
         }
 
-        // ─── Private helper method (not a relay command) ───────────────────────
+        // Privé-hulpmethode (geen relay command)
 
         private async Task LoadAuditTrailInternalAsync()
         {

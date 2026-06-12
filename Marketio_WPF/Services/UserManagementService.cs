@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Marketio_Shared.Models;
 using Marketio_WPF.Models;
 
@@ -146,14 +147,14 @@ namespace Marketio_WPF.Services
             }
         }
 
+        // ← Enige echte wijziging: ToListAsync() i.p.v. Task.FromResult(...ToList())
         public async Task<List<string>> GetAllRolesAsync()
         {
             try
             {
-                return await Task.FromResult(
-                    _roleManager.Roles
-                                .Select(r => r.Name ?? string.Empty)
-                                .ToList());
+                return await _roleManager.Roles
+                    .Select(r => r.Name ?? string.Empty)
+                    .ToListAsync();
             }
             catch (Exception ex)
             {

@@ -25,11 +25,11 @@ namespace Marketio_App
             builder.Logging.AddDebug();
 #endif
 
-            // ─── Resolve platform-specific API base URL ────────────────────────────
+            // Bepaal de platform-specifieke API-basis-URL
             var apiBaseUrl = GetPlatformApiBaseUrl();
 
-            // ─── HttpClient with SSL bypass (dev only) ────────────────────────────────
-            // Register ApiService as both HttpClient and Singleton for DI compatibility
+            // HttpClient met SSL-bypass (alleen voor ontwikkeling)
+            // Registreer ApiService als zowel HttpClient als Singleton voor DI-compatibiliteit
             builder.Services.AddHttpClient<ApiService>(client =>
             {
                 client.BaseAddress = new Uri(apiBaseUrl);
@@ -38,7 +38,7 @@ namespace Marketio_App
 #if DEBUG
             .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
             {
-                // Trust self-signed certs from the ASP.NET Core dev server
+                // Vertrouw zelfondertekende certificaten van de ASP.NET Core-ontwikkelserver
                 ServerCertificateCustomValidationCallback =
                     HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
             });
@@ -46,10 +46,10 @@ namespace Marketio_App
             ;
 #endif
 
-            // ─── Security services ────────────────────────────────────────────────────
+            // Beveiligingsservices
             builder.Services.AddSingleton<SecureKeyManagementService>();
 
-            // ─── Core app services ────────────────────────────────────────────────────
+            // Kern-app-services
             builder.Services.AddSingleton<ConnectivityService>();
             builder.Services.AddSingleton<LocalDatabaseService>();
             builder.Services.AddSingleton<ProductApiService>();
@@ -58,7 +58,7 @@ namespace Marketio_App
             builder.Services.AddSingleton<CartService>();
             builder.Services.AddSingleton<AuthService>();
 
-            // ─── ViewModels ───────────────────────────────────────────────────────────
+            // ViewModels
             builder.Services.AddSingleton<LoginViewModel>();
             builder.Services.AddSingleton<RegisterViewModel>();
             builder.Services.AddSingleton<ProductsViewModel>();
@@ -69,7 +69,7 @@ namespace Marketio_App
             builder.Services.AddTransient<CreateOrderViewModel>();
             builder.Services.AddSingleton<AccountSettingsViewModel>();
 
-            // ─── Pages (AppShell vóór App registreren) ────────────────────────────────
+            // Pagina's (AppShell vóór App registreren)
             builder.Services.AddSingleton<AppShell>();
             builder.Services.AddSingleton<LoginPage>();
             builder.Services.AddSingleton<RegisterPage>();
@@ -83,31 +83,31 @@ namespace Marketio_App
 
             var app = builder.Build();
 
-            // ─── Initialize services on startup ──────────────────────────────────────
+            // Initialiseer services bij opstarten
             Task.Run(async () =>
             {
                 try
                 {
-                    // Initialize LocalDatabase first
+                    // Initialiseer LocalDatabase als eerste
                     var localDb = app.Services.GetRequiredService<LocalDatabaseService>();
                     await localDb.InitializeAsync();
-                    System.Diagnostics.Debug.WriteLine("[MauiProgram] LocalDatabaseService initialized successfully.");
+                    System.Diagnostics.Debug.WriteLine("[MauiProgram] LocalDatabaseService succesvol geïnitialiseerd.");
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[MauiProgram] LocalDatabaseService.InitializeAsync failed: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"[MauiProgram] LocalDatabaseService.InitializeAsync mislukt: {ex.Message}");
                 }
 
                 try
                 {
-                    // Initialize ApiService (loads stored JWT into Authorization header)
+                    // Initialiseer ApiService (laadt opgeslagen JWT in de Authorization-header)
                     var apiService = app.Services.GetRequiredService<ApiService>();
                     await apiService.InitializeAsync();
-                    System.Diagnostics.Debug.WriteLine("[MauiProgram] ApiService initialized successfully.");
+                    System.Diagnostics.Debug.WriteLine("[MauiProgram] ApiService succesvol geïnitialiseerd.");
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[MauiProgram] ApiService.InitializeAsync failed: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"[MauiProgram] ApiService.InitializeAsync mislukt: {ex.Message}");
                 }
             });
 
@@ -115,7 +115,7 @@ namespace Marketio_App
         }
 
         /// <summary>
-        /// Centrale bron van de platform-specifieke API base URL.
+        /// Centrale bron van de platform-specifieke API-basis-URL.
         /// Internal zodat andere services (bv. AccountApiService) deze kunnen hergebruiken
         /// zonder de URL opnieuw te hardcoderen.
         /// </summary>

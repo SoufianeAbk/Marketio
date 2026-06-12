@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:Marketio_App.Pages"
     Title="Marketio">
 
-    <!-- Authentication Routes (accessible without tabbar) -->
+    <!-- Authentication Routes (toegankelijk zonder tabbar) -->
     <ShellContent 
         Title="Login"
         ContentTemplate="{DataTemplate local:LoginPage}"
@@ -17,7 +17,7 @@
         ContentTemplate="{DataTemplate local:RegisterPage}"
         Route="register" />
 
-    <!-- Global Routes (outside TabBar, accessible from anywhere) -->
+    <!-- Globale Routes (buiten de tabbar, overal toegankelijk) -->
     <ShellContent 
         Title="Order Details"
         ContentTemplate="{DataTemplate local:OrderDetailPage}"
@@ -33,7 +33,7 @@
         ContentTemplate="{DataTemplate local:CreateOrderPage}"
         Route="create-order" />
 
-    <!-- Main App with TabBar (after authentication) -->
+    <!-- Main App met TabBar (na authentication) -->
     <TabBar>
         <!-- Products Tab -->
         <ShellContent 
@@ -56,7 +56,7 @@
             ContentTemplate="{DataTemplate local:OrdersPage}"
             Route="orders" />
 
-        <!-- Account Settings Tab -->
+        <!-- Account Instelligen Tab -->
         <ShellContent 
             Title="Instellingen"
             Icon="settings.svg"

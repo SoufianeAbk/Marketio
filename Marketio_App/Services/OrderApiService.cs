@@ -37,7 +37,7 @@ namespace Marketio_App.Services
             }
         }
 
-        // ─── Ophalen ─────────────────────────────────────────────────────────────
+        // Ophalen
 
         public async Task<IEnumerable<OrderDto>?> GetMyOrdersAsync()
         {
@@ -86,7 +86,7 @@ namespace Marketio_App.Services
             return await _localDb.GetOrderByIdAsync(orderId);
         }
 
-        // ─── Aanmaken (met offline queue) ─────────────────────────────────────────
+        // Aanmaken (met offline queue)
 
         /// <summary>
         /// Plaatst een bestelling. Wanneer er geen verbinding is, wordt de bestelling
@@ -154,7 +154,7 @@ namespace Marketio_App.Services
             };
         }
 
-        // ─── Synchronisatie ───────────────────────────────────────────────────────
+        // Synchronisatie
 
         /// <summary>
         /// Verzendt alle bestellingen uit de offline wachtrij naar de API.
@@ -233,7 +233,7 @@ namespace Marketio_App.Services
             return await _localDb.GetPendingOrderCountAsync();
         }
 
-        // ─── Verwijderen ─────────────────────────────────────────────────────────
+        // Verwijderen
 
         public async Task<bool> DeleteOrderAsync(int orderId)
         {
@@ -254,7 +254,7 @@ namespace Marketio_App.Services
             }
         }
 
-        // ─── Hulpmethoden ─────────────────────────────────────────────────────────
+        // Hulpmethoden
 
         /// <summary>
         /// Zet PendingOrders om naar preview-OrderDtos voor weergave in de lijst.

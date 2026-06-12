@@ -67,8 +67,8 @@ namespace Marketio_WPF.ViewModels
         public RelayCommand NavigateToProductsCommand => _navigateToProductsCommand ??= new RelayCommand(ExecuteNavigateToProducts);
         public RelayCommand NavigateToOrdersCommand => _navigateToOrdersCommand ??= new RelayCommand(ExecuteNavigateToOrders);
         public RelayCommand NavigateToCustomersCommand => _navigateToCustomersCommand ??= new RelayCommand(ExecuteNavigateToCustomers);
-        public RelayCommand NavigateToAdminCommand => _navigateToAdminCommand ??= new RelayCommand(ExecuteNavigateToAdmin);
-        public RelayCommand NavigateToRegisterCommand => _navigateToRegisterCommand ??= new RelayCommand(ExecuteNavigateToRegister);
+        public RelayCommand NavigateToAdminCommand => _navigateToAdminCommand ??= new RelayCommand(ExecuteNavigateToAdmin, CanExecuteNavigateToAdmin);
+        public RelayCommand NavigateToRegisterCommand => _navigateToRegisterCommand ??= new RelayCommand(ExecuteNavigateToRegister, CanExecuteNavigateToRegister);
 
         public MainViewModel(
             IAuthService authService,
@@ -114,6 +114,10 @@ namespace Marketio_WPF.ViewModels
                 var roles = await _authService.GetUserRolesAsync(userId);
                 IsAdmin = roles.Contains("Admin", StringComparer.OrdinalIgnoreCase);
                 IsEmployee = roles.Contains("Manager", StringComparer.OrdinalIgnoreCase) || IsAdmin;
+
+                // Herwaardeer commands nadat rollen geladen zijn
+                NavigateToAdminCommand.NotifyCanExecuteChanged();
+                NavigateToRegisterCommand.NotifyCanExecuteChanged();
             }
             catch (Exception ex)
             {
@@ -168,8 +172,18 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
+        // ── Admin navigatie: alleen toegankelijk voor Admin ───────────────────
+
+        private bool CanExecuteNavigateToAdmin() => IsAdmin;
+
         private void ExecuteNavigateToAdmin()
         {
+            if (!IsAdmin)
+            {
+                ErrorMessage = "Toegang geweigerd. Alleen beheerders kunnen gebruikers en rollen beheren.";
+                return;
+            }
+
             try
             {
                 ClearMessages();
@@ -182,8 +196,18 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
+        // ── Register navigatie: alleen toegankelijk voor Admin ────────────────
+
+        private bool CanExecuteNavigateToRegister() => IsAdmin;
+
         private void ExecuteNavigateToRegister()
         {
+            if (!IsAdmin)
+            {
+                ErrorMessage = "Toegang geweigerd. Alleen beheerders kunnen gebruikers registreren.";
+                return;
+            }
+
             try
             {
                 ClearMessages();
@@ -211,6 +235,8 @@ namespace Marketio_WPF.ViewModels
 
                 await _authService.LogoutAsync();
                 IsAuthenticated = false;
+                IsAdmin = false;
+                IsEmployee = false;
                 CurrentUserName = "Guest";
                 SuccessMessage = "Logged out successfully.";
 

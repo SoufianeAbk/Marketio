@@ -29,7 +29,7 @@
                 VerticalOptions="Center"
                 HorizontalOptions="Center" />
 
-            <!-- Error Message -->
+            <!-- Error Bericht -->
             <Frame 
                 BorderColor="Red"
                 CornerRadius="8"
@@ -43,7 +43,7 @@
                     FontSize="12" />
             </Frame>
 
-            <!-- Product Image -->
+            <!-- Product Afbeelding -->
             <Frame 
                 CornerRadius="12"
                 Padding="0"
@@ -59,14 +59,14 @@
             <!-- Product Details -->
             <StackLayout IsVisible="{Binding Product, Converter={StaticResource IsNotNullConverter}}" Spacing="12">
 
-                <!-- Product Name -->
+                <!-- Product Naam -->
                 <Label 
                     Text="{Binding Product.Name}"
                     FontSize="24"
                     FontAttributes="Bold"
                     TextColor="{AppThemeBinding Light={StaticResource LightTextColor}, Dark={StaticResource DarkTextColor}}" />
 
-                <!-- Price and Stock -->
+                <!-- Prijs en Stock -->
                 <StackLayout Orientation="Horizontal" Spacing="16">
                     <StackLayout Spacing="4">
                         <Label 
@@ -107,7 +107,7 @@
                         LineBreakMode="WordWrap" />
                 </VerticalStackLayout>
 
-                <!-- Category -->
+                <!-- Categorie -->
                 <StackLayout Orientation="Horizontal" Spacing="8">
                     <Label 
                         Text="Categorie:"
@@ -120,7 +120,7 @@
                         TextColor="{AppThemeBinding Light={StaticResource LightSecondaryText}, Dark={StaticResource DarkSecondaryText}}" />
                 </StackLayout>
 
-                <!-- Quantity Selector -->
+                <!-- Hoeveelheid Selector -->
                 <VerticalStackLayout Spacing="8" Margin="0,16">
                     <Label 
                         Text="Hoeveelheid"
@@ -161,7 +161,7 @@
                     </StackLayout>
                 </VerticalStackLayout>
 
-                <!-- Total Price -->
+                <!-- Totale Prijs -->
                 <Frame 
                     BackgroundColor="{AppThemeBinding Light={StaticResource LightFrameBackground}, Dark={StaticResource DarkFrameBackground}}"
                     CornerRadius="8"
@@ -184,7 +184,7 @@
                     </StackLayout>
                 </Frame>
 
-                <!-- Add to Cart Button -->
+                <!-- Voeg toe Cart Button -->
                 <Button 
                     Text="In winkelwagen plaatsen"
                     Command="{Binding AddToCartCommand}"

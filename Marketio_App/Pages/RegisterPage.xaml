@@ -53,7 +53,7 @@
                     PlaceholderColor="{AppThemeBinding Light=#999999, Dark=#666666}" />
             </VerticalStackLayout>
 
-            <!-- First Name Input -->
+            <!-- Voornaam Input -->
             <VerticalStackLayout Spacing="8">
                 <Label 
                     Text="Voornaam *"
@@ -67,7 +67,7 @@
                     PlaceholderColor="{AppThemeBinding Light=#999999, Dark=#666666}" />
             </VerticalStackLayout>
 
-            <!-- Last Name Input -->
+            <!-- Achternaam Input -->
             <VerticalStackLayout Spacing="8">
                 <Label 
                     Text="Achternaam *"
@@ -81,7 +81,7 @@
                     PlaceholderColor="{AppThemeBinding Light=#999999, Dark=#666666}" />
             </VerticalStackLayout>
 
-            <!-- Address Input -->
+            <!-- Addres Input -->
             <VerticalStackLayout Spacing="8">
                 <Label 
                     Text="Adres"
@@ -95,7 +95,7 @@
                     PlaceholderColor="{AppThemeBinding Light=#999999, Dark=#666666}" />
             </VerticalStackLayout>
 
-            <!-- Password Input -->
+            <!-- Wachtwoord Input -->
             <VerticalStackLayout Spacing="8">
                 <Label 
                     Text="Wachtwoord *"
@@ -110,7 +110,7 @@
                     PlaceholderColor="{AppThemeBinding Light=#999999, Dark=#666666}" />
             </VerticalStackLayout>
 
-            <!-- Confirm Password Input -->
+            <!-- Confirm Wachtwoord Input -->
             <VerticalStackLayout Spacing="8">
                 <Label 
                     Text="Bevestig wachtwoord *"
@@ -171,7 +171,7 @@
                 </VerticalStackLayout>
             </StackLayout>
 
-            <!-- Marketing Opt-in (Optional) -->
+            <!-- Marketing Opt-in (Optioneel) -->
             <StackLayout Orientation="Horizontal" Spacing="12" Margin="0,8">
                 <CheckBox 
                     IsChecked="{Binding AcceptMarketing}"

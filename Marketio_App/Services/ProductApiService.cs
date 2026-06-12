@@ -27,22 +27,22 @@ namespace Marketio_App.Services
         }
 
         /// <summary>
-        /// Converts relative image URLs to absolute URLs for MAUI Image control compatibility.
-        /// MAUI Image control requires full URLs (http/https), not relative paths.
+        /// Converteert relatieve afbeeldings-URL's naar absolute URL's.
+        /// De MAUI Image-control werkt alleen met volledige URL's (http/https) en niet met relatieve paden.
         /// </summary>
         private string ConvertImageUrlToAbsolute(string imageUrl)
         {
             if (string.IsNullOrWhiteSpace(imageUrl))
                 return imageUrl;
 
-            // If it's already an absolute URL (http/https), return as-is
+            // Als het al een absolute URL (http/https) is, wordt deze ongewijzigd teruggegeven.
             if (imageUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
                 imageUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
             {
                 return imageUrl;
             }
 
-            // If it's a relative path, prepend the API base URL
+            // Indien het een relatief pad is, wordt de basis-URL van de API toegevoegd.
             if (imageUrl.StartsWith("/"))
             {
                 var baseUrl = _api.BaseAddress?.ToString().TrimEnd('/');
@@ -56,7 +56,7 @@ namespace Marketio_App.Services
         }
 
         /// <summary>
-        /// Processes a collection of products to ensure image URLs are absolute
+        /// Verwerkt een verzameling producten en zorgt ervoor dat alle afbeeldings-URL's absolute URL's zijn.
         /// </summary>
         private IEnumerable<ProductDto> ProcessProductImages(IEnumerable<ProductDto> products)
         {
@@ -91,12 +91,12 @@ namespace Marketio_App.Services
                     {
                         var productList = products.ToList();
 
-                        // Convert image URLs to absolute paths for MAUI compatibility
+                        // Converteert afbeeldings-URL's naar absolute paden voor compatibiliteit met MAUI.
                         productList = ProcessProductImages(productList).ToList();
 
                         _logger.LogInformation("[ProductApiService] ✓ Got {Count} products from API", productList.Count);
 
-                        // Cache them
+                        // Cache ze
                         try
                         {
                             await _localDb.SaveProductsAsync(productList);
@@ -124,7 +124,7 @@ namespace Marketio_App.Services
                 _logger.LogInformation("[ProductApiService] No internet connection, using cached data");
             }
 
-            // Fallback to cached products
+            // Fallback naar cached producten
             try
             {
                 var cachedProducts = await _localDb.GetProductsAsync();
@@ -151,7 +151,7 @@ namespace Marketio_App.Services
 
                     if (product != null)
                     {
-                        // Convert image URL to absolute path for MAUI compatibility
+                        // Converteer afbeelding URL naar absolute path voor MAUI compatibiliteit
                         if (!string.IsNullOrWhiteSpace(product.ImageUrl))
                         {
                             product.ImageUrl = ConvertImageUrlToAbsolute(product.ImageUrl);
@@ -187,7 +187,7 @@ namespace Marketio_App.Services
                 _logger.LogInformation("[ProductApiService] No internet connection, using cached product");
             }
 
-            // Fallback to cached product
+            // Fallback naar cached producten
             try
             {
                 var cachedProduct = await _localDb.GetProductByIdAsync(id);

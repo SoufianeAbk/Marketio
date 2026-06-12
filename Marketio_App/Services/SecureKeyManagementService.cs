@@ -5,49 +5,49 @@ using System.Text;
 namespace Marketio_App.Services
 {
     /// <summary>
-    /// Handles secure generation, storage, and retrieval of database encryption keys.
-    /// Complies with GDPR and platform security best practices.
+    /// Beheert de veilige generatie, opslag en ophaling van databaseversleutelingssleutels.
+    /// Voldoet aan de AVG en platformbeveiligingsnormen.
     /// 
-    /// Strategy:
-    /// - DEBUG: Generates a persistent key on first run (for development consistency)
-    /// - RELEASE: Uses device-native secure storage (Keychain, Keystore)
+    /// Strategie:
+    /// - DEBUG: Genereert een persistente sleutel bij de eerste uitvoering (voor consistentie tijdens ontwikkeling)
+    /// - RELEASE: Gebruikt de native beveiligde opslag van het apparaat (Keychain, Keystore)
     /// </summary>
     public class SecureKeyManagementService
     {
         private const string DbEncryptionKeyId = "marketio_db_encryption_key_v1";
         private const string KeyDerivationSalt = "marketio_salt_v1";
-        private const int KeySizeBytes = 32; // 256-bit key for AES
+        private const int KeySizeBytes = 32; // 256-bit sleutel voor AES
 
         /// <summary>
-        /// Gets or generates the database encryption key securely.
+        /// Haalt de databaseversleutelingssleutel op of genereert een nieuwe.
         /// </summary>
         public async Task<string> GetOrCreateDatabaseKeyAsync()
         {
             try
             {
-                // Attempt to retrieve existing key from secure storage
+                // Probeer bestaande sleutel op te halen uit beveiligde opslag
                 var existingKey = await SecureStorage.Default.GetAsync(DbEncryptionKeyId);
                 if (!string.IsNullOrEmpty(existingKey))
                 {
                     return existingKey;
                 }
 
-                // Generate new key if none exists
+                // Genereer een nieuwe sleutel als er geen bestaat
                 var newKey = GenerateSecureKey();
                 await SecureStorage.Default.SetAsync(DbEncryptionKeyId, newKey);
 
-                System.Diagnostics.Debug.WriteLine("[SecureKeyManagement] New database encryption key generated and stored.");
+                System.Diagnostics.Debug.WriteLine("[SecureKeyManagement] Nieuwe databaseversleutelingssleutel gegenereerd en opgeslagen.");
                 return newKey;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[SecureKeyManagement] Error in GetOrCreateDatabaseKeyAsync: {ex.Message}");
-                throw new InvalidOperationException("Failed to retrieve or create database encryption key.", ex);
+                System.Diagnostics.Debug.WriteLine($"[SecureKeyManagement] Fout in GetOrCreateDatabaseKeyAsync: {ex.Message}");
+                throw new InvalidOperationException("Ophalen of aanmaken van databaseversleutelingssleutel mislukt.", ex);
             }
         }
 
         /// <summary>
-        /// Generates a cryptographically secure random key.
+        /// Genereert een cryptografisch veilige willekeurige sleutel.
         /// </summary>
         private static string GenerateSecureKey()
         {
@@ -56,19 +56,19 @@ namespace Marketio_App.Services
                 var keyBytes = new byte[KeySizeBytes];
                 rng.GetBytes(keyBytes);
 
-                // Return as Base64 for safe storage
+                // Geef terug als Base64 voor veilige opslag
                 return Convert.ToBase64String(keyBytes);
             }
         }
 
         /// <summary>
-        /// Derives a key from a password using PBKDF2 (for fallback scenarios).
-        /// NOT used for primary encryption - only for backup key derivation.
+        /// Leidt een sleutel af van een wachtwoord via PBKDF2 (voor noodscenario's).
+        /// NIET gebruikt voor primaire versleuteling – alleen voor afgeleide reservesleutels.
         /// </summary>
         public static string DeriveKeyFromPassword(string password)
         {
             if (string.IsNullOrWhiteSpace(password))
-                throw new ArgumentException("Password cannot be null or empty.", nameof(password));
+                throw new ArgumentException("Wachtwoord mag niet leeg of null zijn.", nameof(password));
 
             var salt = Encoding.UTF8.GetBytes(KeyDerivationSalt);
 
@@ -80,41 +80,41 @@ namespace Marketio_App.Services
         }
 
         /// <summary>
-        /// Clears the stored encryption key (use during account deletion/logout).
+        /// Verwijdert de opgeslagen versleutelingssleutel (gebruik bij accountverwijdering of uitloggen).
         /// </summary>
         public async Task ClearDatabaseKeyAsync()
         {
             try
             {
                 SecureStorage.Default.Remove(DbEncryptionKeyId);
-                System.Diagnostics.Debug.WriteLine("[SecureKeyManagement] Database encryption key cleared.");
+                System.Diagnostics.Debug.WriteLine("[SecureKeyManagement] Databaseversleutelingssleutel verwijderd.");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[SecureKeyManagement] Error clearing database key: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[SecureKeyManagement] Fout bij verwijderen van databasesleutel: {ex.Message}");
             }
         }
 
         /// <summary>
-        /// Rotates the encryption key (advanced GDPR compliance feature).
+        /// Roteert de versleutelingssleutel (geavanceerde AVG-nalevingsfunctie).
         /// </summary>
         public async Task<string> RotateKeyAsync()
         {
             try
             {
-                // Clear old key
+                // Verwijder de oude sleutel
                 await ClearDatabaseKeyAsync();
 
-                // Generate and store new key
+                // Genereert en slaat een nieuwe sleutel op
                 var newKey = GenerateSecureKey();
                 await SecureStorage.Default.SetAsync(DbEncryptionKeyId, newKey);
 
-                System.Diagnostics.Debug.WriteLine("[SecureKeyManagement] Encryption key rotated successfully.");
+                System.Diagnostics.Debug.WriteLine("[SecureKeyManagement] Versleutelingssleutel succesvol geroteerd.");
                 return newKey;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[SecureKeyManagement] Error rotating encryption key: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[SecureKeyManagement] Fout bij roteren van versleutelingssleutel: {ex.Message}");
                 throw;
             }
         }

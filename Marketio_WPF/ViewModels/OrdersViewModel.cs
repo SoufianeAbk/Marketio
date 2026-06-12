@@ -43,7 +43,14 @@ namespace Marketio_WPF.ViewModels
         public dynamic? SelectedOrder
         {
             get => _selectedOrder;
-            set => SetProperty(ref _selectedOrder, value);
+            set
+            {
+                if (SetProperty(ref _selectedOrder, value))
+                {
+                    UpdateOrderCommand.NotifyCanExecuteChanged();
+                    DeleteOrderCommand.NotifyCanExecuteChanged();
+                }
+            }
         }
 
         public string StatusFilter

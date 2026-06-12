@@ -53,7 +53,7 @@ namespace Marketio_App.ViewModels
             _orderService.PendingOrdersSynced += OnPendingOrdersSynced;
         }
 
-        // ─── Connectiviteit ───────────────────────────────────────────────────────
+        // Connectiviteit
 
         private async void OnConnectivityChanged(object? sender, bool isConnected)
         {
@@ -80,7 +80,7 @@ namespace Marketio_App.ViewModels
             });
         }
 
-        // ─── Laden / vernieuwen ───────────────────────────────────────────────────
+        // Laden / vernieuwen
 
         [RelayCommand]
         public async Task LoadOrdersAsync()
@@ -154,7 +154,7 @@ namespace Marketio_App.ViewModels
             }
         }
 
-        // ─── Handmatige sync ─────────────────────────────────────────────────────
+        // Handmatige sync
 
         [RelayCommand]
         public async Task ManualSyncAsync()
@@ -196,7 +196,7 @@ namespace Marketio_App.ViewModels
             }
         }
 
-        // ─── Navigatie / selectie ─────────────────────────────────────────────────
+        // Navigatie / selectie
 
         [RelayCommand]
         public async Task SelectOrderAsync(OrderDto? order)
@@ -273,7 +273,7 @@ namespace Marketio_App.ViewModels
         [RelayCommand]
         public async Task CreateNewOrderAsync()
         {
-            await Shell.Current.GoToAsync("create-order");
+            await Shell.Current.GoToAsync("///producten");
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Marketio_App.Services;
 using Microsoft.Extensions.DependencyInjection;
-
 namespace Marketio_App
 {
     public partial class App : Application
@@ -8,83 +7,68 @@ namespace Marketio_App
         private readonly AuthService _authService;
         private readonly ApiService _apiService;
         private bool _hasNavigated = false;
-
         public App(AuthService authService, ApiService apiService)
         {
             InitializeComponent();
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
             _apiService = apiService ?? throw new ArgumentNullException(nameof(apiService));
-
-            // Subscribe to token expiration events
+            // Abonneer op token-verloopgebeurtenissen
             _apiService.TokenExpired += OnApiServiceTokenExpired;
         }
-
         protected override Window CreateWindow(IActivationState? activationState)
         {
             var appShell = IPlatformApplication.Current?.Services.GetService<AppShell>()
                 ?? throw new InvalidOperationException("AppShell not found in DI container");
-
             var window = new Window(appShell);
-
-            // Perform authentication check after Shell is created
+            // Voer authenticatiecontrole uit nadat de Shell is aangemaakt
             MainThread.BeginInvokeOnMainThread(async () => await PerformInitialNavigationAsync());
-
             return window;
         }
-
         protected override async void OnStart()
         {
             base.OnStart();
-            // OnStart is called too early on Windows; Shell may not be ready yet
-            // Navigation is deferred to CreateWindow via MainThread.BeginInvokeOnMainThread
+            // OnStart wordt te vroeg aangeroepen op Windows; Shell is mogelijk nog niet gereed
+            // Navigatie wordt uitgesteld naar CreateWindow via MainThread.BeginInvokeOnMainThread
         }
-
         private async Task PerformInitialNavigationAsync()
         {
             try
             {
-                // Add delay to ensure Shell.Current is fully initialized on all platforms
+                // Wacht kort zodat Shell.Current volledig geïnitialiseerd is op alle platformen
                 await Task.Delay(100);
-
                 if (_hasNavigated)
                     return;
-
                 _hasNavigated = true;
-
-                // Check for existing token and validate its expiration
+                // Controleer het bestaande token en valideer de vervaldatum
                 var isTokenValid = await _authService.IsTokenValidAsync();
-
                 if (isTokenValid)
                 {
-                    // Token exists and is still valid, navigate to products
-                    System.Diagnostics.Debug.WriteLine("[App] Valid token found — navigating to products");
+                    // Token bestaat en is nog geldig, navigeer naar producten
+                    System.Diagnostics.Debug.WriteLine("[App] Geldig token gevonden — navigeren naar producten");
                     await Shell.Current.GoToAsync("///producten", animate: false);
                 }
                 else
                 {
-                    // No valid token, navigate to login
-                    System.Diagnostics.Debug.WriteLine("[App] No valid token found — navigating to login");
+                    // Geen geldig token, navigeer naar inlogpagina
+                    System.Diagnostics.Debug.WriteLine("[App] Geen geldig token gevonden — navigeren naar login");
                     await Shell.Current.GoToAsync("///login", animate: false);
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[App] Navigation error: {ex.Message}");
-                // Fallback to login on any error
+                System.Diagnostics.Debug.WriteLine($"[App] Navigatiefout: {ex.Message}");
+                // Terugvallen op inlogpagina bij elke fout
                 await Shell.Current.GoToAsync("///login", animate: false);
             }
         }
-
         private async void OnApiServiceTokenExpired(object? sender, EventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("[App] Token expired event triggered — clearing token and redirecting to login");
-
+            System.Diagnostics.Debug.WriteLine("[App] Token-verloopgebeurtenis geactiveerd — token wissen en doorsturen naar login");
             try
             {
-                // Clear the expired token
+                // Verwijder het verlopen token
                 await _authService.LogoutAsync();
-
-                // Navigate to login on the main thread
+                // Navigeer naar de inlogpagina op de hoofdthread
                 MainThread.BeginInvokeOnMainThread(async () =>
                 {
                     await Shell.Current.GoToAsync("///login", animate: false);
@@ -92,7 +76,7 @@ namespace Marketio_App
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[App] Error handling token expiration: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[App] Fout bij verwerken van tokenverloop: {ex.Message}");
             }
         }
     }

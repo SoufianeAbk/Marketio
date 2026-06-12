@@ -3,19 +3,29 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:converters="clr-namespace:Marketio_WPF.Converters"
              mc:Ignorable="d"
              d:DesignHeight="650" d:DesignWidth="1000"
              Loaded="UserControl_Loaded">
 
+    <UserControl.Resources>
+        <!-- Ingebouwde WPF-converter: geen assembly-loading nodig in de designer -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+        <!-- Disabled buttons zichtbaar maar gedimmed houden -->
+        <Style TargetType="Button">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.4"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Header                -->
             <RowDefinition Height="Auto"/>
-            <!-- Error / Success msgs   -->
             <RowDefinition Height="*"/>
-            <!-- Main content split     -->
         </Grid.RowDefinitions>
 
         <!-- ═══════════════════════════════════════════
@@ -35,16 +45,18 @@
 
         <!-- ═══════════════════════════════════════════
              ROW 1 – Feedback messages
+             HasError / HasSuccess zijn bool-properties in BaseViewModel:
+             geen custom converter nodig, enkel de ingebouwde BooleanToVisibilityConverter
              ═══════════════════════════════════════════ -->
         <StackPanel Grid.Row="1" Margin="0,0,0,8">
             <TextBlock Text="{Binding ErrorMessage}"
                        Foreground="#E74C3C" FontSize="12" TextWrapping="Wrap"
-                       Visibility="{Binding ErrorMessage,
-                           Converter={StaticResource StringToVisibilityConverter}}"/>
+                       Visibility="{Binding HasError,
+                           Converter={StaticResource BoolToVisibilityConverter}}"/>
             <TextBlock Text="{Binding SuccessMessage}"
                        Foreground="#27AE60" FontSize="12" TextWrapping="Wrap"
-                       Visibility="{Binding SuccessMessage,
-                           Converter={StaticResource StringToVisibilityConverter}}"/>
+                       Visibility="{Binding HasSuccess,
+                           Converter={StaticResource BoolToVisibilityConverter}}"/>
         </StackPanel>
 
         <!-- ═══════════════════════════════════════════
@@ -53,9 +65,7 @@
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <!-- DataGrid   -->
                 <ColumnDefinition Width="260"/>
-                <!-- Actions    -->
             </Grid.ColumnDefinitions>
 
             <!-- ─── User DataGrid ─────────────────────────── -->
@@ -108,7 +118,6 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <!-- Loading bar sits at top of the DataGrid row -->
                 <ProgressBar Grid.Row="1"
                              IsIndeterminate="True" Height="4"
                              Visibility="{Binding IsBusy,

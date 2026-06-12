@@ -25,7 +25,7 @@ namespace Marketio_Shared.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Product Configuration
+            // Product Configuratie
             modelBuilder.Entity<Product>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -71,7 +71,7 @@ namespace Marketio_Shared.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // ProductTranslation Configuration
+            // ProductTranslation Configuratie
             modelBuilder.Entity<ProductTranslation>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -93,7 +93,7 @@ namespace Marketio_Shared.Data
                     .IsUnique();
             });
 
-            // Order Configuration
+            // Order Configuratie
             modelBuilder.Entity<Order>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -147,7 +147,7 @@ namespace Marketio_Shared.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // OrderItem Configuration
+            // OrderItem Configuratie
             modelBuilder.Entity<OrderItem>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -177,7 +177,7 @@ namespace Marketio_Shared.Data
                     .IsUnique();
             });
 
-            // Customer Configuration
+            // Customer Configuratie
             modelBuilder.Entity<Customer>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -217,7 +217,7 @@ namespace Marketio_Shared.Data
                     .IsUnique();
             });
 
-            // GdprAuditLog Configuration
+            // GdprAuditLog Configuratie
             modelBuilder.Entity<GdprAuditLog>(entity =>
             {
                 entity.ToTable("GdprAuditLogs");
@@ -261,7 +261,7 @@ namespace Marketio_Shared.Data
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Global Query Filters (soft-delete)
+            // Globale Query Filters (soft-delete)
             modelBuilder.Entity<Product>()
                 .HasQueryFilter(p => p.IsActive);
 

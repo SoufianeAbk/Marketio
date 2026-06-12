@@ -30,7 +30,14 @@ namespace Marketio_WPF.ViewModels
         public dynamic? SelectedProduct
         {
             get => _selectedProduct;
-            set => SetProperty(ref _selectedProduct, value);
+            set
+            {
+                if (SetProperty(ref _selectedProduct, value))
+                {
+                    EditProductCommand.NotifyCanExecuteChanged();
+                    DeleteProductCommand.NotifyCanExecuteChanged();
+                }
+            }
         }
 
         public string SearchQuery

@@ -159,7 +159,7 @@
                                         BorderColor="#505050"
                                         Margin="0,5">
                                         <Grid ColumnDefinitions="*, 60, 80" ColumnSpacing="10">
-                                            <!-- Product Name -->
+                                            <!-- Product Naam -->
                                             <VerticalStackLayout Grid.Column="0" Spacing="3">
                                                 <Label 
                                                     Text="{Binding ProductName}"
@@ -172,7 +172,7 @@
                                                     TextColor="#B0B0B0" />
                                             </VerticalStackLayout>
 
-                                            <!-- Quantity -->
+                                            <!-- Hoeveelheid -->
                                             <Label 
                                                 Grid.Column="1"
                                                 Text="{Binding Quantity, StringFormat='x{0}'}"
@@ -181,7 +181,7 @@
                                                 VerticalTextAlignment="Center"
                                                 HorizontalTextAlignment="Center" />
 
-                                            <!-- Total -->
+                                            <!-- Totaal -->
                                             <Label 
                                                 Grid.Column="2"
                                                 Text="{Binding TotalPrice, StringFormat='€{0:N2}'}"
@@ -198,7 +198,7 @@
                     </VerticalStackLayout>
                 </Frame>
 
-                <!-- Shipping Address -->
+                <!-- Shipping Addres -->
                 <Frame 
                     Padding="15"
                     CornerRadius="10"

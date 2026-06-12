@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace Marketio_App.Services
 {
     /// <summary>
-    /// GDPR and account management API service for MAUI
+    /// GDPR en account management API service voor MAUI
     /// </summary>
     public class AccountApiService
     {
@@ -20,7 +20,7 @@ namespace Marketio_App.Services
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        // ─── DTOs ─────────────────────────────────────────────────────────────────
+        // DTOs
 
         public class UserProfileDto
         {
@@ -61,10 +61,10 @@ namespace Marketio_App.Services
             public string? ProcessedBy { get; set; }
         }
 
-        // ─── Profile Management ────────────────────────────────────────────────────
+        // Profile Management
 
         /// <summary>
-        /// Get current user's profile information
+        /// Profielgegevens van de huidige gebruiker ophalen
         /// </summary>
         public async Task<(bool Success, UserProfileDto? Profile, string? ErrorMessage)> GetProfileAsync()
         {
@@ -89,7 +89,7 @@ namespace Marketio_App.Services
             }
         }
 
-        // ─── Consent Management ────────────────────────────────────────────────────
+        // Consent Management
 
         /// <summary>
         /// Update marketing consent preference
@@ -122,10 +122,10 @@ namespace Marketio_App.Services
             }
         }
 
-        // ─── Data Export (Right to Portability) ────────────────────────────────────
+        // Data Export (Right to Portability)
 
         /// <summary>
-        /// Export personal data as JSON file.
+        /// Export personal data als JSON file.
         /// Hergebruikt de BaseAddress van de geconfigureerde ApiService zodat de URL
         /// op één centrale plek beheerd wordt (MauiProgram.GetPlatformApiBaseUrl).
         /// </summary>
@@ -135,11 +135,11 @@ namespace Marketio_App.Services
 
             try
             {
-                // Gebruik de BaseAddress van de geconfigureerde ApiService — geen losse URL meer
+                // Gebruikt de BaseAddress van de geconfigureerde ApiService — geen losse URL meer
                 var baseUrl = _api.BaseAddress?.ToString()
                     ?? throw new InvalidOperationException("ApiService heeft geen geconfigureerde BaseAddress.");
 
-                // Bouw een tijdelijke HttpClient met dezelfde SSL-instellingen als in productie
+                // Bouwt een tijdelijke HttpClient met dezelfde SSL-instellingen als in productie
 #if DEBUG
                 var handler = new HttpClientHandler
                 {
@@ -151,7 +151,7 @@ namespace Marketio_App.Services
                 using var client = new HttpClient();
 #endif
 
-                // Haal JWT op en zet Authorization-header
+                // Haalt JWT op en zet Authorization-header
                 var token = await Microsoft.Maui.Storage.SecureStorage.Default.GetAsync("jwt_token");
                 if (!string.IsNullOrEmpty(token))
                 {
@@ -182,10 +182,10 @@ namespace Marketio_App.Services
             }
         }
 
-        // ─── Account Deletion (Right to be Forgotten) ──────────────────────────────
+        // Accountverwijdering (recht om vergeten te worden)
 
         /// <summary>
-        /// Request account deletion with password verification (immediately deletes the account)
+        /// Vraag accountverwijdering aan met wachtwoordverificatie (verwijdert het account onmiddellijk)
         /// </summary>
         public async Task<(bool Success, string? ErrorMessage)> RequestDeletionAsync(string password)
         {
@@ -215,10 +215,10 @@ namespace Marketio_App.Services
             }
         }
 
-        // ─── Audit Trail ──────────────────────────────────────────────────────────
+        // Audit Trail
 
         /// <summary>
-        /// Retrieve user's GDPR audit trail
+        /// Haal het GDPR-auditspoor van de gebruiker op
         /// </summary>
         public async Task<(bool Success, List<AuditLogDto>? Logs, string? ErrorMessage)> GetAuditTrailAsync()
         {

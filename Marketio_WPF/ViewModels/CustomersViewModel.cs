@@ -8,7 +8,7 @@ namespace Marketio_WPF.ViewModels
     {
         private readonly CustomerService _customerService;
         private ObservableCollection<dynamic> _customers = new();
-        private ObservableCollection<dynamic> _allCustomers = new();  // cache voor search
+        private ObservableCollection<dynamic> _allCustomers = new();
         private dynamic? _selectedCustomer;
         private string _searchQuery = string.Empty;
         private RelayCommand? _loadCustomersCommand;
@@ -18,7 +18,7 @@ namespace Marketio_WPF.ViewModels
         private RelayCommand? _searchCommand;
         private RelayCommand? _refreshCommand;
 
-        // ── Dialog events ────────────────────────────────────────────────────
+        // Dialog events
         public event EventHandler? CreateCustomerRequested;
         public event EventHandler<dynamic>? EditCustomerRequested;
 
@@ -31,7 +31,14 @@ namespace Marketio_WPF.ViewModels
         public dynamic? SelectedCustomer
         {
             get => _selectedCustomer;
-            set => SetProperty(ref _selectedCustomer, value);
+            set
+            {
+                if (SetProperty(ref _selectedCustomer, value))
+                {
+                    _editCustomerCommand?.NotifyCanExecuteChanged();
+                    _deleteCustomerCommand?.NotifyCanExecuteChanged();
+                }
+            }
         }
 
         public string SearchQuery
@@ -52,7 +59,7 @@ namespace Marketio_WPF.ViewModels
             _customerService = customerService ?? throw new ArgumentNullException(nameof(customerService));
         }
 
-        // ── Load ──────────────────────────────────────────────────────────────
+        // Load
         private async void ExecuteLoadCustomers()
         {
             try
@@ -69,7 +76,7 @@ namespace Marketio_WPF.ViewModels
             finally { IsBusy = false; }
         }
 
-        // ── Create / Edit (raise events; view opens dialog) ───────────────────
+        // Create / Edit (raise events; view opens dialog)
         private void ExecuteCreateCustomer() =>
             CreateCustomerRequested?.Invoke(this, EventArgs.Empty);
 
@@ -81,7 +88,7 @@ namespace Marketio_WPF.ViewModels
 
         private bool CanExecuteEditCustomer() => SelectedCustomer != null && !IsBusy;
 
-        // ── Delete ────────────────────────────────────────────────────────────
+        // Delete
         private async void ExecuteDeleteCustomer()
         {
             if (SelectedCustomer == null) { ErrorMessage = "No customer selected."; return; }
@@ -105,7 +112,7 @@ namespace Marketio_WPF.ViewModels
 
         private bool CanExecuteDeleteCustomer() => SelectedCustomer != null && !IsBusy;
 
-        // ── Search (client-side) ──────────────────────────────────────────────
+        // Search (client-side)
         private void ExecuteSearch()
         {
             if (string.IsNullOrWhiteSpace(SearchQuery))
@@ -123,11 +130,8 @@ namespace Marketio_WPF.ViewModels
             Customers = new ObservableCollection<dynamic>(results);
         }
 
-        // ── Submit handlers (called by view after dialog OK) ──────────────────
+        // Submit handlers (called by view after dialog OK)
 
-        /// <summary>
-        /// Assumes CustomerService.CreateCustomerAsync(string, string, string, string, string, bool) exists.
-        /// </summary>
         public async Task SubmitCreateCustomerAsync(
             string firstName, string lastName,
             string email, string phone,
@@ -146,9 +150,6 @@ namespace Marketio_WPF.ViewModels
             finally { IsBusy = false; }
         }
 
-        /// <summary>
-        /// Assumes CustomerService.UpdateCustomerAsync(string, string, string, string, string, string, bool) exists.
-        /// </summary>
         public async Task SubmitUpdateCustomerAsync(
             string customerId,
             string firstName, string lastName,

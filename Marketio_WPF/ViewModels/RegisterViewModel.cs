@@ -74,6 +74,8 @@ namespace Marketio_WPF.ViewModels
 
         private async Task ExecuteRegisterAsync()
         {
+            ClearMessages();
+
             if (!ValidateForm())
             {
                 return;
@@ -82,7 +84,6 @@ namespace Marketio_WPF.ViewModels
             try
             {
                 IsBusy = true;
-                ClearMessages();
 
                 var success = await _authService.RegisterAsync(Email, FirstName, LastName, Password);
 
@@ -112,7 +113,10 @@ namespace Marketio_WPF.ViewModels
 
         private bool CanExecuteRegister()
         {
-            return !IsBusy && ValidateForm();
+            // Geen ValidateForm() hier — heeft side effects (zet ErrorMessage).
+            // WPF roept CanExecute continu aan; validatie gebeurt pas in ExecuteRegisterAsync
+            // wanneer de gebruiker effectief op de knop klikt.
+            return !IsBusy;
         }
 
         private void ExecuteBackToLogin()

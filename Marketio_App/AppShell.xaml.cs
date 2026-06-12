@@ -8,8 +8,8 @@ namespace Marketio_App
         {
             InitializeComponent();
 
-            // Register detail routes programmatically
-            // QueryProperties only work with routes registered via Routing.RegisterRoute()
+            // Registreer detailroutes programmatisch
+            // QueryProperties werken alleen met routes die geregistreerd zijn via Routing.RegisterRoute()
             Routing.RegisterRoute("product-detail", typeof(ProductDetailPage));
             Routing.RegisterRoute("order-detail", typeof(OrderDetailPage));
             Routing.RegisterRoute("create-order", typeof(CreateOrderPage));

@@ -36,7 +36,7 @@
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="16" Spacing="16">
 
-                <!-- Empty Cart Message -->
+                <!-- Lege Cart Berichten -->
                 <Frame 
                     IsVisible="{Binding IsCartEmpty}"
                     CornerRadius="8"
@@ -82,7 +82,7 @@
                             <DataTemplate>
                                 <VerticalStackLayout Padding="8" Spacing="8" Margin="0,0,0,8">
                                     <Grid ColumnDefinitions="80,*,Auto" ColumnSpacing="12">
-                                        <!-- Product Image -->
+                                        <!-- Product Afbeelding -->
                                         <Frame 
                                             Grid.Column="0"
                                             CornerRadius="6"
@@ -142,7 +142,7 @@
                                             </HorizontalStackLayout>
                                         </VerticalStackLayout>
 
-                                        <!-- Total Price & Remove -->
+                                        <!-- Totale Prijs & Remove -->
                                         <VerticalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center" HorizontalOptions="End">
                                             <Label 
                                                 Text="{Binding TotalPrice, StringFormat='€{0:F2}'}"
@@ -173,7 +173,7 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- Footer with Total and Checkout Button -->
+        <!-- Footer met Total en Checkout Button -->
         <Frame 
             Grid.Row="2"
             IsVisible="{Binding IsCartEmpty, Converter={StaticResource IsNotTrueConverter}}"

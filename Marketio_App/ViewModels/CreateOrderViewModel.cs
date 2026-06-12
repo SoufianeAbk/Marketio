@@ -90,8 +90,9 @@ namespace Marketio_App.ViewModels
                 CartTotal = await _cartService.GetCartTotalAsync();
                 IsCartEmpty = !items.Any();
 
+                // Terug naar winkelwagen als alle items verwijderd zijn
                 if (IsCartEmpty)
-                    await Shell.Current.GoToAsync("///producten");
+                    await Shell.Current.GoToAsync("..");
             }
             catch (Exception ex)
             {
@@ -102,10 +103,10 @@ namespace Marketio_App.ViewModels
         [RelayCommand]
         public async Task PlaceOrderAsync()
         {
+            // Winkelwagen leeg: toon foutmelding, geen automatische redirect
             if (!CartItems.Any())
             {
                 ErrorMessage = "Winkelwagen is leeg.";
-                await Shell.Current.GoToAsync("///producten");
                 return;
             }
 
@@ -145,16 +146,19 @@ namespace Marketio_App.ViewModels
 
                     if (order.Id > 0)
                     {
-                        // Online: navigeer naar bestellingsdetail
                         await Shell.Current.DisplayAlert(
                             "Succes",
                             $"Bestelling {order.OrderNumber} succesvol geplaatst!",
                             "OK");
+
+                        // Navigeer naar Bestellingen-tab en push daarna order-detail.
+                        // Zo verdwijnt CreateOrderPage uit de navigatiestack en gaat
+                        // de back-knop op order-detail correct naar OrdersPage.
+                        await Shell.Current.GoToAsync("///orders");
                         await Shell.Current.GoToAsync($"order-detail?OrderId={order.Id}");
                     }
                     else
                     {
-                        // Offline: bestelling staat in wachtrij
                         await Shell.Current.DisplayAlert(
                             "Opgeslagen",
                             $"Geen internetverbinding. Bestelling {order.OrderNumber} is opgeslagen en wordt automatisch verstuurd zodra u verbinding heeft.",
@@ -186,7 +190,8 @@ namespace Marketio_App.ViewModels
         [RelayCommand]
         public async Task GoBackAsync()
         {
-            await Shell.Current.GoToAsync("cart");
+            // Gebruik .. voor echte back-navigatie (niet forward naar "cart")
+            await Shell.Current.GoToAsync("..");
         }
 
         partial void OnSameAsShippingChanged(bool value)

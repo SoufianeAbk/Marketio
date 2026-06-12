@@ -56,7 +56,7 @@
                         FontSize="12" />
                 </Frame>
 
-                <!-- Empty Cart Message -->
+                <!-- Lege Cart Bericht -->
                 <Frame 
                     IsVisible="{Binding IsCartEmpty}"
                     CornerRadius="8"

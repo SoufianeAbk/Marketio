@@ -63,7 +63,7 @@ namespace Marketio_App.ViewModels
 
                 if (success)
                 {
-                    // Get the newly saved token and update ApiService
+                    // Haalt het nieuw opgeslagen token op en werk ApiService bij
                     var token = await _authService.GetTokenAsync();
                     if (!string.IsNullOrWhiteSpace(token))
                     {
@@ -116,7 +116,7 @@ namespace Marketio_App.ViewModels
             }
             catch
             {
-                // Silently ignore if secure storage fails
+                // Negeer stilletjes als het opslaan in Secure Storage mislukt
             }
         }
     }

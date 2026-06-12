@@ -15,8 +15,7 @@ namespace Marketio_App.Pages
             base.OnAppearing();
             var viewModel = (AccountSettingsViewModel)BindingContext;
 
-            // Refresh profile data to ensure we have the current user's data
-            // This is especially important after login with a different user
+            
             await viewModel.RefreshProfileDataCommand.ExecuteAsync(null);
         }
     }

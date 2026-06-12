@@ -18,10 +18,10 @@ namespace Marketio_App.Pages
             {
                 await viewModel.LoadCartCommand.ExecuteAsync(null);
 
-                // Redirect to products page if cart is empty
+                // Winkelwagen is leeg: ga terug naar cart, niet naar producten
                 if (viewModel.IsCartEmpty)
                 {
-                    await Shell.Current.GoToAsync("///producten");
+                    await Shell.Current.GoToAsync("..");
                 }
             }
         }

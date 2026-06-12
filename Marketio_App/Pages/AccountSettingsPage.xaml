@@ -47,7 +47,7 @@
                         TextColor="{AppThemeBinding Light=#666666, Dark=#BBBBBB}" />
                 </StackLayout>
 
-                <!-- Messages -->
+                <!-- Berichten -->
                 <StackLayout IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" Spacing="8">
                     <Frame BackgroundColor="#FFE6E6" BorderColor="#CC0000" CornerRadius="8" Padding="12">
                         <Label
@@ -99,7 +99,7 @@
                                 Text="{Binding Email}"
                                 TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
 
-                            <!-- First Name (read-only) -->
+                            <!-- Voornaam (read-only) -->
                             <Label
                                 Grid.Row="2"
                                 Grid.Column="0"
@@ -114,7 +114,7 @@
                                 Text="{Binding FirstName}"
                                 TextColor="{AppThemeBinding Light:#000000, Dark:#FFFFFF}" />
 
-                            <!-- Last Name (read-only) -->
+                            <!-- Achternaam (read-only) -->
                             <Label
                                 Grid.Row="2"
                                 Grid.Column="1"

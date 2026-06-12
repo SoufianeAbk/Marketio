@@ -23,7 +23,7 @@ namespace Marketio_App.Services
         private bool _isRefreshing;
 
         /// <summary>
-        /// Exposes the base API URL for constructing absolute URLs (e.g., for images)
+        /// Geeft de basis-API-URL terug voor het opbouwen van absolute URL's (bijvoorbeeld voor afbeeldingen)
         /// </summary>
         public Uri? BaseAddress => _client.BaseAddress;
 
@@ -35,8 +35,8 @@ namespace Marketio_App.Services
         public HttpClient HttpClient => _client;
 
         /// <summary>
-        /// Raised when a 401 Unauthorized response is received AND the refresh token
-        /// also failed (or was absent). The app should navigate to the login page.
+        /// RWordt geactiveerd wanneer een 401 Unauthorized-respons wordt ontvangen en het refresh token niet kon worden gebruikt.
+        /// De gebruiker moet opnieuw aanmelden.
         /// </summary>
         public event EventHandler? TokenExpired;
 
@@ -48,7 +48,7 @@ namespace Marketio_App.Services
             _logger.LogDebug("[ApiService] Created. BaseAddress = {Base}", _client.BaseAddress);
         }
 
-        // ─── Initialization ───────────────────────────────────────────────────────
+        // Initialization
 
         public async Task InitializeAsync()
         {
@@ -68,7 +68,7 @@ namespace Marketio_App.Services
             }
             catch (Exception ex)
             {
-                // SecureStorage can throw on emulators / certain Android configs
+                // SecureStorage kan fouten veroorzaken op emulators of in specifieke Android-configuraties.
                 _logger.LogWarning(ex, "[ApiService] SecureStorage.GetAsync failed during init — continuing without token.");
             }
         }
@@ -93,7 +93,7 @@ namespace Marketio_App.Services
             }
         }
 
-        // ─── Token management ─────────────────────────────────────────────────────
+        // Token management
 
         public void SetAuthorizationHeader(string? token)
         {
@@ -126,7 +126,7 @@ namespace Marketio_App.Services
             }
             finally
             {
-                // Always apply to header, even if persistence fails
+                // Pas dit altijd toe op de header, ook wanneer de persistente opslag mislukt.
                 SetAuthorizationHeader(token);
             }
         }
@@ -163,7 +163,7 @@ namespace Marketio_App.Services
             await Task.CompletedTask;
         }
 
-        // ─── Silent token refresh (401-interceptor) ───────────────────────────────
+        // Silent token refresh (401-interceptor)
 
         /// <summary>
         /// Probeert het toegangstoken te vernieuwen via het opgeslagen refresh token.
@@ -257,7 +257,7 @@ namespace Marketio_App.Services
             return response; // aanroeper verantwoordelijk voor Dispose (via using)
         }
 
-        // ─── HTTP helpers ─────────────────────────────────────────────────────────
+        // HTTP helpers
 
         public async Task<T?> GetAsync<T>(string endpoint)
         {
@@ -441,7 +441,7 @@ namespace Marketio_App.Services
             }
         }
 
-        // ─── Helpers ──────────────────────────────────────────────────────────────
+        // Helpers
 
         private void OnTokenExpired() => TokenExpired?.Invoke(this, EventArgs.Empty);
 
@@ -465,7 +465,7 @@ namespace Marketio_App.Services
             catch { return false; }
         }
 
-        // ─── Interne DTO voor het refresh-antwoord ────────────────────────────────
+        // Interne DTO voor het refresh-antwoord
 
         private sealed class RefreshResponse
         {

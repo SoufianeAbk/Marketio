@@ -29,8 +29,6 @@ namespace Marketio_WPF.ViewModels
             set
             {
                 SetProperty(ref _selectedUser, value);
-
-                // Re-evaluate all user-specific commands when selection changes.
                 AssignRoleCommand.NotifyCanExecuteChanged();
                 RemoveRoleCommand.NotifyCanExecuteChanged();
                 ResetPasswordCommand.NotifyCanExecuteChanged();
@@ -84,6 +82,51 @@ namespace Marketio_WPF.ViewModels
             LockUserCommand = new RelayCommand(ExecuteLockUser, CanExecuteLockUser);
             DeleteUserCommand = new RelayCommand(ExecuteDeleteUser, CanExecuteDeleteUser);
             RefreshCommand = new RelayCommand(ExecuteRefresh);
+        }
+
+        // ── Sequentiële initialisatie (gebruikt door UserControl_Loaded) ──────
+        /// <summary>
+        /// Laadt rollen en gebruikers sequentieel om concurrente DbContext-toegang
+        /// te vermijden. Altijd via deze methode initialiseren, niet via de losse
+        /// Load-commands tegelijk aanroepen.
+        /// </summary>
+        public async Task InitializeAsync()
+        {
+            ClearMessages();
+            IsBusy = true;
+
+            try
+            {
+                // 1. Rollen eerst — eenvoudige query, geen loop
+                try
+                {
+                    var roles = await _userManagementService.GetAllRolesAsync();
+                    AvailableRoles = new ObservableCollection<string>(
+                        roles.Where(r => !string.IsNullOrWhiteSpace(r)));
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessage = $"Fout bij laden van rollen: {ex.Message}";
+                }
+
+                // 2. Gebruikers daarna — bevat meerdere awaits per user
+                try
+                {
+                    var users = await _userManagementService.GetAllUsersAsync();
+                    Users = new ObservableCollection<UserAdminDto>(users);
+
+                    if (!Users.Any())
+                        ErrorMessage = "Geen gebruikers gevonden.";
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessage = $"Fout bij laden van gebruikers: {ex.Message}";
+                }
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         // ── 1. Load users ─────────────────────────────────────────────────────
@@ -289,11 +332,9 @@ namespace Marketio_WPF.ViewModels
         private bool CanExecuteDeleteUser() => SelectedUser != null && !IsBusy;
 
         // ── 8. Refresh ────────────────────────────────────────────────────────
-        private void ExecuteRefresh()
+        private async void ExecuteRefresh()
         {
-            ClearMessages();
-            ExecuteLoadUsers();
-            ExecuteLoadRoles();
+            await InitializeAsync();
         }
     }
 }

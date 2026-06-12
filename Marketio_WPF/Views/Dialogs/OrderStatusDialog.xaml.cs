@@ -15,9 +15,9 @@ namespace Marketio_WPF.Views.Dialogs
             OrderNumberText.Text = $"Order:   {order.OrderNumber}";
             OrderDateText.Text = $"Datum:   {order.OrderDate:dd/MM/yyyy}";
             OrderTotalText.Text = $"Totaal:  €{order.TotalAmount:N2}";
-            CurrentStatusText.Text = $"Huidig:  {order.StatusName}";
+            CurrentStatusText.Text = $"Huidig:  {order.Status}";
 
-            string current = order.StatusName?.ToString() ?? "Pending";
+            string current = order.Status.ToString() ?? "Pending";
             foreach (ComboBoxItem item in StatusBox.Items)
                 if (item.Content.ToString() == current) { StatusBox.SelectedItem = item; break; }
 
