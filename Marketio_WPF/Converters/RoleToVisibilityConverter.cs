@@ -5,19 +5,19 @@ using System.Windows.Data;
 namespace Marketio_WPF.Converters
 {
     /// <summary>
-    /// Converter that returns visibility based on user role presence.
-    /// Takes a collection of roles and checks if any match the required role.
+    /// Converter die zichtbaarheid bepaalt op basis van de aanwezigheid van een gebruikersrol.
+    /// Ontvangt een verzameling rollen en controleert of een van deze rollen overeenkomt met de vereiste rol.
     /// </summary>
     public class RoleToVisibilityConverter : IMultiValueConverter
     {
         /// <summary>
-        /// Converts user roles and required role to visibility.
+        /// Zet gebruikersrollen en een vereiste rol om naar zichtbaarheid
         /// </summary>
         /// <param name="values">[0] = IList<string> of user roles, [1] = string of required role</param>
         /// <param name="targetType">Visibility</param>
         /// <param name="parameter">Not used</parameter>
         /// <param name="culture">Culture info</param>
-        /// <returns>Visibility.Visible if user has role, Visibility.Collapsed otherwise</returns>
+        /// <returns>Visibility.Visible als user een rol heeft, Visibility.Collapsed anders</returns>
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null || values.Length < 2)
@@ -35,7 +35,7 @@ namespace Marketio_WPF.Converters
                 return Visibility.Collapsed;
             }
 
-            // Check if user has the required role
+            // Controleert of de gebruiker de vereiste rol heeft
             var hasRole = userRoles.Any(role =>
                 role.Equals(requiredRole, StringComparison.OrdinalIgnoreCase));
 

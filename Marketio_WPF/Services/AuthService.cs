@@ -69,7 +69,7 @@ namespace Marketio_WPF.Services
                 FirstName = firstName,
                 LastName = lastName,
                 PhoneNumber = phoneNumber ?? string.Empty,
-                Address = address,           // <-- was DefaultAddress
+                Address = address,
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true
             };

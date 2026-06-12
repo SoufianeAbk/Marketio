@@ -184,7 +184,7 @@
             BackgroundColor="{AppThemeBinding Light={StaticResource LightFrameBackground}, Dark={StaticResource DarkFrameBackground}}"
             HasShadow="True">
             <VerticalStackLayout Spacing="12">
-                <!-- Subtotal -->
+                <!-- Subtotaal -->
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
                     <Label 
                         Grid.Column="0"

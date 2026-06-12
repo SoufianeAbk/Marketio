@@ -13,12 +13,12 @@ namespace Marketio_App.Converters
             {
                 return status switch
                 {
-                    OrderStatus.Pending => Color.FromArgb("#FFA500"),      // Orange
-                    OrderStatus.Processing => Color.FromArgb("#007AFF"),   // Blue
-                    OrderStatus.Shipped => Color.FromArgb("#3478F6"),      // Light Blue
-                    OrderStatus.Delivered => Color.FromArgb("#34C759"),    // Green
-                    OrderStatus.Cancelled => Color.FromArgb("#FF3B30"),    // Red
-                    _ => Color.FromArgb("#666666")                         // Gray
+                    OrderStatus.Pending => Color.FromArgb("#FFA500"),      // Oranje
+                    OrderStatus.Processing => Color.FromArgb("#007AFF"),   // Blauw
+                    OrderStatus.Shipped => Color.FromArgb("#3478F6"),      // Ligt Blauw
+                    OrderStatus.Delivered => Color.FromArgb("#34C759"),    // Groen
+                    OrderStatus.Cancelled => Color.FromArgb("#FF3B30"),    // Rood
+                    _ => Color.FromArgb("#666666")                         // Grijs
                 };
             }
 

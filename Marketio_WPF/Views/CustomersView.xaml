@@ -33,7 +33,7 @@
                     FontWeight="Bold" Cursor="Hand" BorderThickness="0"/>
         </StackPanel>
 
-        <!-- Messages -->
+        <!-- Berichten -->
         <StackPanel Grid.Row="1" Margin="0,0,0,8">
             <TextBlock Text="{Binding ErrorMessage}"
                        Foreground="#E74C3C" FontSize="12" TextWrapping="Wrap"

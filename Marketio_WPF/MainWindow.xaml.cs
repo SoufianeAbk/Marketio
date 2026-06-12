@@ -4,7 +4,7 @@ using Marketio_WPF.ViewModels;
 namespace Marketio_WPF
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interactie logica voor MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -12,7 +12,7 @@ namespace Marketio_WPF
         {
             InitializeComponent();
 
-            // Set the DataContext to MainViewModel
+            // Set the DataContext naar MainViewModel
             this.DataContext = App.ServiceProvider.GetService(typeof(MainViewModel));
         }
     }

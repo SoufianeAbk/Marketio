@@ -3,38 +3,38 @@
 namespace Marketio_WPF.Services.Interfaces
 {
     /// <summary>
-    /// Interface for authentication service operations in WPF application
+    /// Interface voor authenticatiediensten in WPF-toepassing
     /// </summary>
     public interface IAuthService
     {
         /// <summary>
-        /// Get the currently logged-in user
+        /// Haal de momenteel aangemelde gebruiker op
         /// </summary>
         Task<AppUser?> GetCurrentUserAsync();
 
         /// <summary>
-        /// Get the current user (synchronous property)
+        /// Haal de huidige gebruiker op (synchrone eigenschap)
         /// </summary>
         AppUser? CurrentUser { get; }
 
         /// <summary>
-        /// Authenticate user with email and password
+        /// Authenticeer een gebruiker met e-mailadres en wachtwoord
         /// </summary>
-        /// <param name="email">User email</param>
-        /// <param name="password">User password</param>
-        /// <returns>True if successful, false if failed</returns>
+        /// <param name="email">E-mailadres van de gebruiker</param>
+        /// <param name="password">Wachtwoord van de gebruiker</param>
+        /// <returns>True indien succesvol, anders false</returns>
         Task<bool> LoginAsync(string email, string password);
 
         /// <summary>
-        /// Register a new user
+        /// Registreer een nieuwe gebruiker
         /// </summary>
-        /// <param name="email">User email</param>
-        /// <param name="firstName">User first name</param>
-        /// <param name="lastName">User last name</param>
-        /// <param name="password">User password</param>
-        /// <param name="phoneNumber">User phone number (optional)</param>
-        /// <param name="address">User address (optional)</param>
-        /// <returns>True if successful, false if registration failed</returns>
+        /// <param name="email">E-mailadres van de gebruiker</param>
+        /// <param name="firstName">Voornaam van de gebruiker</param>
+        /// <param name="lastName">Achternaam van de gebruiker</param>
+        /// <param name="password">Wachtwoord van de gebruiker</param>
+        /// <param name="phoneNumber">Telefoonnummer van de gebruiker (optioneel)</param>
+        /// <param name="address">Adres van de gebruiker (optioneel)</param>
+        /// <returns>True indien succesvol, anders false indien registratie mislukt</returns>
         Task<bool> RegisterAsync(
             string email,
             string firstName,
@@ -44,95 +44,95 @@ namespace Marketio_WPF.Services.Interfaces
             string? address = null);
 
         /// <summary>
-        /// Logout the current user
+        /// Meld de huidige gebruiker af
         /// </summary>
         Task LogoutAsync();
 
         /// <summary>
-        /// Change password for authenticated user
+        /// Wijzig het wachtwoord van een geauthenticeerde gebruiker
         /// </summary>
-        /// <param name="userId">User ID</param>
-        /// <param name="currentPassword">Current password</param>
-        /// <param name="newPassword">New password</param>
-        /// <returns>True if successful, false if failed</returns>
+        /// <param name="userId">Gebruikers-ID</param>
+        /// <param name="currentPassword">Huidig wachtwoord</param>
+        /// <param name="newPassword">Nieuw wachtwoord</param>
+        /// <returns>True indien succesvol, anders false</returns>
         Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword);
 
         /// <summary>
-        /// Check if user is authenticated
+        /// Controleer of de gebruiker geauthenticeerd is
         /// </summary>
-        /// <returns>True if user is logged in, false otherwise</returns>
+        /// <returns>True indien de gebruiker aangemeld is, anders false</returns>
         bool IsAuthenticated { get; }
 
         /// <summary>
-        /// Get user by ID
+        /// Haal een gebruiker op via ID
         /// </summary>
-        /// <param name="userId">User ID</param>
-        /// <returns>AppUser if found, null otherwise</returns>
+        /// <param name="userId">Gebruikers-ID</param>
+        /// <returns>AppUser indien gevonden, anders null</returns>
         Task<AppUser?> GetUserByIdAsync(string userId);
 
         /// <summary>
-        /// Get user by email
+        /// Haalt een gebruiker op via e-mailadres
         /// </summary>
-        /// <param name="email">User email</param>
-        /// <returns>AppUser if found, null otherwise</returns>
+        /// <param name="email">E-mailadres van de gebruiker</param>
+        /// <returns>AppUser indien gevonden, anders null</returns>
         Task<AppUser?> GetUserByEmailAsync(string email);
 
         /// <summary>
-        /// Update user profile information
+        /// Werk profielinformatie van een gebruiker bij
         /// </summary>
-        /// <param name="user">Updated user object</param>
-        /// <returns>True if successful, false if failed</returns>
+        /// <param name="user">Bijgewerkt gebruikersobject</param>
+        /// <returns>True indien succesvol, anders false</returns>
         Task<bool> UpdateUserAsync(AppUser user);
 
         /// <summary>
-        /// Check if user has specific role
+        /// Controleer of een gebruiker een specifieke rol heeft
         /// </summary>
-        /// <param name="userId">User ID</param>
-        /// <param name="roleName">Role name to check</param>
-        /// <returns>True if user has role, false otherwise</returns>
+        /// <param name="userId">Gebruikers-ID</param>
+        /// <param name="roleName">Te controleren rolnaam</param>
+        /// <returns>True indien de gebruiker de rol heeft, anders false</returns>
         Task<bool> UserHasRoleAsync(string userId, string roleName);
 
         /// <summary>
-        /// Get all roles for a user
+        /// Haalt alle rollen van een gebruiker op
         /// </summary>
-        /// <param name="userId">User ID</param>
-        /// <returns>List of role names</returns>
+        /// <param name="userId">Gebruikers-ID</param>
+        /// <returns>Lijst met rolnamen</returns>
         Task<IList<string>> GetUserRolesAsync(string userId);
 
         /// <summary>
-        /// Lock user account temporarily (failed login attempts)
+        /// Vergrendelt tijdelijk een gebruikersaccount (mislukte aanmeldpogingen)
         /// </summary>
-        /// <param name="userId">User ID</param>
-        /// <param name="duration">Lock duration in minutes</param>
-        /// <returns>True if successful, false if failed</returns>
+        /// <param name="userId">Gebruikers-ID</param>
+        /// <param name="duration">Duur van de vergrendeling in minuten</param>
+        /// <returns>True indien succesvol, anders false</returns>
         Task<bool> LockUserAsync(string userId, int duration = 30);
 
         /// <summary>
-        /// Unlock user account
+        /// Ontgrendelt een gebruikersaccount
         /// </summary>
-        /// <param name="userId">User ID</param>
-        /// <returns>True if successful, false if failed</returns>
+        /// <param name="userId">Gebruikers-ID</param>
+        /// <returns>True indien succesvol, anders false</returns>
         Task<bool> UnlockUserAsync(string userId);
 
         /// <summary>
-        /// Check if user account is locked
+        /// Controleert of een gebruikersaccount vergrendeld is
         /// </summary>
-        /// <param name="userId">User ID</param>
-        /// <returns>True if locked, false otherwise</returns>
+        /// <param name="userId">Gebruikers-ID</param>
+        /// <returns>True indien vergrendeld, anders false</returns>
         Task<bool> IsUserLockedAsync(string userId);
 
         /// <summary>
-        /// Deactivate user account (soft delete)
+        /// Deactiveert een gebruikersaccount (soft delete)
         /// </summary>
-        /// <param name="userId">User ID</param>
-        /// <returns>True if successful, false if failed</returns>
+        /// <param name="userId">Gebruikers-ID</param>
+        /// <returns>True indien succesvol, anders false</returns>
         Task<bool> DeactivateUserAsync(string userId);
 
         /// <summary>
-        /// Reactivate user account
+        /// Heractiveer een gebruikersaccount
         /// </summary>
-        /// <param name="userId">User ID</param>
-        /// <returns>True if successful, false if failed</returns>
+        /// <param name="userId">Gebruikers-ID</param>
+        /// <returns>True indien succesvol, anders false</returns>
         Task<bool> ReactivateUserAsync(string userId);
     }
 }

@@ -12,15 +12,15 @@ namespace Marketio_App.Converters
             {
                 if (stock == 0)
                 {
-                    return Color.FromArgb("#FF3B30");  // Red - Out of stock
+                    return Color.FromArgb("#FF3B30");  // Rood - Geen Stock
                 }
                 else if (stock < 10)
                 {
-                    return Color.FromArgb("#FFA500");  // Orange - Low stock
+                    return Color.FromArgb("#FFA500");  // Oranje - Laag voorraad
                 }
                 else
                 {
-                    return Color.FromArgb("#34C759");  // Green - In stock
+                    return Color.FromArgb("#34C759");  // Groen - Op voorraad
                 }
             }
 

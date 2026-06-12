@@ -218,7 +218,7 @@
                     </VerticalStackLayout>
                 </Frame>
 
-                <!-- Order Total -->
+                <!-- Order Totaal -->
                 <Frame 
                     Padding="15"
                     CornerRadius="10"

@@ -7,8 +7,8 @@ using Microsoft.Extensions.Logging;
 namespace Marketio_WPF.ViewModels
 {
     /// <summary>
-    /// ViewModel for user login functionality.
-    /// Handles authentication and credential validation.
+    /// ViewModel voor gebruikersaanmelding.
+    /// Beheert authenticatie en validatie van inloggegevens.
     /// </summary>
     internal class LoginViewModel : BaseViewModel
     {
@@ -21,12 +21,12 @@ namespace Marketio_WPF.ViewModels
         private RelayCommand? _registerCommand;
 
         /// <summary>
-        /// Event raised when login is successful and navigation should occur.
+        /// Gebeurtenis die wordt geactiveerd wanneer het aanmelden succesvol is
         /// </summary>
         public event EventHandler? LoginSucceeded;
 
         /// <summary>
-        /// Event raised when user requests to navigate to register page.
+        /// ebeurtenis die wordt geactiveerd wanneer de gebruiker naar de registratiepagina wil navigeren.
         /// </summary>
         public event EventHandler? RegisterRequested;
 

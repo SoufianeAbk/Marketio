@@ -6,14 +6,14 @@ using System.Collections.ObjectModel;
 namespace Marketio_WPF.ViewModels
 {
     /// <summary>
-    /// ViewModel for administrative functions.
-    /// Handles user management, role assignment, and system-wide operations.
+    /// ViewModel voor administratieve functies.
+    /// Beheert gebruikersbeheer, roltoewijzingen en systeembrede bewerkingen.
     /// </summary>
     internal class AdminViewModel : BaseViewModel
     {
         private readonly UserManagementService _userManagementService;
 
-        // ── Users ────────────────────────────────────────────────────────────
+        // Gebruikers
         private ObservableCollection<UserAdminDto> _users = new();
         private UserAdminDto? _selectedUser;
 
@@ -37,7 +37,7 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        // ── Roles ────────────────────────────────────────────────────────────
+        // Rollen
         private ObservableCollection<string> _availableRoles = new();
         private string _selectedRole = string.Empty;
 
@@ -58,7 +58,7 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        // ── Commands ─────────────────────────────────────────────────────────
+        // Commands
         public RelayCommand LoadUsersCommand { get; }
         public RelayCommand LoadRolesCommand { get; }
         public RelayCommand AssignRoleCommand { get; }
@@ -68,7 +68,7 @@ namespace Marketio_WPF.ViewModels
         public RelayCommand DeleteUserCommand { get; }
         public RelayCommand RefreshCommand { get; }
 
-        // ── Constructor ───────────────────────────────────────────────────────
+        // Constructor
         public AdminViewModel(UserManagementService userManagementService)
         {
             _userManagementService = userManagementService
@@ -84,7 +84,7 @@ namespace Marketio_WPF.ViewModels
             RefreshCommand = new RelayCommand(ExecuteRefresh);
         }
 
-        // ── Sequentiële initialisatie (gebruikt door UserControl_Loaded) ──────
+        // Sequentiële initialisatie (gebruikt door UserControl_Loaded)
         /// <summary>
         /// Laadt rollen en gebruikers sequentieel om concurrente DbContext-toegang
         /// te vermijden. Altijd via deze methode initialiseren, niet via de losse
@@ -129,7 +129,7 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        // ── 1. Load users ─────────────────────────────────────────────────────
+        // 1. Gebruikers Laden
         private async void ExecuteLoadUsers()
         {
             try
@@ -153,7 +153,7 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        // ── 2. Load available roles ───────────────────────────────────────────
+        // 2. Beschikbare Rollen Laden
         private async void ExecuteLoadRoles()
         {
             try
@@ -168,7 +168,7 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        // ── 3. Assign role ────────────────────────────────────────────────────
+        // 3. Rol Toekennen
         private async void ExecuteAssignRole()
         {
             try
@@ -203,7 +203,7 @@ namespace Marketio_WPF.ViewModels
         private bool CanExecuteAssignRole() =>
             SelectedUser != null && !string.IsNullOrWhiteSpace(SelectedRole) && !IsBusy;
 
-        // ── 4. Remove role ────────────────────────────────────────────────────
+        // 4. Verwijder Rol
         private async void ExecuteRemoveRole()
         {
             try
@@ -238,7 +238,7 @@ namespace Marketio_WPF.ViewModels
         private bool CanExecuteRemoveRole() =>
             SelectedUser != null && !string.IsNullOrWhiteSpace(SelectedRole) && !IsBusy;
 
-        // ── 5. Reset password ─────────────────────────────────────────────────
+        // 5. Reset wachtwoord
         private async void ExecuteResetPassword()
         {
             try
@@ -266,7 +266,7 @@ namespace Marketio_WPF.ViewModels
 
         private bool CanExecuteResetPassword() => SelectedUser != null && !IsBusy;
 
-        // ── 6. Lock user ──────────────────────────────────────────────────────
+        // 6. Lock user
         private async void ExecuteLockUser()
         {
             try
@@ -298,7 +298,7 @@ namespace Marketio_WPF.ViewModels
 
         private bool CanExecuteLockUser() => SelectedUser != null && !IsBusy;
 
-        // ── 7. Delete user (GDPR Right to be Forgotten) ───────────────────────
+        // 7. Delete user (GDPR Right to be Forgotten)
         private async void ExecuteDeleteUser()
         {
             try
@@ -331,7 +331,7 @@ namespace Marketio_WPF.ViewModels
 
         private bool CanExecuteDeleteUser() => SelectedUser != null && !IsBusy;
 
-        // ── 8. Refresh ────────────────────────────────────────────────────────
+        // 8. Refresh
         private async void ExecuteRefresh()
         {
             await InitializeAsync();

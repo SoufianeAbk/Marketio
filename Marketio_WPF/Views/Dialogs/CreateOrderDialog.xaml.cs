@@ -9,13 +9,13 @@ namespace Marketio_WPF.Views.Dialogs
 {
     public partial class CreateOrderDialog : Window
     {
-        // ── Data ─────────────────────────────────────────────────────────────
+        // Data
         private readonly List<dynamic> _products;
 
         /// <summary>Artikelrijen; ItemsControl bindt hieraan via code-behind.</summary>
         public ObservableCollection<OrderItemRow> Items { get; } = new();
 
-        // ── Constructor ───────────────────────────────────────────────────────
+        // Constructor
         public CreateOrderDialog(List<dynamic> customers, List<dynamic> products)
         {
             InitializeComponent();
@@ -45,7 +45,7 @@ namespace Marketio_WPF.Views.Dialogs
             AddRow();
         }
 
-        // ── Publieke uitleeswaarden (gebruikt door OrdersView.xaml.cs) ────────
+        // Publieke uitleeswaarden (gebruikt door OrdersView.xaml.cs)
 
         public string SelectedCustomerId
         {
@@ -82,7 +82,7 @@ namespace Marketio_WPF.Views.Dialogs
             }
         }
 
-        // ── Rijen beheer ──────────────────────────────────────────────────────
+        // Rijen beheer
 
         private void AddRow()
         {
@@ -100,7 +100,7 @@ namespace Marketio_WPF.Views.Dialogs
             UpdateTotal();
         }
 
-        // ── Totaalberekening ─────────────────────────────────────────────────
+        // Totaalberekening
 
         private void UpdateTotal()
         {
@@ -108,7 +108,7 @@ namespace Marketio_WPF.Views.Dialogs
             TotalText.Text = $"Totaal: €{total:N2}";
         }
 
-        // ── "Zelfde als verzendadres"-checkbox ────────────────────────────────
+        // "Zelfde als verzendadres"-checkbox
 
         private void SameAsShipping_Changed(object sender, RoutedEventArgs e)
         {
@@ -129,7 +129,7 @@ namespace Marketio_WPF.Views.Dialogs
                 BillingBox.Text = ShippingBox.Text;
         }
 
-        // ── Opslaan / Annuleren ───────────────────────────────────────────────
+        // Opslaan / Annuleren
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
@@ -164,7 +164,7 @@ namespace Marketio_WPF.Views.Dialogs
         }
     }
 
-    // ── Hulpklassen ───────────────────────────────────────────────────────────
+    // Hulpklassen
 
     /// <summary>
     /// Eén artikelrij in de CreateOrderDialog.

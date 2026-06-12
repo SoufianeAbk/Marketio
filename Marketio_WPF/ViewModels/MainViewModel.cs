@@ -7,8 +7,8 @@ using System.Windows.Controls;
 namespace Marketio_WPF.ViewModels
 {
     /// <summary>
-    /// Main ViewModel for the application.
-    /// Manages overall application state and navigation.
+    /// Main ViewModel voor de applicatie.
+    /// Beheert de algehele status en navigatie van de applicatie.
     /// </summary>
     internal class MainViewModel : BaseViewModel
     {
@@ -172,7 +172,7 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        // ── Admin navigatie: alleen toegankelijk voor Admin ───────────────────
+        // Admin navigatie: alleen toegankelijk voor Admin
 
         private bool CanExecuteNavigateToAdmin() => IsAdmin;
 
@@ -196,7 +196,7 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        // ── Register navigatie: alleen toegankelijk voor Admin ────────────────
+        // Register navigatie: alleen toegankelijk voor Admin
 
         private bool CanExecuteNavigateToRegister() => IsAdmin;
 

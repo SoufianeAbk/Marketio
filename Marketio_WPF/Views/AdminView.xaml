@@ -28,9 +28,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- ═══════════════════════════════════════════
-             ROW 0 – Header
-             ═══════════════════════════════════════════ -->
+        <!-- ROW 0 – Header -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
             <TextBlock Text="⚙️ User Management"
                        FontSize="22" FontWeight="Bold"
@@ -43,11 +41,9 @@
                     FontWeight="Bold" Cursor="Hand" BorderThickness="0"/>
         </StackPanel>
 
-        <!-- ═══════════════════════════════════════════
-             ROW 1 – Feedback messages
+        <!-- ROW 1 – Feedback messages
              HasError / HasSuccess zijn bool-properties in BaseViewModel:
-             geen custom converter nodig, enkel de ingebouwde BooleanToVisibilityConverter
-             ═══════════════════════════════════════════ -->
+             geen custom converter nodig, enkel de ingebouwde BooleanToVisibilityConverter -->
         <StackPanel Grid.Row="1" Margin="0,0,0,8">
             <TextBlock Text="{Binding ErrorMessage}"
                        Foreground="#E74C3C" FontSize="12" TextWrapping="Wrap"
@@ -59,16 +55,14 @@
                            Converter={StaticResource BoolToVisibilityConverter}}"/>
         </StackPanel>
 
-        <!-- ═══════════════════════════════════════════
-             ROW 2 – User list (left)  +  Action panel (right)
-             ═══════════════════════════════════════════ -->
+        <!-- ROW 2 – User list (links)  +  Action panel (rechts) -->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="260"/>
             </Grid.ColumnDefinitions>
 
-            <!-- ─── User DataGrid ─────────────────────────── -->
+            <!-- User DataGrid -->
             <Grid Grid.Column="0" Margin="0,0,12,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -124,12 +118,12 @@
                                  Converter={StaticResource BoolToVisibilityConverter}}"/>
             </Grid>
 
-            <!-- ─── Action Panel ───────────────────────────── -->
+            <!-- Action Panel -->
             <ScrollViewer Grid.Column="1"
                           VerticalScrollBarVisibility="Auto">
                 <StackPanel>
 
-                    <!-- Selected user info card -->
+                    <!-- Selecteer gebruiker info kaart -->
                     <Border Background="#ECF0F1"
                             BorderBrush="#BDC3C7" BorderThickness="1"
                             CornerRadius="4" Padding="10" Margin="0,0,0,10">
@@ -149,7 +143,7 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- ── 1. Role Management ── -->
+                    <!-- 1. Role Management -->
                     <Border Background="White"
                             BorderBrush="#BDC3C7" BorderThickness="1"
                             CornerRadius="4" Padding="10" Margin="0,0,0,10">
@@ -180,7 +174,7 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- ── 2. Account Security ── -->
+                    <!-- 2. Account Security -->
                     <Border Background="White"
                             BorderBrush="#BDC3C7" BorderThickness="1"
                             CornerRadius="4" Padding="10" Margin="0,0,0,10">
@@ -205,7 +199,7 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- ── 3. GDPR – User Deletion ── -->
+                    <!-- 3. GDPR – User Deletion -->
                     <Border Background="#FDF2F2"
                             BorderBrush="#E74C3C" BorderThickness="1"
                             CornerRadius="4" Padding="10">

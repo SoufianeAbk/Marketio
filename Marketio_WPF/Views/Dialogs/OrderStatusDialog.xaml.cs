@@ -5,7 +5,7 @@ namespace Marketio_WPF.Views.Dialogs
 {
     public partial class OrderStatusDialog : Window
     {
-        /// <summary>The status name chosen by the user (e.g. "Shipped").</summary>
+        /// <summary>De statusnaam die door de gebruiker is gekozen (bijv. "Verzonden").</summary>
         public string SelectedStatus { get; private set; } = "Pending";
 
         public OrderStatusDialog(dynamic order)

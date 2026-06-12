@@ -5,8 +5,8 @@ using System.Windows.Data;
 namespace Marketio_WPF.Converters
 {
     /// <summary>
-    /// Converts a string value to Visibility.
-    /// Empty/null strings are Collapsed, non-empty strings are Visible.
+    /// Zet een tekenreekswaarde om naar zichtbaarheid.
+    /// Lege of null-tekenreeksen worden Collapsed, niet-lege tekenreeksen worden Visible.
     /// </summary>
     public class StringToVisibilityConverter : IValueConverter
     {

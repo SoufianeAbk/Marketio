@@ -7,12 +7,12 @@ namespace Marketio_WPF.ViewModels
 {
     internal class OrdersViewModel : BaseViewModel
     {
-        // ── Services ──────────────────────────────────────────────────────────
+        // Services
         private readonly OrderService _orderService;
         private readonly CustomerService _customerService;
         private readonly ProductService _productService;
 
-        // ── Backing fields ────────────────────────────────────────────────────
+        // Backing fields
         private ObservableCollection<dynamic> _orders = new();
         private ObservableCollection<dynamic> _allOrders = new();   // cache voor client-side filter
         private dynamic? _selectedOrder;
@@ -25,7 +25,7 @@ namespace Marketio_WPF.ViewModels
         private RelayCommand? _filterByStatusCommand;
         private RelayCommand? _refreshCommand;
 
-        // ── Dialog events ─────────────────────────────────────────────────────
+        // Dialog events
 
         /// <summary>Raised wanneer de view de CreateOrderDialog moet openen.</summary>
         public event EventHandler<(List<dynamic> Customers, List<dynamic> Products)>? CreateOrderRequested;
@@ -33,7 +33,7 @@ namespace Marketio_WPF.ViewModels
         /// <summary>Raised wanneer de view de OrderStatusDialog moet openen.</summary>
         public event EventHandler<dynamic>? UpdateOrderRequested;
 
-        // ── Properties ────────────────────────────────────────────────────────
+        // Properties
         public ObservableCollection<dynamic> Orders
         {
             get => _orders;
@@ -59,7 +59,7 @@ namespace Marketio_WPF.ViewModels
             set => SetProperty(ref _statusFilter, value);
         }
 
-        // ── Commands ──────────────────────────────────────────────────────────
+        // Commands
         public RelayCommand LoadOrdersCommand => _loadOrdersCommand ??= new RelayCommand(ExecuteLoadOrders);
         public RelayCommand CreateOrderCommand => _createOrderCommand ??= new RelayCommand(ExecuteCreateOrder, CanExecuteCreateOrder);
         public RelayCommand UpdateOrderCommand => _updateOrderCommand ??= new RelayCommand(ExecuteUpdateOrder, CanExecuteUpdateOrder);
@@ -67,7 +67,7 @@ namespace Marketio_WPF.ViewModels
         public RelayCommand FilterByStatusCommand => _filterByStatusCommand ??= new RelayCommand(ExecuteFilterByStatus);
         public RelayCommand RefreshCommand => _refreshCommand ??= new RelayCommand(ExecuteLoadOrders);
 
-        // ── Constructor ───────────────────────────────────────────────────────
+        // Constructor
         public OrdersViewModel(
             OrderService orderService,
             CustomerService customerService,
@@ -78,7 +78,7 @@ namespace Marketio_WPF.ViewModels
             _productService = productService ?? throw new ArgumentNullException(nameof(productService));
         }
 
-        // ── Load ──────────────────────────────────────────────────────────────
+        // Load
         private async void ExecuteLoadOrders()
         {
             try
@@ -95,7 +95,7 @@ namespace Marketio_WPF.ViewModels
             finally { IsBusy = false; }
         }
 
-        // ── Create (laadt klanten + producten, gooit event naar view) ─────────
+        // Create (laadt klanten + producten, gooit event naar view)
         private async void ExecuteCreateOrder()
         {
             try
@@ -144,7 +144,7 @@ namespace Marketio_WPF.ViewModels
             finally { IsBusy = false; }
         }
 
-        // ── Update status (raises event; view opens dialog) ───────────────────
+        // Update status (raises event; view opent dialoog)
         private void ExecuteUpdateOrder()
         {
             if (SelectedOrder == null) { ErrorMessage = "Geen order geselecteerd."; return; }
@@ -153,7 +153,7 @@ namespace Marketio_WPF.ViewModels
 
         private bool CanExecuteUpdateOrder() => SelectedOrder != null && !IsBusy;
 
-        // ── Delete ────────────────────────────────────────────────────────────
+        // Delete
         private async void ExecuteDeleteOrder()
         {
             if (SelectedOrder == null) { ErrorMessage = "Geen order geselecteerd."; return; }
@@ -177,7 +177,7 @@ namespace Marketio_WPF.ViewModels
 
         private bool CanExecuteDeleteOrder() => SelectedOrder != null && !IsBusy;
 
-        // ── Filter (client-side) ──────────────────────────────────────────────
+        // Filter (client-side)
         private void ExecuteFilterByStatus()
         {
             if (string.IsNullOrEmpty(StatusFilter) || StatusFilter == "All")
@@ -192,7 +192,7 @@ namespace Marketio_WPF.ViewModels
             Orders = new ObservableCollection<dynamic>(filtered);
         }
 
-        // ── Submit handler voor status-update (aangeroepen door view) ─────────
+        // Submit handler voor status-update (aangeroepen door view)
 
         /// <summary>
         /// Aangeroepen door OrdersView na bevestiging van de OrderStatusDialog.

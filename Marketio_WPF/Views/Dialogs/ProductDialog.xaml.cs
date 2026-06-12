@@ -31,7 +31,7 @@ namespace Marketio_WPF.Views.Dialogs
             }
         }
 
-        /// <summary>Builds a ProductDto from the current form values.</summary>
+        /// <summary>Bouwt een ProductDto uit de huidige formulierwaarden.</summary>
         public ProductDto ToDto(int id = 0)
         {
             var selected = (ComboBoxItem)CategoryBox.SelectedItem;

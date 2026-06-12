@@ -25,7 +25,7 @@
                 </StackPanel>
             </Border>
 
-            <!-- New status -->
+            <!-- Nieuwe status -->
             <TextBlock Text="Nieuwe status *"
                        FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
             <ComboBox x:Name="StatusBox" Height="34" Margin="0,0,0,20">

@@ -16,7 +16,7 @@
                        FontSize="20" FontWeight="Bold"
                        Foreground="#2C3E50" Margin="0,0,0,20"/>
 
-            <!-- Name -->
+            <!-- Naam -->
             <TextBlock Text="Naam *" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
             <TextBox x:Name="NameBox" Height="34" Padding="8" FontSize="12"
                      BorderBrush="#BDC3C7" BorderThickness="1" Margin="0,0,0,12"/>
@@ -28,7 +28,7 @@
                      TextWrapping="Wrap" AcceptsReturn="True"
                      Margin="0,0,0,12"/>
 
-            <!-- Price + Stock -->
+            <!-- Prijs + Voorraad -->
             <Grid Margin="0,0,0,12">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -49,7 +49,7 @@
                 </StackPanel>
             </Grid>
 
-            <!-- Category -->
+            <!-- Categorie -->
             <TextBlock Text="Categorie *" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
             <ComboBox x:Name="CategoryBox" Height="34" Margin="0,0,0,12">
                 <ComboBoxItem Content="Electronics"   Tag="1"/>

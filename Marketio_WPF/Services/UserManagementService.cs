@@ -147,7 +147,7 @@ namespace Marketio_WPF.Services
             }
         }
 
-        // ← Enige echte wijziging: ToListAsync() i.p.v. Task.FromResult(...ToList())
+        // Enige echte wijziging: ToListAsync() i.p.v. Task.FromResult(...ToList())
         public async Task<List<string>> GetAllRolesAsync()
         {
             try

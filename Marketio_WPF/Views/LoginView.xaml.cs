@@ -6,7 +6,7 @@ using System.Windows.Controls;
 namespace Marketio_WPF.Views
 {
     /// <summary>
-    /// Interaction logic for LoginView.xaml
+    /// Interactie logica voor LoginView.xaml
     /// </summary>
     public partial class LoginView : Window
     {
@@ -14,7 +14,7 @@ namespace Marketio_WPF.Views
         {
             InitializeComponent();
 
-            // Wire up after InitializeComponent so named elements exist
+            // Wire up na InitializeComponent zodat naam elementen bestaan
             Loaded += (s, e) =>
             {
                 if (DataContext is not LoginViewModel viewModel)

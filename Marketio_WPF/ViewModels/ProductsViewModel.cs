@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Marketio_Shared.DTOs;
+using Marketio_Shared.Enums;
 using Marketio_WPF.Services;
 using System.Collections.ObjectModel;
 
@@ -17,7 +18,38 @@ namespace Marketio_WPF.ViewModels
         private RelayCommand? _deleteProductCommand;
         private RelayCommand? _refreshCommand;
 
-        // ── Dialog events ────────────────────────────────────────────────────
+        // Categorie-filter
+        private List<dynamic> _allProducts = new();
+        private string _selectedCategoryFilter = "Alle categorieën";
+
+        /// <summary>
+        /// Vaste lijst voor de ComboBox: "Alle categorieën" + elke enum-waarde.
+        /// </summary>
+        public IReadOnlyList<string> CategoryFilterOptions { get; } =
+            new[] { "Alle categorieën" }
+            .Concat(Enum.GetNames<ProductCategory>())
+            .ToArray();
+
+        public string SelectedCategoryFilter
+        {
+            get => _selectedCategoryFilter;
+            set
+            {
+                if (SetProperty(ref _selectedCategoryFilter, value))
+                    ApplyFilter();
+            }
+        }
+
+        private void ApplyFilter()
+        {
+            Products = _selectedCategoryFilter == "Alle categorieën"
+                ? new ObservableCollection<dynamic>(_allProducts)
+                : new ObservableCollection<dynamic>(
+                    _allProducts.Where(p =>
+                        ((ProductCategory)p.Category).ToString() == _selectedCategoryFilter));
+        }
+
+        // Dialoogvenster-gebeurtenissen
         public event EventHandler? CreateProductRequested;
         public event EventHandler<dynamic>? EditProductRequested;
 
@@ -57,7 +89,7 @@ namespace Marketio_WPF.ViewModels
             _productService = productService ?? throw new ArgumentNullException(nameof(productService));
         }
 
-        // ── Load ──────────────────────────────────────────────────────────────
+        // Laden
         private async void ExecuteLoadProducts()
         {
             try
@@ -65,7 +97,8 @@ namespace Marketio_WPF.ViewModels
                 IsBusy = true;
                 ClearMessages();
                 var products = await _productService.GetAllProductsAsync();
-                Products = new ObservableCollection<dynamic>(products ?? new List<dynamic>());
+                _allProducts = products ?? new List<dynamic>();
+                ApplyFilter();
                 if (!Products.Any())
                     ErrorMessage = "No products found.";
             }
@@ -73,7 +106,7 @@ namespace Marketio_WPF.ViewModels
             finally { IsBusy = false; }
         }
 
-        // ── Create / Edit (raise events; view opens dialog) ───────────────────
+        // Aanmaken / Bewerken (activeert gebeurtenissen; de view opent een dialoogvenster)
         private void ExecuteCreateProduct() =>
             CreateProductRequested?.Invoke(this, EventArgs.Empty);
 
@@ -85,7 +118,7 @@ namespace Marketio_WPF.ViewModels
 
         private bool CanExecuteEditProduct() => SelectedProduct != null && !IsBusy;
 
-        // ── Delete ────────────────────────────────────────────────────────────
+        // Verwijderen
         private async void ExecuteDeleteProduct()
         {
             if (SelectedProduct == null) { ErrorMessage = "No product selected."; return; }
@@ -97,6 +130,7 @@ namespace Marketio_WPF.ViewModels
                 var success = await _productService.DeleteProductAsync(productId);
                 if (success)
                 {
+                    _allProducts.Remove(SelectedProduct);
                     Products.Remove(SelectedProduct);
                     SuccessMessage = "Product deleted successfully.";
                     SelectedProduct = null;
@@ -109,10 +143,10 @@ namespace Marketio_WPF.ViewModels
 
         private bool CanExecuteDeleteProduct() => SelectedProduct != null && !IsBusy;
 
-        // ── Submit handlers (called by view after dialog OK) ──────────────────
+        // Verwerkingsmethoden (aangeroepen door de view na bevestiging van het dialoogvenster)
 
         /// <summary>
-        /// Called by ProductsView after the Create dialog is confirmed.
+        /// Aangeroepen door ProductsView nadat het dialoogvenster voor aanmaken is bevestigd.
         /// </summary>
         public async Task SubmitCreateProductAsync(ProductDto dto)
         {
@@ -129,8 +163,8 @@ namespace Marketio_WPF.ViewModels
         }
 
         /// <summary>
-        /// Called by ProductsView after the Edit dialog is confirmed.
-        /// FIX CS7036: dto.Id meegeven als eerste argument want ProductService.UpdateProductAsync
+        /// Aangeroepen door ProductsView nadat het dialoogvenster voor bewerken is bevestigd.
+        /// OPLOSSING CS7036: dto.Id meegeven als eerste argument omdat ProductService.UpdateProductAsync
         /// verwacht (int productId, dynamic productData).
         /// </summary>
         public async Task SubmitUpdateProductAsync(ProductDto dto)
@@ -139,7 +173,7 @@ namespace Marketio_WPF.ViewModels
             {
                 IsBusy = true;
                 ClearMessages();
-                // FIX: dto.Id als eerste argument + dto als productData
+                // dto.Id als eerste argument + dto als productData
                 await _productService.UpdateProductAsync(dto.Id, dto);
                 SuccessMessage = "Product bijgewerkt.";
                 ExecuteLoadProducts();

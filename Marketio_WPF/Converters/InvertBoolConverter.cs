@@ -4,7 +4,7 @@ using System.Windows.Data;
 namespace Marketio_WPF.Converters
 {
     /// <summary>
-    /// Inverts a boolean value.
+    /// Inverteert een boolean waarde.
     /// </summary>
     public class InvertBoolConverter : IValueConverter
     {

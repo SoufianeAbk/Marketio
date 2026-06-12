@@ -55,7 +55,7 @@ namespace Marketio_App.Services
                 }
                 catch
                 {
-                    // fall back to cache
+                    // fall back naar cache
                 }
             }
 
@@ -79,7 +79,7 @@ namespace Marketio_App.Services
                 }
                 catch
                 {
-                    // fall back to cache
+                    // fall back naar cache
                 }
             }
 

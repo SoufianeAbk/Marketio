@@ -5,7 +5,7 @@ using System.Windows.Data;
 namespace Marketio_WPF.Converters
 {
     /// <summary>
-    /// Converts a boolean value to Visibility.
+    /// Converteert een boolean waarde naar Visibility.
     /// </summary>
     public class BoolToVisibilityConverter : IValueConverter
     {

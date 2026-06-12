@@ -102,7 +102,7 @@ namespace Marketio_App.Services
         {
             try
             {
-                // Verwijder de oude sleutel
+                // Verwijdert de oude sleutel
                 await ClearDatabaseKeyAsync();
 
                 // Genereert en slaat een nieuwe sleutel op

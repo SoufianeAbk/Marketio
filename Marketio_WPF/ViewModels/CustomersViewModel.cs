@@ -18,7 +18,7 @@ namespace Marketio_WPF.ViewModels
         private RelayCommand? _searchCommand;
         private RelayCommand? _refreshCommand;
 
-        // Dialog events
+        // Dialoog events
         public event EventHandler? CreateCustomerRequested;
         public event EventHandler<dynamic>? EditCustomerRequested;
 
@@ -76,7 +76,7 @@ namespace Marketio_WPF.ViewModels
             finally { IsBusy = false; }
         }
 
-        // Create / Edit (raise events; view opens dialog)
+        // Create / Edit (raise events; view open dialoog)
         private void ExecuteCreateCustomer() =>
             CreateCustomerRequested?.Invoke(this, EventArgs.Empty);
 
@@ -88,7 +88,7 @@ namespace Marketio_WPF.ViewModels
 
         private bool CanExecuteEditCustomer() => SelectedCustomer != null && !IsBusy;
 
-        // Delete
+        // Verwijderen
         private async void ExecuteDeleteCustomer()
         {
             if (SelectedCustomer == null) { ErrorMessage = "No customer selected."; return; }
@@ -112,7 +112,7 @@ namespace Marketio_WPF.ViewModels
 
         private bool CanExecuteDeleteCustomer() => SelectedCustomer != null && !IsBusy;
 
-        // Search (client-side)
+        // Zoek (client-side)
         private void ExecuteSearch()
         {
             if (string.IsNullOrWhiteSpace(SearchQuery))
@@ -130,7 +130,7 @@ namespace Marketio_WPF.ViewModels
             Customers = new ObservableCollection<dynamic>(results);
         }
 
-        // Submit handlers (called by view after dialog OK)
+        // Submit handlers (Aangeroepen door een view na dialoog OK)
 
         public async Task SubmitCreateCustomerAsync(
             string firstName, string lastName,

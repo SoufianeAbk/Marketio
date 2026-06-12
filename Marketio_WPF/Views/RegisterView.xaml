@@ -44,7 +44,7 @@
                              BorderThickness="1"
                              Margin="0,0,0,15"/>
 
-                    <!-- First Name -->
+                    <!-- Voornaam -->
                     <TextBlock Text="First Name"
                                FontSize="12"
                                FontWeight="SemiBold"
@@ -58,7 +58,7 @@
                              BorderThickness="1"
                              Margin="0,0,0,15"/>
 
-                    <!-- Last Name -->
+                    <!-- Achternaam -->
                     <TextBlock Text="Last Name"
                                FontSize="12"
                                FontWeight="SemiBold"
@@ -72,7 +72,7 @@
                              BorderThickness="1"
                              Margin="0,0,0,15"/>
 
-                    <!-- Password -->
+                    <!-- Wachtwoord -->
                     <TextBlock Text="Password"
                                FontSize="12"
                                FontWeight="SemiBold"
@@ -86,7 +86,7 @@
                                  BorderThickness="1"
                                  Margin="0,0,0,15"/>
 
-                    <!-- Confirm Password -->
+                    <!-- Confirm Wachtwoord -->
                     <TextBlock Text="Confirm Password"
                                FontSize="12"
                                FontWeight="SemiBold"

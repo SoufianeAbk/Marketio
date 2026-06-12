@@ -54,7 +54,7 @@ namespace Marketio_WPF.Services
             }
         }
 
-        // FIX CS1061: nieuwe methode toegevoegd die door CustomersViewModel.SubmitCreateCustomerAsync wordt aangeroepen
+        // Nieuwe methode toegevoegd die door CustomersViewModel.SubmitCreateCustomerAsync wordt aangeroepen
         public async Task<bool> CreateCustomerAsync(
             string firstName, string lastName,
             string email, string phone,
@@ -90,8 +90,8 @@ namespace Marketio_WPF.Services
             }
         }
 
-        // FIX CS1501: signatuur uitgebreid van (string, dynamic) naar 7 individuele parameters
-        // zodat CustomersViewModel.SubmitUpdateCustomerAsync correct compileert
+        // Signatuur uitgebreid van (string, dynamic) naar 7 individuele parameters
+        // Zodat CustomersViewModel.SubmitUpdateCustomerAsync correct compileert
         public async Task<bool> UpdateCustomerAsync(
             string customerId,
             string firstName, string lastName,

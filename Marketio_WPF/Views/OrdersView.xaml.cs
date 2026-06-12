@@ -20,7 +20,7 @@ namespace Marketio_WPF.Views
 
             vm.LoadOrdersCommand.Execute(null);
 
-            // ── ★ Nieuwe order aanmaken ────────────────────────────────────────
+            // Nieuwe order aanmaken
             vm.CreateOrderRequested += async (_, payload) =>
             {
                 var dialog = new CreateOrderDialog(payload.Customers, payload.Products)
@@ -40,7 +40,7 @@ namespace Marketio_WPF.Views
                 }
             };
 
-            // ── Orderstatus bijwerken ──────────────────────────────────────────
+            // Orderstatus bijwerken
             vm.UpdateOrderRequested += async (_, order) =>
             {
                 var dialog = new OrderStatusDialog(order)

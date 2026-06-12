@@ -6,8 +6,8 @@ using System.Net.Http;
 namespace Marketio_WPF.ViewModels
 {
     /// <summary>
-    /// ViewModel for user registration.
-    /// Handles form validation and user account creation.
+    /// ViewModel voor user registration.
+    /// Handles form validation en user account creation.
     /// </summary>
     internal class RegisterViewModel : BaseViewModel
     {
@@ -121,7 +121,7 @@ namespace Marketio_WPF.ViewModels
 
         private void ExecuteBackToLogin()
         {
-            // Navigation handled by view
+            // Navigation handled door view
         }
 
         private bool ValidateForm()

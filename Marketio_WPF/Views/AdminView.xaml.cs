@@ -4,7 +4,7 @@ using Marketio_WPF.ViewModels;
 namespace Marketio_WPF.Views
 {
     /// <summary>
-    /// Interaction logic voor AdminView.xaml
+    /// Interactie logica voor AdminView.xaml
     /// </summary>
     public partial class AdminView : UserControl
     {

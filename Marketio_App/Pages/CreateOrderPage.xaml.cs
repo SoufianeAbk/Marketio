@@ -18,7 +18,7 @@ namespace Marketio_App.Pages
             {
                 await viewModel.LoadCartCommand.ExecuteAsync(null);
 
-                // Winkelwagen is leeg: ga terug naar cart, niet naar producten
+                // Winkelwagen is leeg: ga terug naar cart
                 if (viewModel.IsCartEmpty)
                 {
                     await Shell.Current.GoToAsync("..");
