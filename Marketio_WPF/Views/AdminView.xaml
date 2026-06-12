@@ -8,17 +8,10 @@
              Loaded="UserControl_Loaded">
 
     <UserControl.Resources>
-        <!-- Ingebouwde WPF-converter: geen assembly-loading nodig in de designer -->
+        <!-- WPF built-in converter: geen project-assembly nodig voor de XAML designer.
+             Styles (PrimaryButtonStyle enz.) komen uit App.xaml — designer vindt die wél
+             omdat styles alleen WPF built-in types gebruiken. -->
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-
-        <!-- Disabled buttons zichtbaar maar gedimmed houden -->
-        <Style TargetType="Button">
-            <Style.Triggers>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Opacity" Value="0.4"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
     </UserControl.Resources>
 
     <Grid Margin="10">
@@ -31,26 +24,21 @@
         <!-- ROW 0 – Header -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
             <TextBlock Text="⚙️ User Management"
-                       FontSize="22" FontWeight="Bold"
-                       Foreground="#2C3E50"
-                       VerticalAlignment="Center"/>
+                       Style="{StaticResource ViewHeaderStyle}"/>
             <Button Content="🔄 Refresh"
                     Command="{Binding RefreshCommand}"
-                    Margin="20,0,0,0" Padding="10,5"
-                    Background="#3498DB" Foreground="White"
-                    FontWeight="Bold" Cursor="Hand" BorderThickness="0"/>
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Margin="20,0,0,0"/>
         </StackPanel>
 
-        <!-- ROW 1 – Feedback messages
-             HasError / HasSuccess zijn bool-properties in BaseViewModel:
-             geen custom converter nodig, enkel de ingebouwde BooleanToVisibilityConverter -->
+        <!-- ROW 1 – Feedback messages -->
         <StackPanel Grid.Row="1" Margin="0,0,0,8">
             <TextBlock Text="{Binding ErrorMessage}"
-                       Foreground="#E74C3C" FontSize="12" TextWrapping="Wrap"
+                       Style="{StaticResource ErrorMessageStyle}"
                        Visibility="{Binding HasError,
                            Converter={StaticResource BoolToVisibilityConverter}}"/>
             <TextBlock Text="{Binding SuccessMessage}"
-                       Foreground="#27AE60" FontSize="12" TextWrapping="Wrap"
+                       Style="{StaticResource SuccessMessageStyle}"
                        Visibility="{Binding HasSuccess,
                            Converter={StaticResource BoolToVisibilityConverter}}"/>
         </StackPanel>
@@ -70,19 +58,9 @@
                 </Grid.RowDefinitions>
 
                 <DataGrid Grid.Row="0"
+                          Style="{StaticResource StandardDataGridStyle}"
                           ItemsSource="{Binding Users}"
-                          SelectedItem="{Binding SelectedUser, Mode=TwoWay}"
-                          AutoGenerateColumns="False"
-                          IsReadOnly="True"
-                          CanUserAddRows="False"
-                          CanUserDeleteRows="False"
-                          SelectionMode="Single"
-                          GridLinesVisibility="Horizontal"
-                          HeadersVisibility="Column"
-                          AlternatingRowBackground="#F9F9F9"
-                          RowBackground="White"
-                          BorderBrush="#BDC3C7"
-                          BorderThickness="1">
+                          SelectedItem="{Binding SelectedUser, Mode=TwoWay}">
 
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Full Name"
@@ -119,13 +97,12 @@
             </Grid>
 
             <!-- Action Panel -->
-            <ScrollViewer Grid.Column="1"
-                          VerticalScrollBarVisibility="Auto">
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
                 <StackPanel>
 
                     <!-- Selecteer gebruiker info kaart -->
                     <Border Background="#ECF0F1"
-                            BorderBrush="#BDC3C7" BorderThickness="1"
+                            BorderBrush="{StaticResource BorderDefaultBrush}" BorderThickness="1"
                             CornerRadius="4" Padding="10" Margin="0,0,0,10">
                         <StackPanel>
                             <TextBlock Text="Selected user"
@@ -145,7 +122,7 @@
 
                     <!-- 1. Role Management -->
                     <Border Background="White"
-                            BorderBrush="#BDC3C7" BorderThickness="1"
+                            BorderBrush="{StaticResource BorderDefaultBrush}" BorderThickness="1"
                             CornerRadius="4" Padding="10" Margin="0,0,0,10">
                         <StackPanel>
                             <TextBlock Text="🎭 Role Management"
@@ -160,23 +137,20 @@
 
                             <Button Content="✅ Assign Role"
                                     Command="{Binding AssignRoleCommand}"
-                                    Padding="8,5" Margin="0,0,0,5"
-                                    Background="#27AE60" Foreground="White"
-                                    FontWeight="Bold" Cursor="Hand"
-                                    BorderThickness="0" HorizontalAlignment="Stretch"/>
+                                    Style="{StaticResource SuccessButtonStyle}"
+                                    Margin="0,0,0,5" HorizontalAlignment="Stretch"/>
 
+                            <!-- Remove Role: oranje variant zonder eigen stijl -->
                             <Button Content="❌ Remove Role"
                                     Command="{Binding RemoveRoleCommand}"
-                                    Padding="8,5"
-                                    Background="#E67E22" Foreground="White"
-                                    FontWeight="Bold" Cursor="Hand"
-                                    BorderThickness="0" HorizontalAlignment="Stretch"/>
+                                    Background="#E67E22"
+                                    HorizontalAlignment="Stretch"/>
                         </StackPanel>
                     </Border>
 
                     <!-- 2. Account Security -->
                     <Border Background="White"
-                            BorderBrush="#BDC3C7" BorderThickness="1"
+                            BorderBrush="{StaticResource BorderDefaultBrush}" BorderThickness="1"
                             CornerRadius="4" Padding="10" Margin="0,0,0,10">
                         <StackPanel>
                             <TextBlock Text="🔒 Account Security"
@@ -185,23 +159,20 @@
 
                             <Button Content="🔑 Reset Password"
                                     Command="{Binding ResetPasswordCommand}"
-                                    Padding="8,5" Margin="0,0,0,5"
-                                    Background="#3498DB" Foreground="White"
-                                    FontWeight="Bold" Cursor="Hand"
-                                    BorderThickness="0" HorizontalAlignment="Stretch"/>
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Margin="0,0,0,5" HorizontalAlignment="Stretch"/>
 
+                            <!-- Lock Account: paarse accentkleur zonder eigen stijl -->
                             <Button Content="🔐 Lock Account"
                                     Command="{Binding LockUserCommand}"
-                                    Padding="8,5"
-                                    Background="#8E44AD" Foreground="White"
-                                    FontWeight="Bold" Cursor="Hand"
-                                    BorderThickness="0" HorizontalAlignment="Stretch"/>
+                                    Background="#8E44AD"
+                                    HorizontalAlignment="Stretch"/>
                         </StackPanel>
                     </Border>
 
                     <!-- 3. GDPR – User Deletion -->
                     <Border Background="#FDF2F2"
-                            BorderBrush="#E74C3C" BorderThickness="1"
+                            BorderBrush="{StaticResource DangerBrush}" BorderThickness="1"
                             CornerRadius="4" Padding="10">
                         <StackPanel>
                             <TextBlock Text="🗑️ User Deletion"
@@ -213,10 +184,8 @@
 
                             <Button Content="🗑️ Delete User"
                                     Command="{Binding DeleteUserCommand}"
-                                    Padding="8,5"
-                                    Background="#E74C3C" Foreground="White"
-                                    FontWeight="Bold" Cursor="Hand"
-                                    BorderThickness="0" HorizontalAlignment="Stretch"/>
+                                    Style="{StaticResource DangerButtonStyle}"
+                                    HorizontalAlignment="Stretch"/>
                         </StackPanel>
                     </Border>
 

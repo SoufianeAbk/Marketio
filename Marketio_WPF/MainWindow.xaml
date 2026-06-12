@@ -13,48 +13,9 @@
         Background="#F5F5F5">
 
     <Window.Resources>
+        <!-- BoolToVis lokaal: de designer voor Window-bestanden laadt App.xaml
+             converter-resources niet betrouwbaar. Style-resources wel. -->
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-
-        <!-- Stijl voor navigatie-menuitems in de zijbalk -->
-        <Style x:Key="NavMenuItemStyle" TargetType="MenuItem">
-            <Setter Property="Width" Value="200"/>
-            <Setter Property="Height" Value="50"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Background" Value="#34495E"/>
-            <Setter Property="Padding" Value="15,0,0,0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="MenuItem">
-                        <Border x:Name="border"
-                                Background="{TemplateBinding Background}"
-                                BorderThickness="0"
-                                Height="{TemplateBinding Height}">
-                            <ContentPresenter ContentSource="Header"
-                                              HorizontalAlignment="Left"
-                                              VerticalAlignment="Center"
-                                              Margin="{TemplateBinding Padding}"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#2980B9"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#1F618D"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Stijl voor de separator in het menu -->
-        <Style x:Key="NavSeparatorStyle" TargetType="Separator">
-            <Setter Property="Background" Value="#2C3E50"/>
-            <Setter Property="Margin" Value="0,10,0,10"/>
-        </Style>
     </Window.Resources>
 
     <Grid>
@@ -93,12 +54,9 @@
 
                 <Button Content="🚪 Logout"
                         Command="{Binding LogoutCommand}"
+                        Style="{StaticResource DangerButtonStyle}"
                         Width="100"
                         Height="40"
-                        Background="#E74C3C"
-                        Foreground="White"
-                        FontWeight="Bold"
-                        Cursor="Hand"
                         VerticalAlignment="Center"/>
             </StackPanel>
         </Border>

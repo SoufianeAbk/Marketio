@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:converters="clr-namespace:Marketio_WPF.Converters"
              xmlns:controls="clr-namespace:Marketio_WPF.Controls"
              mc:Ignorable="d"
              d:DesignHeight="600"
@@ -30,39 +29,24 @@
                     Margin="0,0,0,10">
 
             <TextBlock Text="📋 Orders"
-                       FontSize="22"
-                       FontWeight="Bold"
-                       Foreground="#2C3E50"
-                       VerticalAlignment="Center"/>
+                       Style="{StaticResource ViewHeaderStyle}"/>
 
             <Button Content="🔄 Refresh"
                     Command="{Binding RefreshCommand}"
-                    Margin="20,0,0,0"
-                    Padding="10,5"
-                    Background="#3498DB"
-                    Foreground="White"
-                    FontWeight="Bold"
-                    Cursor="Hand"
-                    BorderThickness="0"/>
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Margin="20,0,0,0"/>
         </StackPanel>
 
         <!-- Berichten -->
-        <StackPanel Grid.Row="1"
-                    Margin="0,0,0,8">
+        <StackPanel Grid.Row="1" Margin="0,0,0,8">
 
             <TextBlock Text="{Binding ErrorMessage}"
-                       Foreground="#E74C3C"
-                       FontSize="12"
-                       TextWrapping="Wrap"
-                       Visibility="{Binding ErrorMessage,
-                                            Converter={StaticResource StringNullOrEmptyToVisibilityConverter}}"/>
+                       Style="{StaticResource ErrorMessageStyle}"
+                       Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
             <TextBlock Text="{Binding SuccessMessage}"
-                       Foreground="#27AE60"
-                       FontSize="12"
-                       TextWrapping="Wrap"
-                       Visibility="{Binding SuccessMessage,
-                                            Converter={StaticResource StringNullOrEmptyToVisibilityConverter}}"/>
+                       Style="{StaticResource SuccessMessageStyle}"
+                       Visibility="{Binding HasSuccess, Converter={StaticResource BoolToVisibilityConverter}}"/>
         </StackPanel>
 
         <!-- Filter bar -->
@@ -93,29 +77,15 @@
 
             <Button Content="▶ Filter"
                     Command="{Binding FilterByStatusCommand}"
-                    Padding="10,4"
-                    Background="#95A5A6"
-                    Foreground="White"
-                    FontWeight="Bold"
-                    Cursor="Hand"
-                    BorderThickness="0"/>
+                    Style="{StaticResource NeutralButtonStyle}"
+                    Padding="10,4"/>
         </StackPanel>
 
-        <!-- Orders Grid -->
+        <!-- Orders DataGrid -->
         <DataGrid Grid.Row="3"
+                  Style="{StaticResource StandardDataGridStyle}"
                   ItemsSource="{Binding Orders}"
-                  SelectedItem="{Binding SelectedOrder, Mode=TwoWay}"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  CanUserAddRows="False"
-                  CanUserDeleteRows="False"
-                  SelectionMode="Single"
-                  GridLinesVisibility="Horizontal"
-                  HeadersVisibility="Column"
-                  AlternatingRowBackground="#F9F9F9"
-                  RowBackground="White"
-                  BorderBrush="#BDC3C7"
-                  BorderThickness="1">
+                  SelectedItem="{Binding SelectedOrder, Mode=TwoWay}">
 
             <DataGrid.Columns>
 
@@ -132,8 +102,7 @@
                                     Width="160"/>
 
                 <DataGridTextColumn Header="Datum"
-                                    Binding="{Binding OrderDate,
-                                                      StringFormat={}{0:dd/MM/yyyy}}"
+                                    Binding="{Binding OrderDate, StringFormat={}{0:dd/MM/yyyy}}"
                                     Width="90"/>
 
                 <DataGridTemplateColumn Header="Status" Width="115" SortMemberPath="StatusName">
@@ -150,8 +119,7 @@
                                     Width="105"/>
 
                 <DataGridTextColumn Header="Totaal"
-                                    Binding="{Binding TotalAmount,
-                                                      StringFormat=€{0:N2}}"
+                                    Binding="{Binding TotalAmount, StringFormat=€{0:N2}}"
                                     Width="80"/>
 
                 <DataGridCheckBoxColumn Header="Actief"
@@ -171,35 +139,19 @@
                     Margin="0,10,0,0"
                     HorizontalAlignment="Right">
 
-            <!-- Nieuw: knop om order aan te maken -->
             <Button Content="➕ Nieuwe order"
                     Command="{Binding CreateOrderCommand}"
-                    Padding="10,5"
-                    Margin="0,0,5,0"
-                    Background="#27AE60"
-                    Foreground="White"
-                    FontWeight="Bold"
-                    Cursor="Hand"
-                    BorderThickness="0"/>
+                    Style="{StaticResource SuccessButtonStyle}"
+                    Margin="0,0,5,0"/>
 
             <Button Content="✏️ Update Status"
                     Command="{Binding UpdateOrderCommand}"
-                    Padding="10,5"
-                    Margin="0,0,5,0"
-                    Background="#F39C12"
-                    Foreground="White"
-                    FontWeight="Bold"
-                    Cursor="Hand"
-                    BorderThickness="0"/>
+                    Style="{StaticResource WarningButtonStyle}"
+                    Margin="0,0,5,0"/>
 
             <Button Content="🗑️ Delete"
                     Command="{Binding DeleteOrderCommand}"
-                    Padding="10,5"
-                    Background="#E74C3C"
-                    Foreground="White"
-                    FontWeight="Bold"
-                    Cursor="Hand"
-                    BorderThickness="0"/>
+                    Style="{StaticResource DangerButtonStyle}"/>
 
         </StackPanel>
 
@@ -209,7 +161,7 @@
                      VerticalAlignment="Top"
                      IsIndeterminate="True"
                      Visibility="{Binding IsBusy,
-                                          Converter={StaticResource BoolToVisibilityConverter}}"/>
+                         Converter={StaticResource BoolToVisibilityConverter}}"/>
 
     </Grid>
 </UserControl>

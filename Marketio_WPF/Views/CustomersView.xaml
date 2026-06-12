@@ -7,6 +7,10 @@
              d:DesignHeight="600" d:DesignWidth="1000"
              Loaded="UserControl_Loaded">
 
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </UserControl.Resources>
+
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -19,30 +23,24 @@
         <!-- Header -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
             <TextBlock Text="👥 Customers"
-                       FontSize="22" FontWeight="Bold"
-                       Foreground="#2C3E50" VerticalAlignment="Center"/>
+                       Style="{StaticResource ViewHeaderStyle}"/>
             <Button Content="🔄 Refresh"
                     Command="{Binding RefreshCommand}"
-                    Margin="20,0,5,0" Padding="10,5"
-                    Background="#3498DB" Foreground="White"
-                    FontWeight="Bold" Cursor="Hand" BorderThickness="0"/>
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Margin="20,0,5,0"/>
             <Button Content="➕ New Customer"
                     Command="{Binding CreateCustomerCommand}"
-                    Padding="10,5"
-                    Background="#27AE60" Foreground="White"
-                    FontWeight="Bold" Cursor="Hand" BorderThickness="0"/>
+                    Style="{StaticResource SuccessButtonStyle}"/>
         </StackPanel>
 
         <!-- Berichten -->
         <StackPanel Grid.Row="1" Margin="0,0,0,8">
             <TextBlock Text="{Binding ErrorMessage}"
-                       Foreground="#E74C3C" FontSize="12" TextWrapping="Wrap"
-                       Visibility="{Binding ErrorMessage,
-                           Converter={StaticResource StringToVisibilityConverter}}"/>
+                       Style="{StaticResource ErrorMessageStyle}"
+                       Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}"/>
             <TextBlock Text="{Binding SuccessMessage}"
-                       Foreground="#27AE60" FontSize="12" TextWrapping="Wrap"
-                       Visibility="{Binding SuccessMessage,
-                           Converter={StaticResource StringToVisibilityConverter}}"/>
+                       Style="{StaticResource SuccessMessageStyle}"
+                       Visibility="{Binding HasSuccess, Converter={StaticResource BoolToVisibilityConverter}}"/>
         </StackPanel>
 
         <!-- Search bar -->
@@ -53,26 +51,15 @@
                      Margin="0,0,8,0"/>
             <Button Content="🔍 Zoek"
                     Command="{Binding SearchCommand}"
-                    Padding="10,4"
-                    Background="#95A5A6" Foreground="White"
-                    FontWeight="Bold" Cursor="Hand" BorderThickness="0"/>
+                    Style="{StaticResource NeutralButtonStyle}"
+                    Padding="10,4"/>
         </StackPanel>
 
         <!-- DataGrid -->
         <DataGrid Grid.Row="3"
+                  Style="{StaticResource StandardDataGridStyle}"
                   ItemsSource="{Binding Customers}"
-                  SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  CanUserAddRows="False"
-                  CanUserDeleteRows="False"
-                  SelectionMode="Single"
-                  GridLinesVisibility="Horizontal"
-                  HeadersVisibility="Column"
-                  AlternatingRowBackground="#F9F9F9"
-                  RowBackground="White"
-                  BorderBrush="#BDC3C7"
-                  BorderThickness="1">
+                  SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}">
 
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Voornaam"
@@ -104,14 +91,11 @@
                     Margin="0,10,0,0" HorizontalAlignment="Right">
             <Button Content="✏️ Edit"
                     Command="{Binding EditCustomerCommand}"
-                    Padding="10,5" Margin="0,0,5,0"
-                    Background="#F39C12" Foreground="White"
-                    FontWeight="Bold" Cursor="Hand" BorderThickness="0"/>
+                    Style="{StaticResource WarningButtonStyle}"
+                    Margin="0,0,5,0"/>
             <Button Content="🗑️ Delete"
                     Command="{Binding DeleteCustomerCommand}"
-                    Padding="10,5"
-                    Background="#E74C3C" Foreground="White"
-                    FontWeight="Bold" Cursor="Hand" BorderThickness="0"/>
+                    Style="{StaticResource DangerButtonStyle}"/>
         </StackPanel>
 
         <!-- Loading overlay -->

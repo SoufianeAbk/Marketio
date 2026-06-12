@@ -3,14 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Marketio_WPF.Converters"
         mc:Ignorable="d"
         Background="#F5F5F5"
         Foreground="#333333">
 
     <UserControl.Resources>
-        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <local:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </UserControl.Resources>
 
     <Grid>
@@ -114,33 +112,23 @@
 
                     <!-- Error Message -->
                     <TextBlock Text="{Binding ErrorMessage}"
-                               Foreground="#E74C3C"
-                               FontSize="12"
-                               TextWrapping="Wrap"
+                               Style="{StaticResource ErrorMessageStyle}"
                                Margin="0,0,0,15"
-                               Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
+                               Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
                     <!-- Register Button -->
                     <Button Content="✓ Create Account"
                             Command="{Binding RegisterCommand}"
+                            Style="{StaticResource SuccessButtonStyle}"
                             Height="45"
-                            Background="#27AE60"
-                            Foreground="White"
-                            FontWeight="Bold"
                             FontSize="14"
-                            BorderThickness="0"
-                            Cursor="Hand"
                             Margin="0,0,0,10"/>
 
                     <!-- Back Button -->
                     <Button Content="← Back to Login"
+                            Style="{StaticResource NeutralButtonStyle}"
                             Height="40"
-                            Background="#95A5A6"
-                            Foreground="White"
-                            FontWeight="Bold"
                             FontSize="12"
-                            BorderThickness="0"
-                            Cursor="Hand"
                             Click="BackToLogin_Click"/>
 
                     <!-- Loading -->

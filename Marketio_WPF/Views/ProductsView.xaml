@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:converters="clr-namespace:Marketio_WPF.Converters"
              xmlns:controls="clr-namespace:Marketio_WPF.Controls"
              mc:Ignorable="d"
              d:DesignHeight="600"
@@ -11,24 +10,23 @@
              Loaded="UserControl_Loaded">
 
     <UserControl.Resources>
+        <!-- Alleen WPF built-in types hier — designer laadt project-assembly niet -->
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <converters:StringNullOrEmptyToVisibilityConverter
-            x:Key="StringNullOrEmptyToVisibilityConverter"/>
     </UserControl.Resources>
 
     <Grid Margin="10">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Row 0: Header -->
+            <!-- Row 0: Header        -->
             <RowDefinition Height="Auto"/>
-            <!-- Row 1: Filter balk -->
+            <!-- Row 1: Categorie-filter -->
             <RowDefinition Height="Auto"/>
-            <!-- Row 2: Meldingen -->
+            <!-- Row 2: Meldingen     -->
             <RowDefinition Height="*"/>
-            <!-- Row 3: DataGrid -->
+            <!-- Row 3: DataGrid      -->
             <RowDefinition Height="Auto"/>
-            <!-- Row 4: Toolbar -->
+            <!-- Row 4: Toolbar       -->
         </Grid.RowDefinitions>
 
         <!-- Row 0: Header -->
@@ -37,20 +35,12 @@
                     Margin="0,0,0,10">
 
             <TextBlock Text="📦 Products"
-                       FontSize="22"
-                       FontWeight="Bold"
-                       Foreground="#2C3E50"
-                       VerticalAlignment="Center"/>
+                       Style="{StaticResource ViewHeaderStyle}"/>
 
             <Button Content="🔄 Refresh"
                     Command="{Binding LoadProductsCommand}"
-                    Margin="20,0,0,0"
-                    Padding="10,5"
-                    Background="#3498DB"
-                    Foreground="White"
-                    FontWeight="Bold"
-                    Cursor="Hand"
-                    BorderThickness="0"/>
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Margin="20,0,0,0"/>
 
         </StackPanel>
 
@@ -74,40 +64,23 @@
         </StackPanel>
 
         <!-- Row 2: Meldingen -->
-        <StackPanel Grid.Row="2"
-                    Margin="0,0,0,8">
+        <StackPanel Grid.Row="2" Margin="0,0,0,8">
 
             <TextBlock Text="{Binding ErrorMessage}"
-                       Foreground="#E74C3C"
-                       FontSize="12"
-                       TextWrapping="Wrap"
-                       Visibility="{Binding ErrorMessage,
-                                            Converter={StaticResource StringNullOrEmptyToVisibilityConverter}}"/>
+                       Style="{StaticResource ErrorMessageStyle}"
+                       Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
             <TextBlock Text="{Binding SuccessMessage}"
-                       Foreground="#27AE60"
-                       FontSize="12"
-                       TextWrapping="Wrap"
-                       Visibility="{Binding SuccessMessage,
-                                            Converter={StaticResource StringNullOrEmptyToVisibilityConverter}}"/>
+                       Style="{StaticResource SuccessMessageStyle}"
+                       Visibility="{Binding HasSuccess, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
         </StackPanel>
 
         <!-- Row 3: Products DataGrid -->
         <DataGrid Grid.Row="3"
+                  Style="{StaticResource StandardDataGridStyle}"
                   ItemsSource="{Binding Products}"
-                  SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  CanUserAddRows="False"
-                  CanUserDeleteRows="False"
-                  SelectionMode="Single"
-                  GridLinesVisibility="Horizontal"
-                  HeadersVisibility="Column"
-                  AlternatingRowBackground="#F9F9F9"
-                  RowBackground="White"
-                  BorderBrush="#BDC3C7"
-                  BorderThickness="1">
+                  SelectedItem="{Binding SelectedProduct, Mode=TwoWay}">
 
             <DataGrid.Columns>
 
@@ -138,8 +111,6 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <!-- {Binding CategoryName} — Product heeft geen CategoryName property;
-                     Category is een ProductCategory enum, ToString() geeft de naam. -->
                 <DataGridTextColumn Header="Categorie"
                                     Binding="{Binding Category}"
                                     Width="110"/>
@@ -160,32 +131,17 @@
 
             <Button Content="➕ Nieuw"
                     Command="{Binding CreateProductCommand}"
-                    Padding="10,5"
-                    Margin="0,0,5,0"
-                    Background="#27AE60"
-                    Foreground="White"
-                    FontWeight="Bold"
-                    Cursor="Hand"
-                    BorderThickness="0"/>
+                    Style="{StaticResource SuccessButtonStyle}"
+                    Margin="0,0,5,0"/>
 
             <Button Content="✏️ Bewerken"
                     Command="{Binding EditProductCommand}"
-                    Padding="10,5"
-                    Margin="0,0,5,0"
-                    Background="#F39C12"
-                    Foreground="White"
-                    FontWeight="Bold"
-                    Cursor="Hand"
-                    BorderThickness="0"/>
+                    Style="{StaticResource WarningButtonStyle}"
+                    Margin="0,0,5,0"/>
 
             <Button Content="🗑️ Delete"
                     Command="{Binding DeleteProductCommand}"
-                    Padding="10,5"
-                    Background="#E74C3C"
-                    Foreground="White"
-                    FontWeight="Bold"
-                    Cursor="Hand"
-                    BorderThickness="0"/>
+                    Style="{StaticResource DangerButtonStyle}"/>
 
         </StackPanel>
 
@@ -195,7 +151,7 @@
                      VerticalAlignment="Top"
                      IsIndeterminate="True"
                      Visibility="{Binding IsBusy,
-                                          Converter={StaticResource BoolToVisibilityConverter}}"/>
+                         Converter={StaticResource BoolToVisibilityConverter}}"/>
 
     </Grid>
 

@@ -11,8 +11,13 @@
         Background="#F5F5F5"
         Foreground="#333333">
 
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Window.Resources>
+
     <Grid>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="320">
+
             <!-- Logo / Titel -->
             <TextBlock Text="📊 Marketio"
                        FontSize="28"
@@ -67,40 +72,30 @@
 
             <!-- Error Message -->
             <TextBlock Text="{Binding ErrorMessage}"
-                       FontSize="12"
-                       Foreground="#E74C3C"
-                       TextWrapping="Wrap"
+                       Style="{StaticResource ErrorMessageStyle}"
                        Margin="0,0,0,10"
-                       Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
+                       Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
             <!-- Success Message -->
             <TextBlock Text="{Binding SuccessMessage}"
-                       FontSize="12"
-                       Foreground="#27AE60"
-                       TextWrapping="Wrap"
+                       Style="{StaticResource SuccessMessageStyle}"
                        Margin="0,0,0,10"
-                       Visibility="{Binding SuccessMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
+                       Visibility="{Binding HasSuccess, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
-            <!-- Login Button - Command handles enabled state automatically -->
+            <!-- Login Button -->
             <Button Content="🔓 Login"
                     Command="{Binding LoginCommand}"
-                    Background="#3498DB"
-                    Foreground="White"
-                    FontWeight="Bold"
+                    Style="{StaticResource PrimaryButtonStyle}"
                     FontSize="14"
                     Padding="12"
-                    Margin="0,0,0,10"
-                    Cursor="Hand"/>
+                    Margin="0,0,0,10"/>
 
             <!-- Register Button -->
             <Button Content="➕ Create Account"
                     Command="{Binding RegisterCommand}"
-                    Background="#95A5A6"
-                    Foreground="White"
-                    FontWeight="Bold"
+                    Style="{StaticResource NeutralButtonStyle}"
                     FontSize="14"
-                    Padding="12"
-                    Cursor="Hand"/>
+                    Padding="12"/>
 
             <!-- Loading Indicator -->
             <ProgressBar IsIndeterminate="True"
