@@ -148,29 +148,7 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- 2. Account Security -->
-                    <Border Background="White"
-                            BorderBrush="{StaticResource BorderDefaultBrush}" BorderThickness="1"
-                            CornerRadius="4" Padding="10" Margin="0,0,0,10">
-                        <StackPanel>
-                            <TextBlock Text="🔒 Account Security"
-                                       FontWeight="Bold" FontSize="13"
-                                       Foreground="#2C3E50" Margin="0,0,0,8"/>
-
-                            <Button Content="🔑 Reset Password"
-                                    Command="{Binding ResetPasswordCommand}"
-                                    Style="{StaticResource PrimaryButtonStyle}"
-                                    Margin="0,0,0,5" HorizontalAlignment="Stretch"/>
-
-                            <!-- Lock Account: paarse accentkleur zonder eigen stijl -->
-                            <Button Content="🔐 Lock Account"
-                                    Command="{Binding LockUserCommand}"
-                                    Background="#8E44AD"
-                                    HorizontalAlignment="Stretch"/>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- 3. GDPR – User Deletion -->
+                    <!-- 2. GDPR – User Deletion -->
                     <Border Background="#FDF2F2"
                             BorderBrush="{StaticResource DangerBrush}" BorderThickness="1"
                             CornerRadius="4" Padding="10">

@@ -94,43 +94,6 @@ namespace Marketio_WPF.Services
             }
         }
 
-        public async Task<bool> ResetPasswordAsync(string userId)
-        {
-            try
-            {
-                var user = await _userManager.FindByIdAsync(userId);
-                if (user == null) return false;
-
-                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-                return !string.IsNullOrEmpty(resetToken);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("Error resetting password.", ex);
-            }
-        }
-
-        public async Task<bool> LockUserAsync(string userId)
-        {
-            try
-            {
-                var user = await _userManager.FindByIdAsync(userId);
-                if (user == null) return false;
-
-                var result = await _userManager.SetLockoutEndDateAsync(
-                    user, DateTimeOffset.UtcNow.AddYears(10));
-
-                if (result.Succeeded)
-                    await _userManager.SetLockoutEnabledAsync(user, true);
-
-                return result.Succeeded;
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("Error locking user account.", ex);
-            }
-        }
-
         public async Task<bool> DeleteUserAsync(string userId)
         {
             try

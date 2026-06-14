@@ -3,6 +3,7 @@ using Marketio_Shared.DTOs;
 using Marketio_Shared.Enums;
 using Marketio_WPF.Services;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace Marketio_WPF.ViewModels
 {
@@ -122,6 +123,14 @@ namespace Marketio_WPF.ViewModels
         private async void ExecuteDeleteProduct()
         {
             if (SelectedProduct == null) { ErrorMessage = "No product selected."; return; }
+
+            var bevestiging = MessageBox.Show(
+                $"Weet u zeker dat u '{SelectedProduct.Name}' wilt verwijderen?",
+                "Product verwijderen",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+            if (bevestiging != MessageBoxResult.Yes) return;
+
             try
             {
                 IsBusy = true;

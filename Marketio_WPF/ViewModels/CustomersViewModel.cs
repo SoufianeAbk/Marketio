@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Marketio_WPF.Services;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace Marketio_WPF.ViewModels
 {
@@ -92,6 +93,14 @@ namespace Marketio_WPF.ViewModels
         private async void ExecuteDeleteCustomer()
         {
             if (SelectedCustomer == null) { ErrorMessage = "No customer selected."; return; }
+
+            var bevestiging = MessageBox.Show(
+                $"Weet u zeker dat u '{SelectedCustomer.FirstName} {SelectedCustomer.LastName}' wilt verwijderen?",
+                "Klant verwijderen",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+            if (bevestiging != MessageBoxResult.Yes) return;
+
             try
             {
                 IsBusy = true;

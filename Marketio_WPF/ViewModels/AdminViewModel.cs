@@ -31,8 +31,6 @@ namespace Marketio_WPF.ViewModels
                 SetProperty(ref _selectedUser, value);
                 AssignRoleCommand.NotifyCanExecuteChanged();
                 RemoveRoleCommand.NotifyCanExecuteChanged();
-                ResetPasswordCommand.NotifyCanExecuteChanged();
-                LockUserCommand.NotifyCanExecuteChanged();
                 DeleteUserCommand.NotifyCanExecuteChanged();
             }
         }
@@ -63,8 +61,6 @@ namespace Marketio_WPF.ViewModels
         public RelayCommand LoadRolesCommand { get; }
         public RelayCommand AssignRoleCommand { get; }
         public RelayCommand RemoveRoleCommand { get; }
-        public RelayCommand ResetPasswordCommand { get; }
-        public RelayCommand LockUserCommand { get; }
         public RelayCommand DeleteUserCommand { get; }
         public RelayCommand RefreshCommand { get; }
 
@@ -78,13 +74,11 @@ namespace Marketio_WPF.ViewModels
             LoadRolesCommand = new RelayCommand(ExecuteLoadRoles);
             AssignRoleCommand = new RelayCommand(ExecuteAssignRole, CanExecuteAssignRole);
             RemoveRoleCommand = new RelayCommand(ExecuteRemoveRole, CanExecuteRemoveRole);
-            ResetPasswordCommand = new RelayCommand(ExecuteResetPassword, CanExecuteResetPassword);
-            LockUserCommand = new RelayCommand(ExecuteLockUser, CanExecuteLockUser);
             DeleteUserCommand = new RelayCommand(ExecuteDeleteUser, CanExecuteDeleteUser);
             RefreshCommand = new RelayCommand(ExecuteRefresh);
         }
 
-        // Sequentiële initialisatie (gebruikt door UserControl_Loaded)
+        // Sequentiële initialisatie (gebruikt door UserControl_Loaded en na mutaties)
         /// <summary>
         /// Laadt rollen en gebruikers sequentieel om concurrente DbContext-toegang
         /// te vermijden. Altijd via deze methode initialiseren, niet via de losse
@@ -129,7 +123,7 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        // 1. Gebruikers Laden
+        // 1. Gebruikers Laden (intern, niet meer rechtstreeks aangeroepen bij initialisatie)
         private async void ExecuteLoadUsers()
         {
             try
@@ -153,7 +147,7 @@ namespace Marketio_WPF.ViewModels
             }
         }
 
-        // 2. Beschikbare Rollen Laden
+        // 2. Beschikbare Rollen Laden (intern, niet meer rechtstreeks aangeroepen bij initialisatie)
         private async void ExecuteLoadRoles()
         {
             try
@@ -169,6 +163,10 @@ namespace Marketio_WPF.ViewModels
         }
 
         // 3. Rol Toekennen
+        // Na de mutatie wordt InitializeAsync() gebruikt (ipv de losse ExecuteLoadUsers),
+        // zodat rollen en gebruikers sequentieel worden herladen zonder concurrent DbContext-gebruik.
+        // SuccessMessage wordt NA de refresh ingesteld zodat InitializeAsync().ClearMessages()
+        // de boodschap niet meteen wist.
         private async void ExecuteAssignRole()
         {
             try
@@ -176,13 +174,14 @@ namespace Marketio_WPF.ViewModels
                 IsBusy = true;
                 ClearMessages();
 
+                var roleName = SelectedRole;
                 var success = await _userManagementService.AssignRoleAsync(
-                    SelectedUser!.Id, SelectedRole);
+                    SelectedUser!.Id, roleName);
 
                 if (success)
                 {
-                    SuccessMessage = $"Rol '{SelectedRole}' succesvol toegewezen.";
-                    ExecuteLoadUsers();
+                    await InitializeAsync();                                   // sequentieel herladen
+                    SuccessMessage = $"Rol '{roleName}' succesvol toegewezen."; // NA de refresh
                 }
                 else
                 {
@@ -211,13 +210,14 @@ namespace Marketio_WPF.ViewModels
                 IsBusy = true;
                 ClearMessages();
 
+                var roleName = SelectedRole;
                 var success = await _userManagementService.RemoveRoleAsync(
-                    SelectedUser!.Id, SelectedRole);
+                    SelectedUser!.Id, roleName);
 
                 if (success)
                 {
-                    SuccessMessage = $"Rol '{SelectedRole}' succesvol verwijderd.";
-                    ExecuteLoadUsers();
+                    await InitializeAsync();                                    // sequentieel herladen
+                    SuccessMessage = $"Rol '{roleName}' succesvol verwijderd."; // NA de refresh
                 }
                 else
                 {
@@ -238,67 +238,7 @@ namespace Marketio_WPF.ViewModels
         private bool CanExecuteRemoveRole() =>
             SelectedUser != null && !string.IsNullOrWhiteSpace(SelectedRole) && !IsBusy;
 
-        // 5. Reset wachtwoord
-        private async void ExecuteResetPassword()
-        {
-            try
-            {
-                IsBusy = true;
-                ClearMessages();
-
-                var success = await _userManagementService.ResetPasswordAsync(SelectedUser!.Id);
-
-                if (success)
-                    SuccessMessage = "Wachtwoord-reset token aangemaakt. " +
-                                     "Stuur de reset-link naar de gebruiker.";
-                else
-                    ErrorMessage = "Wachtwoord resetten mislukt.";
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Fout bij wachtwoord resetten: {ex.Message}";
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-
-        private bool CanExecuteResetPassword() => SelectedUser != null && !IsBusy;
-
-        // 6. Lock user
-        private async void ExecuteLockUser()
-        {
-            try
-            {
-                IsBusy = true;
-                ClearMessages();
-
-                var success = await _userManagementService.LockUserAsync(SelectedUser!.Id);
-
-                if (success)
-                {
-                    SuccessMessage = "Account geblokkeerd.";
-                    ExecuteLoadUsers();
-                }
-                else
-                {
-                    ErrorMessage = "Account blokkeren mislukt.";
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Fout bij blokkeren van account: {ex.Message}";
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-
-        private bool CanExecuteLockUser() => SelectedUser != null && !IsBusy;
-
-        // 7. Delete user (GDPR Right to be Forgotten)
+        // 5. Delete user (GDPR Right to be Forgotten)
         private async void ExecuteDeleteUser()
         {
             try

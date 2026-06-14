@@ -2,6 +2,7 @@
 using Marketio_Shared.Enums;
 using Marketio_WPF.Services;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace Marketio_WPF.ViewModels
 {
@@ -157,6 +158,14 @@ namespace Marketio_WPF.ViewModels
         private async void ExecuteDeleteOrder()
         {
             if (SelectedOrder == null) { ErrorMessage = "Geen order geselecteerd."; return; }
+
+            var bevestiging = MessageBox.Show(
+                $"Weet u zeker dat u order #{SelectedOrder.Id} wilt verwijderen?",
+                "Order verwijderen",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+            if (bevestiging != MessageBoxResult.Yes) return;
+
             try
             {
                 IsBusy = true;
