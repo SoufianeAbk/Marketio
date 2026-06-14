@@ -32,6 +32,8 @@ namespace Marketio_WPF.ViewModels
                 AssignRoleCommand.NotifyCanExecuteChanged();
                 RemoveRoleCommand.NotifyCanExecuteChanged();
                 DeleteUserCommand.NotifyCanExecuteChanged();
+                LockUserCommand.NotifyCanExecuteChanged();
+                UnlockUserCommand.NotifyCanExecuteChanged();
             }
         }
 
@@ -62,6 +64,8 @@ namespace Marketio_WPF.ViewModels
         public RelayCommand AssignRoleCommand { get; }
         public RelayCommand RemoveRoleCommand { get; }
         public RelayCommand DeleteUserCommand { get; }
+        public RelayCommand LockUserCommand { get; }
+        public RelayCommand UnlockUserCommand { get; }
         public RelayCommand RefreshCommand { get; }
 
         // Constructor
@@ -75,6 +79,8 @@ namespace Marketio_WPF.ViewModels
             AssignRoleCommand = new RelayCommand(ExecuteAssignRole, CanExecuteAssignRole);
             RemoveRoleCommand = new RelayCommand(ExecuteRemoveRole, CanExecuteRemoveRole);
             DeleteUserCommand = new RelayCommand(ExecuteDeleteUser, CanExecuteDeleteUser);
+            LockUserCommand = new RelayCommand(ExecuteLockUser, CanExecuteLockUser);
+            UnlockUserCommand = new RelayCommand(ExecuteUnlockUser, CanExecuteUnlockUser);
             RefreshCommand = new RelayCommand(ExecuteRefresh);
         }
 
@@ -270,6 +276,80 @@ namespace Marketio_WPF.ViewModels
         }
 
         private bool CanExecuteDeleteUser() => SelectedUser != null && !IsBusy;
+
+        // 6. Blokkeer gebruiker (permanent — DateTimeOffset.MaxValue)
+        // CanExecute: alleen actief als de geselecteerde gebruiker NIET al geblokkeerd is.
+        // FullName wordt voor InitializeAsync() vastgelegd zodat de SuccessMessage na
+        // het herladen nog de juiste naam toont.
+        private async void ExecuteLockUser()
+        {
+            try
+            {
+                IsBusy = true;
+                ClearMessages();
+
+                var userId = SelectedUser!.Id;
+                var fullName = SelectedUser.FullName;
+                var success = await _userManagementService.LockUserAsync(userId);
+
+                if (success)
+                {
+                    await InitializeAsync();                                          // sequentieel herladen
+                    SuccessMessage = $"Gebruiker '{fullName}' succesvol geblokkeerd."; // NA de refresh
+                }
+                else
+                {
+                    ErrorMessage = "Blokkeren mislukt.";
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Fout bij blokkeren van gebruiker: {ex.Message}";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private bool CanExecuteLockUser() =>
+            SelectedUser != null && !SelectedUser.IsLocked && !IsBusy;
+
+        // 7. Ontgrendel gebruiker
+        // CanExecute: alleen actief als de geselecteerde gebruiker WEL vergrendeld is.
+        private async void ExecuteUnlockUser()
+        {
+            try
+            {
+                IsBusy = true;
+                ClearMessages();
+
+                var userId = SelectedUser!.Id;
+                var fullName = SelectedUser.FullName;
+                var success = await _userManagementService.UnlockUserAsync(userId);
+
+                if (success)
+                {
+                    await InitializeAsync();                                      // sequentieel herladen
+                    SuccessMessage = $"Gebruiker '{fullName}' succesvol gedeblokkeerd."; // NA de refresh
+                }
+                else
+                {
+                    ErrorMessage = "Ontgrendelen mislukt.";
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Fout bij ontgrendelen van gebruiker: {ex.Message}";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private bool CanExecuteUnlockUser() =>
+            SelectedUser != null && SelectedUser.IsLocked && !IsBusy;
 
         // 8. Refresh
         private async void ExecuteRefresh()

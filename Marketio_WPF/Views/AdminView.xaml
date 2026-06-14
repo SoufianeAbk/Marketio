@@ -148,7 +148,33 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- 2. GDPR – User Deletion -->
+                    <!-- 2. Account Status – Blokkeer / Deblokkeer -->
+                    <Border Background="#EAF4FB"
+                            BorderBrush="#2980B9" BorderThickness="1"
+                            CornerRadius="4" Padding="10" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="🔒 Account Status"
+                                       FontWeight="Bold" FontSize="13"
+                                       Foreground="#1A5276" Margin="0,0,0,4"/>
+                            <TextBlock Text="Blokkeer permanent of deblokkeer de geselecteerde gebruiker."
+                                       FontSize="10" Foreground="#999"
+                                       TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+                            <!-- Block: oranje — zelfde signaalniveau als Remove Role -->
+                            <Button Content="🚫 Block User"
+                                    Command="{Binding LockUserCommand}"
+                                    Background="#E67E22" Foreground="White"
+                                    HorizontalAlignment="Stretch" Margin="0,0,0,5"/>
+
+                            <!-- Unblock: groen — herstelt toegang -->
+                            <Button Content="✅ Unblock User"
+                                    Command="{Binding UnlockUserCommand}"
+                                    Style="{StaticResource SuccessButtonStyle}"
+                                    HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 3. GDPR – User Deletion -->
                     <Border Background="#FDF2F2"
                             BorderBrush="{StaticResource DangerBrush}" BorderThickness="1"
                             CornerRadius="4" Padding="10">

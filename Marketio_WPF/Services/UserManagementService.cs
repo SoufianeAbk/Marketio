@@ -124,5 +124,51 @@ namespace Marketio_WPF.Services
                 throw new InvalidOperationException("Error retrieving roles.", ex);
             }
         }
+
+        /// <summary>
+        /// Blokkeert een gebruikersaccount permanent totdat een admin het deblokkert.
+        /// Gebruikt DateTimeOffset.MaxValue zodat de blokkade niet automatisch vervalt —
+        /// in tegenstelling tot een tijdelijk slot (AddMinutes) dat Identity gebruikt
+        /// bij te veel mislukte aanmeldpogingen.
+        /// </summary>
+        /// <param name="userId">Gebruikers-ID</param>
+        /// <returns>True indien succesvol, anders false</returns>
+        public async Task<bool> LockUserAsync(string userId)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null) return false;
+
+                var result = await _userManager.SetLockoutEndDateAsync(
+                    user, DateTimeOffset.MaxValue);
+                return result.Succeeded;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Fout bij blokkeren van gebruiker.", ex);
+            }
+        }
+
+        /// <summary>
+        /// Ontgrendelt een gebruikersaccount door de lockout-einddatum op null te zetten.
+        /// </summary>
+        /// <param name="userId">Gebruikers-ID</param>
+        /// <returns>True indien succesvol, anders false</returns>
+        public async Task<bool> UnlockUserAsync(string userId)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null) return false;
+
+                var result = await _userManager.SetLockoutEndDateAsync(user, null);
+                return result.Succeeded;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Fout bij ontgrendelen van gebruiker.", ex);
+            }
+        }
     }
 }
