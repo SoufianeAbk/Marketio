@@ -39,9 +39,29 @@ namespace Marketio_Web.Controllers.Api
         }
 
         /// <summary>
+        /// Get order by order number (bv. "ORD-20260611-978F67B6")
+        /// </summary>
+        [HttpGet("by-number/{orderNumber}")]
+        public async Task<ActionResult<OrderDto>> GetByOrderNumber(string orderNumber)
+        {
+            var order = await _orderService.GetOrderByOrderNumberAsync(orderNumber);
+
+            if (order == null)
+                return NotFound(new { message = $"Order with number {orderNumber} not found" });
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Check if user owns this order or is admin/manager
+            if (order.CustomerId != userId && !User.IsInRole("Admin") && !User.IsInRole("Manager"))
+                return Forbid();
+
+            return Ok(order);
+        }
+
+        /// <summary>
         /// Get order by ID
         /// </summary>
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<OrderDto>> GetById(int id)
         {
             var order = await _orderService.GetOrderByIdAsync(id);

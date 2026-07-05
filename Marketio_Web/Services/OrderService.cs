@@ -119,6 +119,12 @@ namespace Marketio_Web.Services
             return order != null ? MapToDto(order) : null;
         }
 
+        public async Task<OrderDto?> GetOrderByOrderNumberAsync(string orderNumber)
+        {
+            var order = await _orderRepository.GetByOrderNumberAsync(orderNumber);
+            return order != null ? MapToDto(order) : null;
+        }
+
         public async Task<IEnumerable<OrderDto>> GetCustomerOrdersAsync(string customerId)
         {
             var orders = await _orderRepository.GetByCustomerIdAsync(customerId);
