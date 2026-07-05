@@ -348,7 +348,7 @@ Privacy zit ingebouwd in alle lagen. Zie [`CONTRIBUTING.md`](CONTRIBUTING.md) vo
 - **Cookiebanner** met beheer van voorkeuren.
 - **AVG-metadata** op `AppUser` (`PrivacyConsentGiven`, `TermsConsentGiven`, `MarketingOptIn`, `ConsentGivenDate`, …).
 
-## Dit is een educatief project en niet bedoeld voor commercieel gebruik (Erasmushogeschool Brussel).
+## Dit is een educatief project en niet bedoeld voor commercieel gebruik.
 - **Auteur**: Abakkiou Soufiane
 - **Email**: soufiane.abakkiou@student.ehb.be
 
