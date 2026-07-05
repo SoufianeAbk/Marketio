@@ -6,7 +6,7 @@ namespace Marketio_Shared.Entities
 {
     /// <summary>
     /// GDPR audit log entry — registreert elke consent-actie, data-export of verwijderingsaanvraag.
-    /// Behoort tot Shared zodat alle platforms (Web, WPF) hetzelfde schema delen.
+    /// Behoort tot Shared zodat alle platforms (Web) hetzelfde schema delen.
     /// </summary>
     public class GdprAuditLog
     {
